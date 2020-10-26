@@ -80,7 +80,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/10/23/kafka-introduce/">kafka-introduce</a>
+      <a class="article-title" href="/2020/10/23/kafka-introduce/">什么是Kafka</a>
     </h1>
   
 
@@ -88,17 +88,34 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="分布式"><a href="#分布式" class="headerlink" title="分布式"></a>分布式</h2><p>分布式系统由多个运行的计算机系统组成，所有这些计算机在一个集群中一起工作，对终端用户来讲只是一个单一节点</p>
-<p><img src="/2020/10/23/kafka-introduce/1603440083.jpg"></p>
-<p>kafka也是分布式的，因为它在不同的节点(又被称为broker)上存储，接受以及发送消息，这样做的好处是具有很高的可扩展性和容错性</p>
+        <h2 id="分布式"><a href="#分布式" class="headerlink" title="分布式"></a>分布式</h2><p>分布式系统由多个运行的计算机系统组成，所有这些计算机在一个集群中一起工作，对终端用户来讲只是一个单一节点。</p>
+<p><img src="/2020/10/23/kafka-introduce/distributed_system.png" alt="distributed_system"></p>
+<p>Kafka也是分布式的，因为它在不同的节点(又被称为broker)上存储，接受以及发送消息，这样做的好处是具有很高的可扩展性和容错性。</p>
+<h2 id="水平可扩展性"><a href="#水平可扩展性" class="headerlink" title="水平可扩展性"></a>水平可扩展性</h2><p>在这之前，先看看什么是垂直可扩展，比如你有一个传统的数据库服务器，它开始过度负载，解决这个问题的办法就是给服务器加配置(cpu，内存，SSD)，这就叫做垂直扩展。但是这种方式存在两个巨大的劣势：</p>
+<p>1.硬件存在限制，不可能无限的添加机器配置</p>
+<p>2.它需要停机时间，通常这是很多公司无法容忍的</p>
+<p>水平可扩展就是通过添加更多的机器来解决同样的问题，添加新机器不需要停机，而且集群中也不会对机器的数量有任何的限制。但问题在于并非所有系统都支持水平可伸缩性，因为它们不是设计用于集群中(在集群中工作会更加复杂)。</p>
+<h2 id="容错性"><a href="#容错性" class="headerlink" title="容错性"></a>容错性</h2><p>非分布式系统中容易最致命的问题就是单点失败，如果你唯一的服务器挂掉了，那么我相信你会很崩溃。</p>
+<p>而分布式系统的设计方式就是可以以配置的方式来容许失败。比如在5个节点的Kafka集群中，即使其中两个节点挂掉了，你仍然可以继续工作。</p>
+<p>需要注意的是，容错与性能直接相关，你的系统容错程度越高，性能就越差。</p>
+<h2 id="提交日志-commit-log"><a href="#提交日志-commit-log" class="headerlink" title="提交日志(commit log)"></a>提交日志(commit log)</h2><p>提交日志(也被称为预写日志或者事物日志)是仅支持附加的持久有序数据结构，你无法修改或者删除记录，它从左往右读并且保证日志的顺序。</p>
+<p><img src="/2020/10/23/kafka-introduce/commint_log.png" alt="commint_log"></p>
+<p>是不是觉得Kafka的数据结构如此简单?</p>
+<p>是的，从很多方面来讲，这个数据结构就是Kafka的核心。这个数据结构的记录是有序的，而有序的数据可以确保我们的处理流程。这两个在分布式系统中都是极其重要的问题。</p>
+<p>Kafka实际上将所有消息存储到磁盘并在数据结构中对它们进行排序，以便利用顺序磁盘读取。</p>
+<p>1.读取和写入都是常量时间O(1)(当确定了record id)，与磁盘上其他结构的O(log N)操作相比是一个巨大的优势，因为每个磁盘搜索都很耗时。</p>
+<p>2.读取和写入不会相互影响，写不会锁住读，反之亦然。</p>
+<p>这两点有着巨大的优势， 因为数据大小与性能完全分离。无论你的服务器上有100KB还是100TB的数据，Kafka都具有相同的性能。</p>
+<h2 id="如何工作"><a href="#如何工作" class="headerlink" title="如何工作"></a>如何工作</h2><p>生产者消费者模式：生产者(producer)发送消息(record)到Kafka服务器(broker)，这些消息存储在主题(topic)中，然后消费者(consumer)订阅该主题，接受新消息后并进行处理。</p>
+<p><img src="/2020/10/23/kafka-introduce/work_model.png" alt="work_model"></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/23/kafka-introduce/" data-id="ckglzz0dm00011svidqlw47fo" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/23/kafka-introduce/" data-id="ckgpua92h0003fsvigw4i31sa" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kafka/" rel="tag">kafka</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a></li></ul>
 
     </footer>
   </div>
@@ -181,7 +198,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/23/hexo-blog/" data-id="ckglzz0dg00001svib3epgzbo" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/23/hexo-blog/" data-id="ckgpua9230000fsvi7hs078qa" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hexo/" rel="tag">hexo</a></li></ul>
@@ -206,7 +223,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/" rel="tag">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kafka/" rel="tag">kafka</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/" rel="tag">hexo</a></li></ul>
     </div>
   </div>
 
@@ -216,7 +233,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/kafka/" style="font-size: 10px;">kafka</a>
+      <a href="/tags/Kafka/" style="font-size: 10px;">Kafka</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a>
     </div>
   </div>
 
@@ -238,7 +255,7 @@
       <ul>
         
           <li>
-            <a href="/2020/10/23/kafka-introduce/">kafka-introduce</a>
+            <a href="/2020/10/23/kafka-introduce/">什么是Kafka</a>
           </li>
         
           <li>
