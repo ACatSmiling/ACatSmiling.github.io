@@ -153,6 +153,85 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/29/kafka-consumer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="XiSun">
+      <meta itemprop="description" content="心如止水者，虽世间繁华之红尘纷扰，已然空无一物">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XiSun的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/10/29/kafka-consumer/" class="post-title-link" itemprop="url">Kafka Consumer消费数据时要考虑的问题</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-10-29 15:10:10 / 修改时间：15:50:21" itemprop="dateCreated datePublished" datetime="2020-10-29T15:10:10+08:00">2020-10-29</time>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="如何消费数据"><a href="#如何消费数据" class="headerlink" title="如何消费数据"></a>如何消费数据</h2><p>在上一篇文章中，介绍了如何发送数据到Kafka，既然有数据发送，那么肯定就有数据消费，消费者也是Kafka整个体系中不可缺少的一环。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">KafkaConsumerDemo</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Properties props = <span class="keyword">new</span> Properties();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 必须设置的属性</span></span><br><span class="line">        props.put(<span class="string">&quot;bootstrap.servers&quot;</span>, <span class="string">&quot;192.168.239.131:9092&quot;</span>);</span><br><span class="line">        props.put(<span class="string">&quot;key.deserializer&quot;</span>, <span class="string">&quot;org.apache.kafka.common.serialization.StringDeserializer&quot;</span>);</span><br><span class="line">        props.put(<span class="string">&quot;value.deserializer&quot;</span>, <span class="string">&quot;org.apache.kafka.common.serialization.StringDeserializer&quot;</span>);</span><br><span class="line">        props.put(<span class="string">&quot;group.id&quot;</span>, <span class="string">&quot;group1&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 可选设置属性</span></span><br><span class="line">        props.put(<span class="string">&quot;enable.auto.commit&quot;</span>, <span class="string">&quot;true&quot;</span>);</span><br><span class="line">        props.put(<span class="string">&quot;auto.commit.interval.ms&quot;</span>, <span class="string">&quot;1000&quot;</span>);</span><br><span class="line">        props.put(<span class="string">&quot;auto.offset.reset&quot;</span>, <span class="string">&quot;earliest &quot;</span>);</span><br><span class="line">        props.put(<span class="string">&quot;client.id&quot;</span>, <span class="string">&quot;zy_client_id&quot;</span>);</span><br><span class="line"></span><br><span class="line">        KafkaConsumer&lt;String, String&gt; consumer = <span class="keyword">new</span> KafkaConsumer&lt;&gt;(props);</span><br><span class="line">        consumer.subscribe(Collections.singletonList(<span class="string">&quot;test&quot;</span>));</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            ConsumerRecords&lt;String, String&gt; records = consumer.poll(Duration.ofMillis(<span class="number">100</span>));</span><br><span class="line">            records.forEach(record -&gt; System.out.printf(<span class="string">&quot;topic = %s, partition = %d, offset = %d, key = %s, value = %s%n&quot;</span>,</span><br><span class="line">                    record.topic(), record.partition(), record.offset(), record.key(), record.value()));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="push还是pull"><a href="#push还是pull" class="headerlink" title="push还是pull"></a>push还是pull</h2><p>Kafka Consumer采用的是主动拉取broker数据进行消费的。</p>
+<p>一般消息中间件存在推送(Server推送数据给Consumer)和拉取(Consumer主动取服务器取数据)两种方式，这两种方式各有优劣。</p>
+<p>如果是选择推送的方式，最大的阻碍就是服务器不清楚Consumer的消费速度，如果Consumer中执行的操作又是比较耗时的，那么Consumer可能会不堪重负，甚至会导致系统挂掉。</p>
+<p>而采用拉取的方式则可以解决这种情况，Consumer根据自己的状态来拉取数据，可以对服务器的数据进行延迟处理。但是这种方式也有一个劣势就是服务器没有数据的时候可能会一直轮询，不过还好<code>KafkaConsumer</code>的<code>poll()</code>有参数允许消费者请求在 “长轮询” 中阻塞，等待数据到达(并且可选地等待直到给定数量的字节可用以确保传输大小)。</p>
+<h2 id="必须属性"><a href="#必须属性" class="headerlink" title="必须属性"></a>必须属性</h2>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/26/kafka-producer/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -167,7 +246,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2020/10/26/kafka-producer/" class="post-title-link" itemprop="url">Kafka Producer源码</a>
+            <a href="/2020/10/26/kafka-producer/" class="post-title-link" itemprop="url">Kafka Producer部分源码解析</a>
         </h2>
 
         <div class="post-meta">
@@ -184,10 +263,24 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-28 08:47:41" itemprop="dateModified" datetime="2020-10-28T08:47:41+08:00">2020-10-28</time>
+                <time title="修改时间：2020-10-29 15:15:08" itemprop="dateModified" datetime="2020-10-29T15:15:08+08:00">2020-10-29</time>
               </span>
 
-          
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>19k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>17 分钟</span>
+            </span>
 
         </div>
       </header>
@@ -274,7 +367,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">props.put(<span class="string">&quot;partitioner.class&quot;</span>, <span class="string">&quot;cn.xisun.partitioner.KeyPartitioner&quot;</span>);</span><br></pre></td></tr></table></figure>
 
 <h2 id="本文参考"><a href="#本文参考" class="headerlink" title="本文参考"></a>本文参考</h2><p><a target="_blank" rel="noopener" href="https://generalthink.github.io/2019/03/07/kafka-producer-source-code-analysis/">https://generalthink.github.io/2019/03/07/kafka-producer-source-code-analysis/</a></p>
-<p>声明：写作本文初衷是个人学习记录，鉴于本人学识有限，如有侵权或不当之处，请联系<a href="mailto:&#119;&#100;&#115;&#x68;&#x66;&#117;&#116;&#64;&#49;&#x36;&#x33;&#x2e;&#99;&#111;&#109;">&#119;&#100;&#115;&#x68;&#x66;&#117;&#116;&#64;&#49;&#x36;&#x33;&#x2e;&#99;&#111;&#109;</a></p>
+<p>声明：写作本文初衷是个人学习记录，鉴于本人学识有限，如有侵权或不当之处，请联系<a href="mailto:&#119;&#x64;&#x73;&#104;&#x66;&#117;&#116;&#x40;&#49;&#x36;&#51;&#x2e;&#99;&#x6f;&#109;">&#119;&#x64;&#x73;&#104;&#x66;&#117;&#116;&#x40;&#49;&#x36;&#51;&#x2e;&#99;&#x6f;&#109;</a></p>
 
       
     </div>
@@ -328,7 +421,21 @@
                 <time title="修改时间：2020-10-28 14:26:39" itemprop="dateModified" datetime="2020-10-28T14:26:39+08:00">2020-10-28</time>
               </span>
 
-          
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
 
         </div>
       </header>
@@ -423,7 +530,7 @@
 <p>Kafka允许你轻松地分离不同(微)服务之间的通信。使用Streams API，现在可以比以往更轻松地编写业务逻辑，从而丰富Kafka主题数据以供服务使用。可能性很大，我恳请你探讨公司如何使用Kafka。</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Apache Kafka是一个分布式流媒体平台，每天可处理数万亿个事件。Kafka提供低延迟，高吞吐量，容错的发布和订阅管道，并能够处理事件流。我们回顾了它的基本语义(生产者，代理，消费者，主题)，了解了它的一些优化(page cache)，通过复制数据了解了它的容错能力，并介绍了它不断增长的强大流媒体功能。Kafka已经在全球数千家公司中大量采用，其中包括财富500强企业中的三分之一。随着Kafka的积极开发和最近发布的第一个主要版本1.0(2017年11月1日)，有预测这个流媒体平台将会与关系数据库一样，是数据平台的重要核心。我希望这篇介绍能帮助你熟悉Apache Kafka。</p>
 <h2 id="本文参考"><a href="#本文参考" class="headerlink" title="本文参考"></a>本文参考</h2><p><a target="_blank" rel="noopener" href="http://generalthink.github.io/2019/02/27/introduction-of-kafka/">http://generalthink.github.io/2019/02/27/introduction-of-kafka/</a></p>
-<p>声明：写作本文初衷是个人学习记录，鉴于本人学识有限，如有侵权或不当之处，请联系<a href="mailto:&#x77;&#100;&#115;&#x68;&#x66;&#117;&#x74;&#64;&#49;&#x36;&#51;&#x2e;&#x63;&#111;&#109;">&#x77;&#100;&#115;&#x68;&#x66;&#117;&#x74;&#64;&#49;&#x36;&#51;&#x2e;&#x63;&#111;&#109;</a></p>
+<p>声明：写作本文初衷是个人学习记录，鉴于本人学识有限，如有侵权或不当之处，请联系<a href="mailto:&#x77;&#x64;&#115;&#x68;&#102;&#x75;&#x74;&#64;&#x31;&#54;&#x33;&#x2e;&#99;&#111;&#109;">&#x77;&#x64;&#115;&#x68;&#102;&#x75;&#x74;&#64;&#x31;&#54;&#x33;&#x2e;&#99;&#111;&#109;</a></p>
 
       
     </div>
@@ -474,10 +581,24 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-10-28 14:24:56" itemprop="dateModified" datetime="2020-10-28T14:24:56+08:00">2020-10-28</time>
+                <time title="修改时间：2020-10-29 16:27:52" itemprop="dateModified" datetime="2020-10-29T16:27:52+08:00">2020-10-29</time>
               </span>
 
-          
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
 
         </div>
       </header>
@@ -537,14 +658,26 @@
 
 <p>之后，再按照你下载的themes的使用说明，做相应修改即可。</p>
 <p>参考：<a target="_blank" rel="noopener" href="http://theme-next.iissnan.com/getting-started.html"><em>NexT的使用</em></a></p>
-<h3 id="补充：NexT中tags的使用"><a href="#补充：NexT中tags的使用" class="headerlink" title="补充：NexT中tags的使用"></a>补充：NexT中tags的使用</h3><p>1.修改NexT目录下的_config.yml文件，取消<code>menu</code>菜单下<code>tags</code>字段的注释：</p>
+<h3 id="NexT中tags的使用"><a href="#NexT中tags的使用" class="headerlink" title="NexT中tags的使用"></a>NexT中tags的使用</h3><p>1.修改NexT目录下的_config.yml文件，取消<code>menu</code>菜单下<code>tags</code>字段的注释</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">menu:</span><br><span class="line">  home: / || fa fa-home</span><br><span class="line">  tags: /tags/ || fa fa-tags</span><br></pre></td></tr></table></figure>
 
-<p>2.在blog根目录的source目录下，新建tags目录：</p>
+<p>2.在blog根目录的source目录下，新建tags目录</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new page <span class="string">&quot;tags&quot;</span></span><br></pre></td></tr></table></figure>
 
-<p>3.修改tags目录下的index.md文件，内容如下：</p>
+<p>3.修改tags目录下的index.md文件</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">title: tags</span><br><span class="line">date: 2020-10-27 16:35:56</span><br><span class="line"><span class="built_in">type</span>: tags</span><br><span class="line">layout: <span class="string">&quot;tags&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="NexT中添加字数统计、阅读时长"><a href="#NexT中添加字数统计、阅读时长" class="headerlink" title="NexT中添加字数统计、阅读时长"></a>NexT中添加字数统计、阅读时长</h3><p>1.安装hexo-symbols-count-time插件</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install hexo-symbols-count-time</span><br></pre></td></tr></table></figure>
+
+<p>或者</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ yarn add hexo-symbols-count-time</span><br></pre></td></tr></table></figure>
+
+<p>2.hexo配置，根目录下的_config.yaml文件，添加<code>symbols_count_time</code>节点</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Post wordcount display settings</span></span><br><span class="line">symbols_count_time:</span><br><span class="line">  symbols: <span class="literal">true</span> <span class="comment"># 文章字数</span></span><br><span class="line">  time: <span class="literal">true</span> <span class="comment"># 阅读时长</span></span><br><span class="line">  total_symbols: <span class="literal">true</span> <span class="comment"># 所有文章总字数</span></span><br><span class="line">  total_time: <span class="literal">true</span> <span class="comment"># 所有文章阅读中时长</span></span><br></pre></td></tr></table></figure>
+
+<p>3.NexT配置，themes目录下的_config.yml文件，<code>symbols_count_time</code>节点</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Post wordcount display settings</span></span><br><span class="line"><span class="comment"># Dependencies: https://github.com/theme-next/hexo-symbols-count-time</span></span><br><span class="line">symbols_count_time:</span><br><span class="line">  separated_meta: <span class="literal">true</span> <span class="comment"># 是否换行显示 字数统计 及 阅读时长</span></span><br><span class="line">  item_text_post: <span class="literal">true</span> <span class="comment"># 文章 字数统计 阅读时长 使用图标 还是 文本表示</span></span><br><span class="line">  item_text_total: <span class="literal">false</span> <span class="comment"># 博客底部统计 字数统计 阅读时长 使用图标 还是 文本表示</span></span><br></pre></td></tr></table></figure>
 
 <h2 id="在博客中添加图片"><a href="#在博客中添加图片" class="headerlink" title="在博客中添加图片"></a>在博客中添加图片</h2><p>md文件中插入图片的语法为：![]()</p>
 <p>其中，方括号是图片描述，圆括号是图片路径。一般来说有三种图片路径，分别是相对路径，绝对路径和网络路径。</p>
@@ -646,7 +779,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-count">4</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -685,6 +818,16 @@
     <i class="fa fa-heart"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">XiSun</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">29k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">26 分钟</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
