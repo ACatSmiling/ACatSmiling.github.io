@@ -167,7 +167,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2020/10/29/kafka-consumer/" class="post-title-link" itemprop="url">Kafka Consumer消费数据时要考虑的问题</a>
+            <a href="/2020/10/29/kafka-consumer/" class="post-title-link" itemprop="url">Kafka Consumer 消费数据时要考虑的问题</a>
         </h2>
 
         <div class="post-meta">
@@ -176,10 +176,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-10-29 15:10:10 / 修改时间：15:50:21" itemprop="dateCreated datePublished" datetime="2020-10-29T15:10:10+08:00">2020-10-29</time>
+              <time title="创建时间：2020-10-29 15:10:10" itemprop="dateCreated datePublished" datetime="2020-10-29T15:10:10+08:00">2020-10-29</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-10-30 11:41:53" itemprop="dateModified" datetime="2020-10-30T11:41:53+08:00">2020-10-30</time>
+              </span>
 
           <br>
             <span class="post-meta-item" title="本文字数">
@@ -187,14 +193,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.6k</span>
+              <span>7k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>6 分钟</span>
             </span>
 
         </div>
@@ -206,14 +212,91 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="如何消费数据"><a href="#如何消费数据" class="headerlink" title="如何消费数据"></a>如何消费数据</h2><p>在上一篇文章中，介绍了如何发送数据到Kafka，既然有数据发送，那么肯定就有数据消费，消费者也是Kafka整个体系中不可缺少的一环。</p>
+          <h2 id="如何消费数据"><a href="#如何消费数据" class="headerlink" title="如何消费数据"></a>如何消费数据</h2><p>在<a target="_blank" rel="noopener" href="https://acatsmiling.github.io/2020/10/26/kafka-producer/">上一篇文章</a>中，介绍了如何发送数据到 Kafka，既然有数据发送，那么肯定就有数据消费，消费者也是 Kafka 整个体系中不可缺少的一环。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">KafkaConsumerDemo</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Properties props = <span class="keyword">new</span> Properties();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 必须设置的属性</span></span><br><span class="line">        props.put(<span class="string">&quot;bootstrap.servers&quot;</span>, <span class="string">&quot;192.168.239.131:9092&quot;</span>);</span><br><span class="line">        props.put(<span class="string">&quot;key.deserializer&quot;</span>, <span class="string">&quot;org.apache.kafka.common.serialization.StringDeserializer&quot;</span>);</span><br><span class="line">        props.put(<span class="string">&quot;value.deserializer&quot;</span>, <span class="string">&quot;org.apache.kafka.common.serialization.StringDeserializer&quot;</span>);</span><br><span class="line">        props.put(<span class="string">&quot;group.id&quot;</span>, <span class="string">&quot;group1&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 可选设置属性</span></span><br><span class="line">        props.put(<span class="string">&quot;enable.auto.commit&quot;</span>, <span class="string">&quot;true&quot;</span>);</span><br><span class="line">        props.put(<span class="string">&quot;auto.commit.interval.ms&quot;</span>, <span class="string">&quot;1000&quot;</span>);</span><br><span class="line">        props.put(<span class="string">&quot;auto.offset.reset&quot;</span>, <span class="string">&quot;earliest &quot;</span>);</span><br><span class="line">        props.put(<span class="string">&quot;client.id&quot;</span>, <span class="string">&quot;zy_client_id&quot;</span>);</span><br><span class="line"></span><br><span class="line">        KafkaConsumer&lt;String, String&gt; consumer = <span class="keyword">new</span> KafkaConsumer&lt;&gt;(props);</span><br><span class="line">        consumer.subscribe(Collections.singletonList(<span class="string">&quot;test&quot;</span>));</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            ConsumerRecords&lt;String, String&gt; records = consumer.poll(Duration.ofMillis(<span class="number">100</span>));</span><br><span class="line">            records.forEach(record -&gt; System.out.printf(<span class="string">&quot;topic = %s, partition = %d, offset = %d, key = %s, value = %s%n&quot;</span>,</span><br><span class="line">                    record.topic(), record.partition(), record.offset(), record.key(), record.value()));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h2 id="push还是pull"><a href="#push还是pull" class="headerlink" title="push还是pull"></a>push还是pull</h2><p>Kafka Consumer采用的是主动拉取broker数据进行消费的。</p>
-<p>一般消息中间件存在推送(Server推送数据给Consumer)和拉取(Consumer主动取服务器取数据)两种方式，这两种方式各有优劣。</p>
-<p>如果是选择推送的方式，最大的阻碍就是服务器不清楚Consumer的消费速度，如果Consumer中执行的操作又是比较耗时的，那么Consumer可能会不堪重负，甚至会导致系统挂掉。</p>
-<p>而采用拉取的方式则可以解决这种情况，Consumer根据自己的状态来拉取数据，可以对服务器的数据进行延迟处理。但是这种方式也有一个劣势就是服务器没有数据的时候可能会一直轮询，不过还好<code>KafkaConsumer</code>的<code>poll()</code>有参数允许消费者请求在 “长轮询” 中阻塞，等待数据到达(并且可选地等待直到给定数量的字节可用以确保传输大小)。</p>
-<h2 id="必须属性"><a href="#必须属性" class="headerlink" title="必须属性"></a>必须属性</h2>
+<h3 id="push-还是-pull"><a href="#push-还是-pull" class="headerlink" title="push 还是 pull"></a>push 还是 pull</h3><p>Kafka Consumer 采用的是主动拉取 broker 数据进行消费的。</p>
+<p>一般消息中间件存在推送 (Server 推送数据给 Consumer) 和拉取 (Consumer 主动取服务器取数据) 两种方式，这两种方式各有优劣。</p>
+<p>如果是选择推送的方式，最大的阻碍就是服务器不清楚 Consumer 的消费速度，如果 Consumer 中执行的操作又是比较耗时的，那么 Consumer 可能会不堪重负，甚至会导致系统挂掉。</p>
+<p>而采用拉取的方式则可以解决这种情况，Consumer 根据自己的状态来拉取数据，可以对服务器的数据进行延迟处理。但是这种方式也有一个劣势就是服务器没有数据的时候可能会一直轮询，不过还好 <code>KafkaConsumer</code> 的 <code>poll()</code> 方法有参数允许消费者请求在 “长轮询” 中阻塞，等待数据到达 (并且可选地等待直到给定数量的字节可用以确保传输大小)。</p>
+<h3 id="必须属性"><a href="#必须属性" class="headerlink" title="必须属性"></a>必须属性</h3><p><code>KafkaConsumer</code> 的必须设置的属性有4个：</p>
+<p>1.<code>bootstrap.servers</code>：连接 Kafka 集群的地址，多个地址以逗号分隔</p>
+<p>2.<code>key.deserializer</code>：消息中 key 反序列化类，需要和 <code>KafkaProducer</code> 中 key 序列化类相对应</p>
+<p>3.<code>value.deserializer</code>：消息中 value 的反序列化类，需要和 <code>KafkaProducer</code> 中 Value 序列化类相对应</p>
+<p>4.<code>group.id</code>：消费者所属消费组的唯一标识</p>
+<p>这里着重说一下 <code>group.id</code> 这个属性，<code>KafkaConsumer</code> 和 <code>KafkaProducer</code> 不一样，<code>KafkaConsumer</code> 中有一个 Consumer group (消费者组)，由它来决定同一个 Consumer group 中的消费者具体拉取哪个 partition 的数据，所以这里必须指定 <code>group.id</code> 属性。</p>
+<h3 id="订阅-取消主题"><a href="#订阅-取消主题" class="headerlink" title="订阅/取消主题"></a>订阅/取消主题</h3><p>1.使用 <code>subscribe()</code> 方法订阅主题</p>
+<p>2.使用 <code>assign()</code> 方法订阅指定主题和分区</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">List&lt;PartitionInfo&gt; partitionInfoList = kafkaConsumer.partitionsFor(<span class="string">&quot;test&quot;</span>);</span><br><span class="line"><span class="keyword">if</span> (partitionInfoList != <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="keyword">for</span> (PartitionInfo partitionInfo : partitionInfoList) &#123;</span><br><span class="line">        kafkaConsumer.assign(Collections.singletonList(<span class="keyword">new</span> TopicPartition(partitionInfo.topic(), partitionInfo.partition())));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>3.取消主题</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kafkaConsumer.unsubscribe();</span><br><span class="line">kafkaConsumer.subscribe(<span class="keyword">new</span> ArrayList&lt;&gt;());</span><br><span class="line">kafkaConsumer.assign(<span class="keyword">new</span> ArrayList&lt;TopicPartition&gt;());</span><br></pre></td></tr></table></figure>
+
+<p>上面的三行代码作用相同，都是取消订阅，其中 <code>unsubscribe ()</code> 方法即可以取消通过 <code>subscribe ()</code> 方式实现的订阅，也可以取消通过 <code>assign ()</code> 方式实现的订阅。</p>
+<h2 id="如何更好的消费数据"><a href="#如何更好的消费数据" class="headerlink" title="如何更好的消费数据"></a>如何更好的消费数据</h2><p>文章开头处的代码展示了我们是如何消费数据的，但是代码未免过于简单，我们测试的时候这样写没有问题，但是实际开发过程中我们并不会这样写，我们会选择更加高效的方式，这里提供两种方式供大家参考。</p>
+<p>1.一个 Consumer group，多个 consumer，数量小于等于 partition 的数量</p>
+<p><img src="/2020/10/29/kafka-consumer/Kafka_multi_consumer.png" alt="Kafka_multi_consumer"></p>
+<p>2.一个 consumer，多线程处理事件</p>
+<p><img src="/2020/10/29/kafka-consumer/Kafka_multi_event_handler.png" alt="Kafka_multi_event_handler"></p>
+<p>第一种方式每个 consumer 都要维护一个独立的 TCP 连接，如果分区数和创建 consumer 线程的数量过多，会造成不小的系统开销。但是如果处理消息足够快速，消费性能也会提升，如果慢的话就会导致消费性能降低。</p>
+<p>第二种方式是采用一个 consumer，多个消息处理线程来处理消息，其实在生产中，瓶颈一般是集中在消息处理上 (可能会插入数据到数据库，或者请求第三方 API)，所以我们采用多个线程来处理这些消息。</p>
+<p>当然可以结合第一和第二两种方式，采用多 consumer + 多个消息处理线程来消费 Kafka 中的数据，核心代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; consumerNum; i++) &#123;</span><br><span class="line">  <span class="comment">// 根据属性创建Consumer</span></span><br><span class="line">  <span class="keyword">final</span> Consumer&lt;String, <span class="keyword">byte</span>[]&gt; consumer = consumerFactory.getConsumer(getServers(), groupId);</span><br><span class="line">  consumerList.add(consumer);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 订阅主题</span></span><br><span class="line">  consumer.subscribe(Arrays.asList(<span class="keyword">this</span>.getTopic()));</span><br><span class="line"></span><br><span class="line">  <span class="comment">// consumer.poll()拉取数据</span></span><br><span class="line">  BufferedConsumerRecords bufferedConsumerRecords = <span class="keyword">new</span> BufferedConsumerRecords(consumer);</span><br><span class="line"></span><br><span class="line">  getExecutor().scheduleWithFixedDelay(() -&gt; &#123;</span><br><span class="line">      <span class="keyword">long</span> startTime = System.currentTimeMillis();</span><br><span class="line"></span><br><span class="line">      <span class="comment">// 进行消息处理</span></span><br><span class="line">      consumeEvents(bufferedConsumerRecords);</span><br><span class="line"></span><br><span class="line">      <span class="keyword">long</span> sleepTime = intervalMillis - (System.currentTimeMillis() - startTime);</span><br><span class="line">      <span class="keyword">if</span> (sleepTime &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        Thread.sleep(sleepTime);</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;, <span class="number">0</span>, <span class="number">1000</span>, TimeUnit.MILLISECONDS);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>不过这种方式不能顺序处理数据，如果你的业务是顺序处理，那么第一种方式可能更适合你。所以实际生产中请根据业务选择最适合自己的方式。</p>
+<h2 id="消费数据考虑哪些问题？"><a href="#消费数据考虑哪些问题？" class="headerlink" title="消费数据考虑哪些问题？"></a>消费数据考虑哪些问题？</h2><p>在 Kafka 中无论是 <code>KafkarPoducer</code> 往 topic 中写数据，还是 <code>KafkaConsumer</code> 从 topic 中读数据，都避免不了和 offset 打交道，关于 offset 主要有以下几个概念。</p>
+<p><img src="/2020/10/29/kafka-consumer/kafka-partition-offset.png" alt="Kafka Offset"></p>
+<ul>
+<li><p>Last Committed Offset：Consumer group 最新一次 commit 的 offset，表示这个 group 已经把 Last Committed Offset 之前的数据都消费成功了。</p>
+</li>
+<li><p>Current Position：Consumer group 当前消费数据的 offset，也就是说，Last Committed Offset 到 Current Position 之间的数据已经拉取成功，可能正在处理，但是还未 commit。</p>
+</li>
+<li><p>Log End Offset (LEO)：记录底层日志 (log) 中的下一条消息的 offset。对 <code>KafkaProducer</code> 来说，就是即将插入下一条消息的 offset。</p>
+</li>
+<li><p>High Watermark (HW)：已经成功备份到其他 replicas 中的最新一条数据的 offset，也就是说 Log End Offset 与 High Watermark 之间的数据已经写入到该 partition 的 leader 中，但是还未完全备份到其他的 replicas 中，consumer 是无法消费这部分消息 (未提交消息)。</p>
+</li>
+</ul>
+<p>每个 Kafka 副本对象都有两个重要的属性：LEO 和 HW。注意是所有的副本，而不只是 leader 副本。关于这两者更详细解释，参考：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/huxi2b/p/7453543.html"><a target="_blank" rel="noopener" href="https://www.cnblogs.com/huxi2b/p/7453543.html">Kafka 的 High Watermark 与 leader epoch 的讨论</a></a></p>
+<p>对于消费者而言，我们更多时候关注的是消费完成之后如何和服务器进行消费确认，告诉服务器这部分数据我已经消费过了。</p>
+<p>这里就涉及到了 2 个 offset，一个是 Current Position, 一个是处理完毕向服务器确认的 Last Committed Offset。显然，异步模式下 Last Committed Offset 是落后于 Current Position 的。如果 consumer 挂掉了，那么下一次消费数据又只会从 Last Committed Offset 的位置拉取数据，就会导致数据被重复消费。</p>
+<h3 id="提交策略如何选择？"><a href="#提交策略如何选择？" class="headerlink" title="提交策略如何选择？"></a>提交策略如何选择？</h3><p>Kafka 提供了三种提交 offset 的方式。</p>
+<p>1.自动提交</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 自动提交,默认true</span></span><br><span class="line">props.put(<span class="string">&quot;enable.auto.commit&quot;</span>, <span class="string">&quot;true&quot;</span>);</span><br><span class="line"><span class="comment">// 设置自动每1s提交一次</span></span><br><span class="line">props.put(<span class="string">&quot;auto.commit.interval.ms&quot;</span>, <span class="string">&quot;1000&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>2.手动同步提交</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kafkaConsumer.commitSync();</span><br></pre></td></tr></table></figure>
+
+<p>3.手动异步提交</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kafkaConsumer.commitAsync();</span><br></pre></td></tr></table></figure>
+
+<p>上面说了，既然异步提交 offset 可能会重复消费，那么我使用同步提交是否就可以解决数据重复消费的问题呢？我只能说 too young, too sample。且看如下代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">  ConsumerRecords&lt;String, String&gt; records = kafkaConsumer.poll(Duration.ofMillis(<span class="number">100</span>));</span><br><span class="line">  records.forEach(record -&gt; &#123;</span><br><span class="line">      insertIntoDB(record);</span><br><span class="line">      kafkaConsumer.commitSync();</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>很明显不行，因为 <code>insertIntoDB()</code> 和 <code>kafkaConsumer.commitSync ()</code> 两个方法做不到原子操作，如果 <code>insertIntoDB ()</code> 成功了，但是提交 offset 的时候 <code>KafkaConsumer</code> 挂掉了，然后服务器重启，仍然会导致重复消费问题。</p>
+<h3 id="是否需要做到不重复消费？"><a href="#是否需要做到不重复消费？" class="headerlink" title="是否需要做到不重复消费？"></a>是否需要做到不重复消费？</h3><p>只要保证处理消息和提交 offset 的操作是原子操作，就可以做到不重复消费。我们可以自己管理 committed offset，而不让 Kafka 来进行管理。</p>
+<p>比如如下使用方式：</p>
+<p>1.如果消费的数据刚好需要存储在数据库，那么可以把 offset 也存在数据库，就可以在一个事物中提交这两个结果，保证原子操作。</p>
+<p>2.借助搜索引擎，把 offset 和数据一起放到索引里面，比如 Elasticsearch。</p>
+<p>每条记录都有自己的 offset，所以如果要管理自己的 offset 还得要做下面事情：</p>
+<p>1.设置 <code>enable.auto.commit</code> 为 <code>false</code></p>
+<p>2.使用每个 <code>ConsumerRecord</code> 提供的 offset 来保存消费的位置</p>
+<p>3.在重新启动时使用 <code>seek (TopicPartition partition, long offset)</code> 恢复上次消费的位置</p>
+<p>通过上面的方式就可以在消费端实现 ”Exactly Once” 的语义，即保证只消费一次。但是是否真的需要保证不重复消费呢？这个得看具体业务，如果重复消费数据对整体有什么影响，然后再来决定是否需要做到不重复消费。</p>
+<h3 id="再均衡-reblance-怎么办？"><a href="#再均衡-reblance-怎么办？" class="headerlink" title="再均衡 (reblance) 怎么办？"></a>再均衡 (reblance) 怎么办？</h3><p>再均衡是指分区的所属权从一个消费者转移到另一个消费者的行为，再均衡期间，消费者组内的消费者无法读取消息。为了更精确的控制消息的消费，我们可以在订阅主题的时候，通过指定监听器的方式来设定发生再均衡动作前后的一些准备或者收尾的动作。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">kafkaConsumer.subscribe(Collections.singletonList(<span class="string">&quot;test&quot;</span>), <span class="keyword">new</span> ConsumerRebalanceListener() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onPartitionsRevoked</span><span class="params">(Collection&lt;TopicPartition&gt; partitions)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 再均衡之前和消费者停止读取消息之后被调用</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onPartitionsAssigned</span><span class="params">(Collection&lt;TopicPartition&gt; partitions)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 重新分配分区之后和消费者开始消费之前被调用</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>具体如何操作，得根据具体的业务逻辑来实现，如果消息比较重要，你可以在再均衡的时候处理 offset，如果不够重要，你可以什么都不做。</p>
+<h3 id="无法消费的数据怎么办？"><a href="#无法消费的数据怎么办？" class="headerlink" title="无法消费的数据怎么办？"></a>无法消费的数据怎么办？</h3><p>可能由于你的业务逻辑有些数据没法消费，这个时候怎么办？同样的还是的看你认为这个数据有多重要或者多不重要，如果重要可以记录日志，把它存入文件或者数据库，以便于稍候进行重试或者定向分析。如果不重要就当做什么事情都没有发生好了。</p>
+<h2 id="实际开发中我的处理方式"><a href="#实际开发中我的处理方式" class="headerlink" title="实际开发中我的处理方式"></a>实际开发中我的处理方式</h2><p>我开发的项目中，用到 Kafka 的其中一个地方是消息通知 (谁给你发了消息，点赞，评论等)，大概的流程就是用户在 client 端做了某些操作，就会发送数据到 Kafka，然后把这些数据进行一定的处理之后插入到 HBase 中。</p>
+<p>其中采用了 N consumer thread + N Event Handler 的方式来消费数据，并采用自动提交 offset。对于无法消费的数据往往只是简单处理下，打印下日志以及消息体 (无法消费的情况非常非常少)。</p>
+<p>得益于 HBase 的多 version 控制，即使是重复消费了数据也无关紧要。这样做没有去避免重复消费的问题主要是基于以下几点考虑：</p>
+<p>1.重复消费的概率较低，服务器整体性能稳定</p>
+<p>2.即便是重复消费了数据，入库了 HBase，获取数据也是只有一条，不影响结果的正确性</p>
+<p>3.有更高的吞吐量</p>
+<p>4.编程简单，不用单独去处理以及保存 offset</p>
+<h2 id="本文参考"><a href="#本文参考" class="headerlink" title="本文参考"></a>本文参考</h2><p><a target="_blank" rel="noopener" href="http://generalthink.github.io/2019/05/06/kafka-consumer-use/">http://generalthink.github.io/2019/05/06/kafka-consumer-use/</a></p>
+<p>声明：写作本文初衷是个人学习记录，鉴于本人学识有限，如有侵权或不当之处，请联系<a href="mailto:&#x77;&#100;&#115;&#104;&#102;&#x75;&#116;&#x40;&#x31;&#54;&#x33;&#x2e;&#99;&#111;&#x6d;">&#x77;&#100;&#115;&#104;&#102;&#x75;&#116;&#x40;&#x31;&#54;&#x33;&#x2e;&#99;&#111;&#x6d;</a></p>
+
       
     </div>
 
@@ -367,7 +450,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">props.put(<span class="string">&quot;partitioner.class&quot;</span>, <span class="string">&quot;cn.xisun.partitioner.KeyPartitioner&quot;</span>);</span><br></pre></td></tr></table></figure>
 
 <h2 id="本文参考"><a href="#本文参考" class="headerlink" title="本文参考"></a>本文参考</h2><p><a target="_blank" rel="noopener" href="https://generalthink.github.io/2019/03/07/kafka-producer-source-code-analysis/">https://generalthink.github.io/2019/03/07/kafka-producer-source-code-analysis/</a></p>
-<p>声明：写作本文初衷是个人学习记录，鉴于本人学识有限，如有侵权或不当之处，请联系<a href="mailto:&#119;&#x64;&#x73;&#104;&#x66;&#117;&#116;&#x40;&#49;&#x36;&#51;&#x2e;&#99;&#x6f;&#109;">&#119;&#x64;&#x73;&#104;&#x66;&#117;&#116;&#x40;&#49;&#x36;&#51;&#x2e;&#99;&#x6f;&#109;</a></p>
+<p>声明：写作本文初衷是个人学习记录，鉴于本人学识有限，如有侵权或不当之处，请联系<a href="mailto:&#119;&#100;&#115;&#104;&#102;&#x75;&#116;&#x40;&#49;&#54;&#51;&#x2e;&#x63;&#x6f;&#109;">&#119;&#100;&#115;&#104;&#102;&#x75;&#116;&#x40;&#49;&#54;&#51;&#x2e;&#x63;&#x6f;&#109;</a></p>
 
       
     </div>
@@ -530,7 +613,7 @@
 <p>Kafka允许你轻松地分离不同(微)服务之间的通信。使用Streams API，现在可以比以往更轻松地编写业务逻辑，从而丰富Kafka主题数据以供服务使用。可能性很大，我恳请你探讨公司如何使用Kafka。</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Apache Kafka是一个分布式流媒体平台，每天可处理数万亿个事件。Kafka提供低延迟，高吞吐量，容错的发布和订阅管道，并能够处理事件流。我们回顾了它的基本语义(生产者，代理，消费者，主题)，了解了它的一些优化(page cache)，通过复制数据了解了它的容错能力，并介绍了它不断增长的强大流媒体功能。Kafka已经在全球数千家公司中大量采用，其中包括财富500强企业中的三分之一。随着Kafka的积极开发和最近发布的第一个主要版本1.0(2017年11月1日)，有预测这个流媒体平台将会与关系数据库一样，是数据平台的重要核心。我希望这篇介绍能帮助你熟悉Apache Kafka。</p>
 <h2 id="本文参考"><a href="#本文参考" class="headerlink" title="本文参考"></a>本文参考</h2><p><a target="_blank" rel="noopener" href="http://generalthink.github.io/2019/02/27/introduction-of-kafka/">http://generalthink.github.io/2019/02/27/introduction-of-kafka/</a></p>
-<p>声明：写作本文初衷是个人学习记录，鉴于本人学识有限，如有侵权或不当之处，请联系<a href="mailto:&#x77;&#x64;&#115;&#x68;&#102;&#x75;&#x74;&#64;&#x31;&#54;&#x33;&#x2e;&#99;&#111;&#109;">&#x77;&#x64;&#115;&#x68;&#102;&#x75;&#x74;&#64;&#x31;&#54;&#x33;&#x2e;&#99;&#111;&#109;</a></p>
+<p>声明：写作本文初衷是个人学习记录，鉴于本人学识有限，如有侵权或不当之处，请联系<a href="mailto:&#x77;&#x64;&#115;&#104;&#x66;&#117;&#116;&#x40;&#x31;&#54;&#x33;&#x2e;&#99;&#111;&#109;">&#x77;&#x64;&#115;&#104;&#x66;&#117;&#116;&#x40;&#x31;&#54;&#x33;&#x2e;&#99;&#111;&#109;</a></p>
 
       
     </div>
@@ -822,12 +905,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">29k</span>
+    <span title="站点总字数">34k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">26 分钟</span>
+    <span title="站点阅读时长">31 分钟</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
