@@ -29,7 +29,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/2020/10/30/kafka-properties/843808-20181213103108421-940591020.png">
 <meta property="article:published_time" content="2020-10-30T07:48:10.000Z">
-<meta property="article:modified_time" content="2020-11-03T08:43:37.761Z">
+<meta property="article:modified_time" content="2020-11-09T08:15:53.480Z">
 <meta property="article:author" content="XiSun">
 <meta property="article:tag" content="Kafka">
 <meta name="twitter:card" content="summary">
@@ -189,7 +189,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-03 16:43:37" itemprop="dateModified" datetime="2020-11-03T16:43:37+08:00">2020-11-03</time>
+                <time title="修改时间：2020-11-09 16:15:53" itemprop="dateModified" datetime="2020-11-09T16:15:53+08:00">2020-11-09</time>
               </span>
 
           <br>
@@ -227,7 +227,7 @@
 <p>acks=1：只需要集群的 leader 收到消息，生产者就会收到一个来自服务器的成功响应。leader 会将记录写到本地日志中，但不会等待所有 follower 的完全确认。在这种情况下，如果 follower 复制数据之前，leader 挂掉，数据就会丢失。</p>
 <p>acks=all / -1：当所有参与复制的节点全部收到消息的时候，生产者才会收到一个来自服务器的成功响应，最安全不过延迟比较高。如果需要保证消息不丢失, 需要使用该设置，同时需要设置 broke端 <code>unclean.leader.election.enable</code> 为 true，保证当 ISR 列表为空时，选择其他存活的副本作为新的 leader。</p>
 <p><strong>batch.size</strong></p>
-<p>批量发送大小，默认：16384，即16 K。</p>
+<p>批量发送大小，默认：16384，即 16 K。</p>
 <p>当有多个消息需要被发送到同一个 partition 的时候，生产者会把他们放到同一个批次里面 (Deque)，该参数指定了一个批次可以使用的内存大小，按照字节数计算，当批次被填满，批次里的所有消息会被发送出去。不过生产者并不一定会等到批次被填满才发送，半满甚至只包含一个消息的批次也有可能被发送。</p>
 <p>生产者产生的消息缓存到本地，每次批量发送 <code>batch.size</code> 大小到服务器。太小的 batch 会降低吞吐，太大则会浪费内存。</p>
 <p><strong>linger.ms</strong></p>
@@ -235,16 +235,16 @@
 <p>指定了生产者在发送批次之前等待更多消息加入批次的时间。生产者会在批次填满或 <code>linger.ms</code> 达到上限时把批次发送出去。把 <code>linger.ms</code> 设置成比0大的数，让生产者在发送批次之前等待一会儿，使更多的消息加入到这个批次，虽然这样会增加延迟，但也会提升吞吐量。</p>
 <p>说明：<code>batch.size</code> 和 <code>linger.ms</code> 满足任何一个条件都会发送。</p>
 <p><strong>buffer.memory</strong></p>
-<p>生产者最大可用缓存，默认：33554432，即32M。</p>
+<p>生产者最大可用缓存，默认：33554432，即 32 M。</p>
 <p>生产者可以用来缓冲等待发送到服务器的记录的总内存字节。如果应用程序发送消息的速度超过生产者发送消息到服务器的速度，即超出 <code>max.block.ms</code>，将会抛出异常。</p>
 <p>该设置应该大致与生产者将使用的总内存相对应，但不是硬绑定，因为生产者使用的内存并非全部都用于缓冲。一些额外的内存将用于压缩 (如果启用了压缩) 以及维护飞行中的请求。</p>
 <p><strong>max.block.ms</strong></p>
-<p>阻塞时间，默认：60000，即1分钟。</p>
-<p>指定了在调用 <code>send()</code> 方法或者 <code>partitionsFor()</code> 方法获取元数据时生产者的阻塞时间。当生产者的发送缓冲区已满，或者没有可用的元数据时，这些方法就会阻塞。在阻塞时间达到 <code>max.block.ms</code> 时，就会抛出 <code>new TimeoutException(“Failed to allocate memory within the configured max blocking time “ + maxTimeToBlockMs + “ ms.”);</code>。</p>
+<p>阻塞时间，默认：60000，即 1 分钟。</p>
+<p>指定了在调用 <code>send ()</code> 方法或者 <code>partitionsFor ()</code> 方法获取元数据时生产者的阻塞时间。当生产者的发送缓冲区已满，或者没有可用的元数据时，这些方法就会阻塞。在阻塞时间达到 <code>max.block.ms</code> 时，就会抛出 <code>new TimeoutException(“Failed to allocate memory within the configured max blocking time “ + maxTimeToBlockMs + “ ms.”);</code>。</p>
 <p>用户提供的序列化器或分区程序中的阻塞将不计入此超时。</p>
 <p><strong>client.id</strong></p>
-<p>生产者ID，默认：空。</p>
-<p>请求时传递给服务器的 id 字符串，用来标识消息来源，后台线程会根据它命名。这样做的目的是通过允许在服务器端请求日志中包含逻辑应用程序名称，从而能够跟踪 ip / 端口之外的请求源。</p>
+<p>生产者 ID，默认：空。</p>
+<p>请求时传递给服务器的 id 字符串，用来标识消息来源，后台线程会根据它命名。这样做的目的是通过允许在服务器端请求日志中包含逻辑应用程序名称，从而能够跟踪 ip/端口之外的请求源。</p>
 <p><strong>compression.type</strong></p>
 <p>生产者数据被发送到服务器之前被压缩的压缩类型，默认：none，即不压缩。</p>
 <p>指定给定主题的最终压缩类型。此配置接受标准压缩编解码器 (“gzip”、“snappy”、“lz4”、“zstd”)。</p>
@@ -252,7 +252,7 @@
 <p>“snappy”：适合带宽敏感性，压缩力度大。</p>
 <p><strong>retries</strong></p>
 <p>失败重试次数，默认：2147483647。</p>
-<p>异常是 RetriableException 类型，或者 TransactionManager 允许重试 (<code>transactionManager.canRetry()</code> )。</p>
+<p>异常是 RetriableException 类型，或者 TransactionManager 允许重试 (<code>transactionManager.canRetry ()</code> )。</p>
 <p>RetriableException 类型异常如下：</p>
 <p><img src="/2020/10/30/kafka-properties/843808-20181213103108421-940591020.png" alt="img"></p>
 <p><strong>retry.backoff.ms</strong></p>
@@ -261,21 +261,21 @@
 <p><strong>max.in.flight.requests.per.connection</strong></p>
 <p>单个连接上发送的未确认请求的最大数量，默认：5。</p>
 <p>阻塞前客户端在单个连接上发送的未确认请求的最大数量。即指定了生产者在收到服务器响应之前可以发送多少个消息。它的值越高，就会占用越多的内存，不过也会提升吞吐量。</p>
-<p>如果设置为1，可以保证消息是按照发送的顺序写入服务器的，即便发生了重试。</p>
-<p>如果设置大于1，在 <code>retries</code> 不为0的情况下可能会出现消息发送顺序的错误。例如将两个批发送到同一个分区，第一个批处理失败并重试，但是第二个批处理成功，那么第二个批处理中的记录可能会先出现。</p>
+<p>如果设置为 1，可以保证消息是按照发送的顺序写入服务器的，即便发生了重试。</p>
+<p>如果设置大于 1，在 <code>retries</code> 不为0的情况下可能会出现消息发送顺序的错误。例如将两个批发送到同一个分区，第一个批处理失败并重试，但是第二个批处理成功，那么第二个批处理中的记录可能会先出现。</p>
 <p><strong>delivery.timeout.ms</strong></p>
-<p>传输时间，默认：120000，即2分钟。</p>
-<p>生产者发送完请求接受服务器ACK的时间，该时间允许重试 ，该配置应该大于 <code>request.timeout.ms</code> + <code>linger.ms</code>。</p>
+<p>传输时间，默认：120000，即 2 分钟。</p>
+<p>生产者发送完请求接受服务器 ACK 的时间，该时间允许重试 ，该配置应该大于 <code>request.timeout.ms</code> + <code>linger.ms</code>。</p>
 <p><strong>request.timeout.ms</strong></p>
 <p>请求超时时间，默认：30000，即30秒。</p>
 <p>配置控制客户端等待请求响应的最长时间。 如果在超时之前未收到响应，客户端将在必要时重新发送请求，如果重试耗尽，则该请求将失败。 这应该大于<code>replica.lag.time.max.ms</code> (broker 端配置)，以减少由于不必要的生产者重试引起的消息重复的可能性。</p>
 <p><strong>connections.max.idle.ms</strong></p>
-<p>连接空闲超时时间，默认：540000，即9分钟。</p>
+<p>连接空闲超时时间，默认：540000，即 9 分钟。</p>
 <p>在此配置指定的毫秒数之后关闭空闲连接。</p>
 <p><strong>enable.idempotence</strong></p>
 <p>开启幂等，默认：false。</p>
 <p>如果设置为 <code>true</code> ，将开启 <code>exactly-once</code> 模式，生产者将确保在流中准确地写入每个消息的副本。如果设置为 <code>false</code>，则由于代理失败而导致生产者重试，等等，可能会在流中写入重试消息的副本。</p>
-<p>注意，启用幂等需要以下条件 ：<code>max.in.flight.requests.per.connection</code> 小于或等于5，<code>retries</code> 大于0， <code>acks</code> 必须为 all 或者-1。如果用户没有显式地设置这些值，将选择合适的值。如果设置了不兼容的值，就会抛出 ConfigException。</p>
+<p>注意，启用幂等需要以下条件 ：<code>max.in.flight.requests.per.connection</code> 小于或等于 5，<code>retries</code> 大于 0， <code>acks</code> 必须为 all 或者 -1。如果用户没有显式地设置这些值，将选择合适的值。如果设置了不兼容的值，就会抛出 ConfigException。</p>
 <p><strong>key.serializer</strong></p>
 <p>key 序列化器，默认：无。</p>
 <p>需要实现接口：<code>org.apache.kafka.common. serialize .Serializer</code> 。Kafka 提供以下几个默认的 key 序列化器：</p>
@@ -286,7 +286,7 @@
 <p>byte[]：<code>org.apache.kafka.common.serialization.ByteArraySerializer</code>。</p>
 <p>String：<code>org.apache.kafka.common.serialization.StringSerializer</code>。</p>
 <p><strong>max.request.size</strong></p>
-<p>请求的最大字节大小，默认：1048576，即1M。</p>
+<p>请求的最大字节大小，默认：1048576，即 1 M。</p>
 <p>该参数用于控制生产者发送的请求大小，单次发送的消息大小超过 <code>max.request.size</code> 时，会抛出异常 ，如：<code>org.apache.kafka.common.errors.RecordTooLargeException: The message is 70459102 bytes when serialized which is larger than the maximum request size you have configured with the max.request.size configuration.</code>。</p>
 <p>注意：broker 对可接收的消息最大值也有自己的限制 (通过 <code>message.max.bytes</code> 参数设置)，所以两边的配置最好可以匹配，避免生产者发送的消息被 broker 拒绝。</p>
 <p><strong>metric.reporters</strong></p>
@@ -299,13 +299,13 @@
 <p>分区策略，默认：<code>org.apache.kafka.clients.producer.internals.DefaultPartitioner</code>。</p>
 <p>如果自定义分区策略，需要实现接口： <code>org.apache.kafka.clients.producer.Partitioner</code>。</p>
 <p><strong>receive.buffer.bytes</strong></p>
-<p>默认：32768，即32K。</p>
-<p>指定了 TCP socket 接收数据包的缓冲区大小 (和 broker 通信还是通过 socket )。如果被设置为-1，就使用操作系统的默认值。如果生产者或消费者与 broker 处于不同的数据中心，那么可以适当增大这些值，因为跨数据中心的网络一般都有比较高的延迟和比较低的带宽。</p>
+<p>默认：32768，即 32 K。</p>
+<p>指定了 TCP socket 接收数据包的缓冲区大小 (和 broker 通信还是通过 socket )。如果被设置为 -1，就使用操作系统的默认值。如果生产者或消费者与 broker 处于不同的数据中心，那么可以适当增大这些值，因为跨数据中心的网络一般都有比较高的延迟和比较低的带宽。</p>
 <p><strong>send.buffer.bytes</strong></p>
-<p>默认：131072，即128K。</p>
-<p>指定了 TCP socket 发送数据包的缓冲区大小 (和 broker 通信还是通过 socket )。如果被设置为-1，就使用操作系统的默认值。如果生产者或消费者与 broker 处于不同的数据中心，那么可以适当增大这些值，因为跨数据中心的网络一般都有比较高的延迟和比较低的带宽。</p>
+<p>默认：131072，即 128 K。</p>
+<p>指定了 TCP socket 发送数据包的缓冲区大小 (和 broker 通信还是通过 socket )。如果被设置为 -1，就使用操作系统的默认值。如果生产者或消费者与 broker 处于不同的数据中心，那么可以适当增大这些值，因为跨数据中心的网络一般都有比较高的延迟和比较低的带宽。</p>
 <p><strong>transaction.timeout.ms</strong></p>
-<p>事务协调器等待生产者更新事务状态的最大毫秒数，默认：60000，即1分钟。</p>
+<p>事务协调器等待生产者更新事务状态的最大毫秒数，默认：60000，即 1 分钟。</p>
 <p>如果超过该时间，事务协调器会终止进行中的事务。</p>
 <p>如果设置的时间大于 broker 端的 <code>max.transaction.timeout.ms</code>，会抛出 <code>InvalidTransactionTimeout</code> 异常。</p>
 <p><strong>transactional.id</strong></p>
@@ -337,10 +337,10 @@
 <p>唯一标识用户群组，每个 partition 只会分配给同一个 group 里面的一个 consumer 来消费。</p>
 <p><strong>max.poll.records</strong></p>
 <p>拉取的最大记录，默认：500。</p>
-<p>单次轮询调用 <code>poll()</code> 方法能返回的记录的最大数量。</p>
+<p>单次轮询调用 <code>poll ()</code> 方法能返回的记录的最大数量。</p>
 <p><strong>max.poll.interval.ms</strong></p>
-<p>拉取记录间隔，默认：300000，即5分钟。</p>
-<p>使用消费者组管理时轮询调用之间的最大延迟。这为使用者在获取更多记录之前空闲的时间设置了上限。如果在此超时过期之前没有调用 <code>poll()</code>，则认为使用者失败，组将重新平衡，以便将分区重新分配给另一个成员。</p>
+<p>拉取记录间隔，默认：300000，即 5 分钟。</p>
+<p>使用消费者组管理时轮询调用之间的最大延迟。这为使用者在获取更多记录之前空闲的时间设置了上限。如果在此超时过期之前没有调用 <code>poll ()</code>，则认为使用者失败，组将重新平衡，以便将分区重新分配给另一个成员。</p>
 <p><strong>request.timeout.ms</strong></p>
 <p>请求超时时间，默认：30000 。</p>
 <p>配置控制客户机等待请求响应的最长时间。如果在超时之前没有收到响应，客户端将在需要时重新发送请求，或者在重试耗尽时失败请求。</p>
@@ -354,7 +354,7 @@
 <p>这个值必须设置的小于 <code>session.timeout.ms</code> 的1/3，因为：</p>
 <p>当 consumer 由于某种原因不能发 Heartbeat 到 coordinator 时，并且时间超过 <code>session.timeout.ms</code> 时，就会认为该 consumer 已退出，它所订阅的 partition 会分配到同一 group 内的其它的 consumer 上。</p>
 <p><strong>connections.max.idle.ms</strong></p>
-<p>连接空闲超时时间，默认：540000，即9分钟。</p>
+<p>连接空闲超时时间，默认：540000，即 9 分钟。</p>
 <p>在此配置指定的毫秒数之后关闭空闲连接。</p>
 <p><strong>key.deserializer</strong></p>
 <p>key 反序列化器，默认：无。</p>
@@ -368,16 +368,16 @@
 <p>consumer订阅分区策略，默认：<code>org.apache.kafka.clients.consumer.RangeAssignor</code>。</p>
 <p>当使用组管理时，客户端将使用分区分配策略的类名在使用者实例之间分配分区所有权。</p>
 <p><strong>max.partition.fetch.bytes</strong></p>
-<p>一次 fetch 请求，从一个 partition 中取得的 records 的最大值，默认：1048576，即1M。</p>
+<p>一次 fetch 请求，从一个 partition 中取得的 records 的最大值，默认：1048576，即 1 M。</p>
 <p>如果在从 topic 中第一个非空的 partition 取消息时，取到的第一个 record 的大小就超过这个配置时，仍然会读取这个 record，也就是说在这种情况下，只会返回这一条 record。</p>
 <p>broker、topic 都会对 producer 发给它的 message size 做限制。所以在配置这值时，可以参考 broker 端的 <code>message.max.bytes</code> 配置和 topic 端的 <code>max.message.bytes</code> 配置。</p>
 <p><strong>fetch.max.bytes</strong></p>
-<p>一次 fetch 请求，从一个 broker 中取得的 records 的最大值，默认：52428800，即50M。</p>
+<p>一次 fetch 请求，从一个 broker 中取得的 records 的最大值，默认：52428800，即 50 M。</p>
 <p>如果在从 topic中 第一个非空的 partition 取消息时，取到的第一个 record 的大小就超过这个配置时，仍然会读取这个 record，也就是说在这种情况下，只会返回这一条 record。</p>
 <p>broker、topic 都会对 producer 发给它的 message size 做限制。所以在配置这值时，可以参考 broker 端的 <code>message.max.bytes</code> 配置 和 topic 端的 <code>max.message.bytes</code> 配置。</p>
 <p><strong>fetch.min.bytes</strong></p>
 <p>一次 fetch 请求，从一个 broker 中取得的 records 的最小值，默认：1。</p>
-<p>如果 broker 中数据量不够的话会 wait，直到积累的数据大小满足这个条件。默认值设置为1的目的是：使得 consumer 的请求能够尽快的返回。将此设置为大于1的值将导致服务器等待更大数量的数据累积，这可以稍微提高服务器吞吐量，但代价是增加一些延迟。</p>
+<p>如果 broker 中数据量不够的话会 wait，直到积累的数据大小满足这个条件。默认值设置为1的目的是：使得 consumer 的请求能够尽快的返回。将此设置为大于 1 的值将导致服务器等待更大数量的数据累积，这可以稍微提高服务器吞吐量，但代价是增加一些延迟。</p>
 <p><strong>fetch.max.wait.ms</strong></p>
 <p>拉取阻塞时间，默认：500。</p>
 <p>如果没有足够的数据立即满足 <code>fetch.min.bytes</code> 提供的要求，服务器在响应 fetch 请求之前将阻塞的最长时间。</p>
@@ -386,7 +386,7 @@
 <p>是否应该将来自内部主题 (如偏移量) 的记录公开给使用者，consumer 共享 offset。如果设置为 true，从内部主题接收记录的唯一方法是订阅它。</p>
 <p><strong>isolation.level</strong></p>
 <p>隔离级别，默认：read_uncommitted。</p>
-<p>控制如何以事务方式读取写入的消息。如果设置为 read_committed，<code>poll()</code> 方法将只返回已提交的事务消息。如果设置为 read_uncommitted，<code>poll()</code> 方法将返回所有消息，甚至是已经中止的事务消息。在任何一种模式下，非事务性消息都将无条件返回。</p>
+<p>控制如何以事务方式读取写入的消息。如果设置为 read_committed，<code>poll ()</code> 方法将只返回已提交的事务消息。如果设置为 read_uncommitted，<code>poll ()</code> 方法将返回所有消息，甚至是已经中止的事务消息。在任何一种模式下，非事务性消息都将无条件返回。</p>
 <h2 id="Kafka-Broker-核心配置参数"><a href="#Kafka-Broker-核心配置参数" class="headerlink" title="Kafka Broker 核心配置参数"></a>Kafka Broker 核心配置参数</h2><p><strong>zookeeper.connect</strong></p>
 <p>zookeeper 地址，多个地址用逗号隔开。</p>
 <p><strong>broker.id</strong></p>
@@ -419,7 +419,7 @@
 <p>rebalance 检测频率，默认：300。</p>
 <p>控制器触发分区 rebalance 检查的频率。</p>
 <p><strong>leader.imbalance.per.broker.percentage</strong></p>
-<p>触发 rebalance 得比率，默认：10，即10%。</p>
+<p>触发 rebalance 得比率，默认：10，即 10%。</p>
 <p>每个 broke 允许的 leader 不平衡比率。如果控制器超过每个 broke 的这个值，控制器将触发一个 leader balance。该值以百分比指定。</p>
 <p><strong>log.dir</strong></p>
 <p>保存日志数据的目录，默认：/tmp/kafka-logs。</p>
@@ -429,7 +429,7 @@
 <p><strong>log.flush.interval.messages</strong></p>
 <p>默认：9223372036854775807。</p>
 <p>在将消息刷新到磁盘之前，日志分区上累积的消息数量。</p>
-<p>log 文件 ”sync” 到磁盘之前累积的消息条数。因为磁盘IO操作是一个慢操作，但又是一个”数据可靠性”的必要手段。所以此参数的设置，需要在”数据可靠性”与”性能”之间做必要的权衡。</p>
+<p>log 文件 ”sync” 到磁盘之前累积的消息条数。因为磁盘 IO 操作是一个慢操作，但又是一个”数据可靠性”的必要手段。所以此参数的设置，需要在”数据可靠性”与”性能”之间做必要的权衡。</p>
 <p>如果此值过大，将会导致每次 ”fsync” 的时间较长 (IO 阻塞)；如果此值过小，将会导致 ”fsync” 的次数较多，这也意味着整体的 client 请求有一定的延迟。</p>
 <p>物理 server 故障，将会导致没有 fsync 的消息丢失。</p>
 <p><strong>log.flush.interval.ms</strong></p>
@@ -443,39 +443,39 @@
 <p>删除前日志的最大大小，默认：-1。</p>
 <p>topic 每个分区的最大文件大小，一个 topic 的大小限制 = 分区数 * <code>log.retention.bytes</code>。</p>
 <p><strong>log.retention.hours</strong></p>
-<p>日志文件最大保存时间 (小时)，默认：168，即7天。</p>
+<p>日志文件最大保存时间 (小时)，默认：168，即 7 天。</p>
 <p>删除日志文件之前保存它的小时数。</p>
 <p><strong>log.retention.minutes</strong></p>
 <p>日志文件最大保存时间 (分钟)，默认：null。</p>
 <p>在删除日志文件之前保存它的分钟数，如果没有设置，则使用 <code>log.retention.hours</code> 中的值。</p>
 <p><strong>log.retention.ms</strong></p>
 <p>日志文件最大保存时间 (毫秒)，默认：null。</p>
-<p>在删除日志文件之前保存它的毫秒数，如果没有设置，则使用 <code>log.retention.minutes</code> 中的值。如果设置为-1，则没有时间限制。</p>
+<p>在删除日志文件之前保存它的毫秒数，如果没有设置，则使用 <code>log.retention.minutes</code> 中的值。如果设置为 -1，则没有时间限制。</p>
 <p><strong>log.roll.hours</strong></p>
-<p>新 segment 产生时间，默认：168，即7天。</p>
+<p>新 segment 产生时间，默认：168，即 7 天。</p>
 <p>即使文件没有到达 <code>log.segment.bytes</code> 设置的大小，只要文件创建时间到达此属性，也会强制创建新 segment。</p>
 <p><strong>log.roll.ms</strong></p>
 <p>新 segment 产生时间，默认：null。</p>
 <p>如果未设置，则使用 <code>log.roll.hours</code> 中的值。</p>
 <p><strong>log.segment.bytes</strong></p>
-<p>单个 segment 文件的最大值，默认：1073741824，即1G。</p>
+<p>单个 segment 文件的最大值，默认：1073741824，即 1 G。</p>
 <p><strong>log.segment.delete.delay.ms</strong></p>
-<p>segment 删除前等待时间， 默认：60000，即1分钟。</p>
+<p>segment 删除前等待时间， 默认：60000，即 1 分钟。</p>
 <p><strong>message.max.bytes</strong></p>
-<p>最大 batch size，默认：1048588，即1.000011M。</p>
-<p>Kafka 允许的最大 record batch size (如果启用了压缩，则是压缩后的大小)。如果增加了这个值，并且是0.10.2版本之前的 consumer，那么也必须增加 consumer 的 fetch 大小，以便他们能够获取这么大的 record batch。在最新的消息格式版本中，记录总是按批进行分组，以提高效率。在以前的消息格式版本中，未压缩记录没有分组成批，这种限制只适用于单个 record。针对每个 topic，可以使用 <code>max.message.bytes</code> 设置。</p>
+<p>最大 batch size，默认：1048588，即 1.000011 M。</p>
+<p>Kafka 允许的最大 record batch size (如果启用了压缩，则是压缩后的大小)。如果增加了这个值，并且是 0.10.2 版本之前的 consumer，那么也必须增加 consumer 的 fetch 大小，以便他们能够获取这么大的 record batch。在最新的消息格式版本中，记录总是按批进行分组，以提高效率。在以前的消息格式版本中，未压缩记录没有分组成批，这种限制只适用于单个 record。针对每个 topic，可以使用 <code>max.message.bytes</code> 设置。</p>
 <p><strong>min.insync.replicas</strong></p>
 <p>insync中最小副本值，默认：1。</p>
 <p>当生产者将 <code>acks</code> 设置为 “all” (或 “-1”)时，<code>min.insync.replicas</code> 指定了必须确认写操作成功的最小副本数量。如果不能满足这个最小值，则生产者将抛出一个异常 (要么是 <code>NotEnoughReplicas</code>，要么是 <code>NotEnoughReplicasAfterAppend</code>)。</p>
-<p>当一起使用时，<code>min.insync.replicas</code> 和 <code>ack</code> 允许你执行更大的持久性保证。一个典型的场景是创建一个复制因子为3的主题，设置 <code>min.insync.replicas</code> 为2，生产者设置 <code>acks</code> 为 “all”，这将确保如果大多数副本没有收到写操作，则生产者会抛出异常。</p>
+<p>当一起使用时，<code>min.insync.replicas</code> 和 <code>ack</code> 允许你执行更大的持久性保证。一个典型的场景是创建一个复制因子为 3 的主题，设置 <code>min.insync.replicas</code> 为 2，生产者设置 <code>acks</code> 为 “all”，这将确保如果大多数副本没有收到写操作，则生产者会抛出异常。</p>
 <p><strong>num.io.threads</strong></p>
-<p>服务器用于处理请求的线程数，其中可能包括磁盘I/O，默认：8。</p>
+<p>服务器用于处理请求的线程数，其中可能包括磁盘 I/O，默认：8。</p>
 <p><strong>num.network.threads</strong></p>
 <p>服务器用于接收来自网络的请求和向网络发送响应的线程数，默认：3。</p>
 <p><strong>num.recovery.threads.per.data.dir</strong></p>
 <p>每个数据目录在启动时用于日志恢复和在关闭时用于刷新的线程数，默认：1。</p>
 <p><strong>num.replica.alter.log.dirs.threads</strong></p>
-<p>可以在日志目录(可能包括磁盘I/O)之间移动副本的线程数，默认：null。</p>
+<p>可以在日志目录 (可能包括磁盘 I/O) 之间移动副本的线程数，默认：null。</p>
 <p><strong>num.replica.fetchers</strong></p>
 <p>从 leader 复制数据到 follower 的线程数，默认：1。</p>
 <p><strong>offset.metadata.max.bytes</strong></p>
@@ -487,7 +487,7 @@
 <p><strong>offsets.topic.replication.factor</strong></p>
 <p>副本大小，默认：3。</p>
 <p><strong>offsets.topic.segment.bytes</strong></p>
-<p>默认104857600，即100M。</p>
+<p>默认104857600，即 100 M。</p>
 <p>segment 映射文件 (index) 文件大小，应该保持相对较小以便加快日志压缩和缓存负载。</p>
 <p><strong>queued.max.requests</strong></p>
 <p>阻塞网络线程之前，允许排队的请求数，默认：500。</p>
@@ -510,7 +510,7 @@
 <p>默认：10。</p>
 <p>阻塞之前 consumer 将发送给 zookeeper 的未确认请求的最大数量。</p>
 <p><strong>group.max.session.timeout.ms</strong></p>
-<p>默认：1800000，即30分钟。</p>
+<p>默认：1800000，即 30 分钟。</p>
 <p>注册使用者允许的最大会话超时。超时时间越长，消费者在心跳之间处理消息的时间就越多，而检测故障的时间就越长。</p>
 <p><strong>group.min.session.timeout.ms</strong></p>
 <p>默认：6000。</p>
@@ -540,8 +540,8 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/10/29/kafka-consumer/" rel="prev" title="Kafka Consumer 消费数据时要考虑的问题">
-      <i class="fa fa-chevron-left"></i> Kafka Consumer 消费数据时要考虑的问题
+    <a href="/2020/10/29/kafka-consumer/" rel="prev" title="KafkaConsumer 消费数据时要考虑的问题">
+      <i class="fa fa-chevron-left"></i> KafkaConsumer 消费数据时要考虑的问题
     </a></div>
       <div class="post-nav-item">
     <a href="/2020/11/04/kafka-consumer-group/" rel="next" title="Kafka consumer 如何加入 consumer group">
