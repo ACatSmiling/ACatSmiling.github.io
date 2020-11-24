@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="在前面的文章中，有简单的介绍了 KafkaConsumer 的两种订阅模式，本篇文章对此进行扩展说明一下。 KafkaConsumer 的两种订阅模式， subscribe () 模式和 assign () 模式，前者是 topic 粒度 (使用 group 管理)，后者是 topic-partition 粒度 (用户自己去管理)。 订阅模式KafkaConsumer 为订阅模式提供了 4 种 A">
+<meta property="og:type" content="article">
+<meta property="og:title" content="KafkaConsumer 源码之 consumer 的两种订阅模式">
+<meta property="og:url" content="http://example.com/2020/11/24/kafka-consumer-subscribeandassign/index.html">
+<meta property="og:site_name" content="XiSun的博客">
+<meta property="og:description" content="在前面的文章中，有简单的介绍了 KafkaConsumer 的两种订阅模式，本篇文章对此进行扩展说明一下。 KafkaConsumer 的两种订阅模式， subscribe () 模式和 assign () 模式，前者是 topic 粒度 (使用 group 管理)，后者是 topic-partition 粒度 (用户自己去管理)。 订阅模式KafkaConsumer 为订阅模式提供了 4 种 A">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2020/11/24/kafka-consumer-subscribeandassign/image-20201124145646131.png">
+<meta property="article:published_time" content="2020-11-24T02:18:47.000Z">
+<meta property="article:modified_time" content="2020-11-24T07:01:05.486Z">
+<meta property="article:author" content="XiSun">
+<meta property="article:tag" content="Kafka">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2020/11/24/kafka-consumer-subscribeandassign/image-20201124145646131.png">
+
+<link rel="canonical" href="http://example.com/2020/11/24/kafka-consumer-subscribeandassign/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>KafkaConsumer 源码之 consumer 的两种订阅模式 | XiSun的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">XiSun的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Learning is endless</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/24/kafka-consumer-subscribeandassign/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="XiSun">
+      <meta itemprop="description" content="心如止水者，虽世间繁华之红尘纷扰，已然空无一物">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XiSun的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          KafkaConsumer 源码之 consumer 的两种订阅模式
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-11-24 10:18:47 / 修改时间：15:01:05" itemprop="dateCreated datePublished" datetime="2020-11-24T10:18:47+08:00">2020-11-24</time>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>12k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>11 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在<a target="_blank" rel="noopener" href="https://acatsmiling.github.io/2020/10/29/kafka-consumer/">前面的文章</a>中，有简单的介绍了 KafkaConsumer 的两种订阅模式，本篇文章对此进行扩展说明一下。</p>
+<p>KafkaConsumer 的两种订阅模式， <code>subscribe ()</code> 模式和 <code>assign ()</code> 模式，前者是 topic 粒度 (使用 group 管理)，后者是 topic-partition 粒度 (用户自己去管理)。</p>
+<h2 id="订阅模式"><a href="#订阅模式" class="headerlink" title="订阅模式"></a>订阅模式</h2><p>KafkaConsumer 为订阅模式提供了 4 种 API，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 订阅指定的topic列表，并且会自动进行动态partition订阅</span></span><br><span class="line"><span class="comment">// 当发生以下情况时，会进行rebalance:1.订阅的topic列表改变；2.topic被创建或删除；3.consumer线程die；4.加一个新的consumer线程</span></span><br><span class="line"><span class="comment">// 当发生rebalance时，会唤醒ConsumerRebalanceListener线程</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">subscribe</span><span class="params">(Collection&lt;String&gt; topics, ConsumerRebalanceListener listener)</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 同上，但是这里没有设置listener</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">subscribe</span><span class="params">(Collection&lt;String&gt; topics)</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 订阅那些满足一定规则(pattern)的topic</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">subscribe</span><span class="params">(Pattern pattern, ConsumerRebalanceListener listener)</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 同上，但是这里没有设置listener</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">subscribe</span><span class="params">(Pattern pattern)</span> </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以上 4 种 API 都是按照 topic 级别去订阅，可以动态地获取其分配的 topic-partition，这是使用 <strong>Group 动态管理</strong>，它不能与手动 partition 管理一起使用。当监控到发生下面的事件时，Group 将会触发 rebalance 操作：</p>
+<ol>
+<li>订阅的 topic 列表变化；</li>
+<li>topic 被创建或删除；</li>
+<li>consumer group 的某个 consumer 实例挂掉；</li>
+<li>一个新的 consumer 实例通过 join 方法加入到一个 group 中。</li>
+</ol>
+<p>在这种模式下，当 KafkaConsumer 调用 <code>poll ()</code> 方法时，第一步会首先加入到一个 group 中，并获取其分配的 topic-partition 列表，具体细节在前面的文章中已经分析过了。</p>
+<p>这里介绍一下当调用 <code>subscribe ()</code> 方法之后，consumer 所做的事情，分两种情况介绍，一种按 topic 列表订阅，一种是按 pattern 模式订阅：</p>
+<ul>
+<li>topic 列表订阅</li>
+</ul>
+<p>topic 列表订阅，最终调用如下方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Subscribe to the given list of topics to get dynamically</span></span><br><span class="line"><span class="comment"> * assigned partitions. &lt;b&gt;Topic subscriptions are not incremental. This list will replace the current</span></span><br><span class="line"><span class="comment"> * assignment (if there is one).&lt;/b&gt; Note that it is not possible to combine topic subscription with group management</span></span><br><span class="line"><span class="comment"> * with manual partition assignment through &#123;<span class="doctag">@link</span> #assign(Collection)&#125;.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * If the given list of topics is empty, it is treated the same as &#123;<span class="doctag">@link</span> #unsubscribe()&#125;.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;</span></span><br><span class="line"><span class="comment"> * As part of group management, the consumer will keep track of the list of consumers that belong to a particular</span></span><br><span class="line"><span class="comment"> * group and will trigger a rebalance operation if any one of the following events are triggered:</span></span><br><span class="line"><span class="comment"> * &lt;ul&gt;</span></span><br><span class="line"><span class="comment"> * &lt;li&gt;Number of partitions change for any of the subscribed topics</span></span><br><span class="line"><span class="comment"> * &lt;li&gt;A subscribed topic is created or deleted</span></span><br><span class="line"><span class="comment"> * &lt;li&gt;An existing member of the consumer group is shutdown or fails</span></span><br><span class="line"><span class="comment"> * &lt;li&gt;A new member is added to the consumer group</span></span><br><span class="line"><span class="comment"> * &lt;/ul&gt;</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;</span></span><br><span class="line"><span class="comment"> * When any of these events are triggered, the provided listener will be invoked first to indicate that</span></span><br><span class="line"><span class="comment"> * the consumer&#x27;s assignment has been revoked, and then again when the new assignment has been received.</span></span><br><span class="line"><span class="comment"> * Note that rebalances will only occur during an active call to &#123;<span class="doctag">@link</span> #poll(Duration)&#125;, so callbacks will</span></span><br><span class="line"><span class="comment"> * also only be invoked during that time.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * The provided listener will immediately override any listener set in a previous call to subscribe.</span></span><br><span class="line"><span class="comment"> * It is guaranteed, however, that the partitions revoked/assigned through this interface are from topics</span></span><br><span class="line"><span class="comment"> * subscribed in this call. See &#123;<span class="doctag">@link</span> ConsumerRebalanceListener&#125; for more details.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> topics The list of topics to subscribe to</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> listener Non-null listener instance to get notifications on partition assignment/revocation for the</span></span><br><span class="line"><span class="comment"> *                 subscribed topics</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span> IllegalArgumentException If topics is null or contains null or empty elements, or if listener is null</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span> IllegalStateException If &#123;<span class="doctag">@code</span> subscribe()&#125; is called previously with pattern, or assign is called</span></span><br><span class="line"><span class="comment"> *                               previously (without a subsequent call to &#123;<span class="doctag">@link</span> #unsubscribe()&#125;), or if not</span></span><br><span class="line"><span class="comment"> *                               configured at-least one partition assignment strategy</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">subscribe</span><span class="params">(Collection&lt;String&gt; topics, ConsumerRebalanceListener listener)</span> </span>&#123;</span><br><span class="line">    acquireAndEnsureOpen();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        maybeThrowInvalidGroupIdException();</span><br><span class="line">        <span class="keyword">if</span> (topics == <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;Topic collection to subscribe to cannot be null&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (topics.isEmpty()) &#123;</span><br><span class="line">            <span class="comment">// treat subscribing to empty topic list as the same as unsubscribing</span></span><br><span class="line">            <span class="keyword">this</span>.unsubscribe();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">for</span> (String topic : topics) &#123;</span><br><span class="line">                <span class="keyword">if</span> (topic == <span class="keyword">null</span> || topic.trim().isEmpty())</span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;Topic collection to subscribe to cannot contain null or empty topic&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            throwIfNoAssignorsConfigured();</span><br><span class="line">            fetcher.clearBufferedDataForUnassignedTopics(topics);</span><br><span class="line">            log.info(<span class="string">&quot;Subscribed to topic(s): &#123;&#125;&quot;</span>, Utils.join(topics, <span class="string">&quot;, &quot;</span>));</span><br><span class="line">            <span class="comment">// 核心步骤在此处执行</span></span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">this</span>.subscriptions.subscribe(<span class="keyword">new</span> HashSet&lt;&gt;(topics), listener))</span><br><span class="line">                metadata.requestUpdateForNewTopics();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        release();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>将 SubscriptionType 类型设置为 <strong>AUTO_TOPICS</strong>，并更新 SubscriptionState 中记录的 subscription 属性 (记录的是订阅的 topic 列表)；</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">boolean</span> <span class="title">subscribe</span><span class="params">(Set&lt;String&gt; topics, ConsumerRebalanceListener listener)</span> </span>&#123;</span><br><span class="line">    registerRebalanceListener(listener);</span><br><span class="line">    setSubscriptionType(SubscriptionType.AUTO_TOPICS);</span><br><span class="line">    <span class="keyword">return</span> changeSubscription(topics);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">changeSubscription</span><span class="params">(Set&lt;String&gt; topicsToSubscribe)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (subscription.equals(topicsToSubscribe))</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">    subscription = topicsToSubscribe;</span><br><span class="line">    <span class="keyword">if</span> (subscriptionType != SubscriptionType.USER_ASSIGNED) &#123;</span><br><span class="line">        groupSubscription = <span class="keyword">new</span> HashSet&lt;&gt;(groupSubscription);</span><br><span class="line">        groupSubscription.addAll(topicsToSubscribe);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        groupSubscription = <span class="keyword">new</span> HashSet&lt;&gt;(topicsToSubscribe);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>请求更新 metadata。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">requestUpdateForNewTopics</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Override the timestamp of last refresh to let immediate update.</span></span><br><span class="line">    <span class="keyword">this</span>.lastRefreshMs = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">this</span>.requestVersion++;</span><br><span class="line">    requestUpdate();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Request an update of the current cluster metadata info, return the current updateVersion before the update</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">int</span> <span class="title">requestUpdate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.needUpdate = <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.updateVersion;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>pattern 模式订阅</li>
+</ul>
+<p>pattern 模式订阅，最终调用如下方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Subscribe to all topics matching specified pattern to get dynamically assigned partitions.</span></span><br><span class="line"><span class="comment"> * The pattern matching will be done periodically against all topics existing at the time of check.</span></span><br><span class="line"><span class="comment"> * This can be controlled through the &#123;<span class="doctag">@code</span> metadata.max.age.ms&#125; configuration: by lowering</span></span><br><span class="line"><span class="comment"> * the max metadata age, the consumer will refresh metadata more often and check for matching topics.</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;</span></span><br><span class="line"><span class="comment"> * See &#123;<span class="doctag">@link</span> #subscribe(Collection, ConsumerRebalanceListener)&#125; for details on the</span></span><br><span class="line"><span class="comment"> * use of the &#123;<span class="doctag">@link</span> ConsumerRebalanceListener&#125;. Generally rebalances are triggered when there</span></span><br><span class="line"><span class="comment"> * is a change to the topics matching the provided pattern and when consumer group membership changes.</span></span><br><span class="line"><span class="comment"> * Group rebalances only take place during an active call to &#123;<span class="doctag">@link</span> #poll(Duration)&#125;.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> pattern Pattern to subscribe to</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> listener Non-null listener instance to get notifications on partition assignment/revocation for the</span></span><br><span class="line"><span class="comment"> *                 subscribed topics</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span> IllegalArgumentException If pattern or listener is null</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span> IllegalStateException If &#123;<span class="doctag">@code</span> subscribe()&#125; is called previously with topics, or assign is called</span></span><br><span class="line"><span class="comment"> *                               previously (without a subsequent call to &#123;<span class="doctag">@link</span> #unsubscribe()&#125;), or if not</span></span><br><span class="line"><span class="comment"> *                               configured at-least one partition assignment strategy</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">subscribe</span><span class="params">(Pattern pattern, ConsumerRebalanceListener listener)</span> </span>&#123;</span><br><span class="line">    maybeThrowInvalidGroupIdException();</span><br><span class="line">    <span class="keyword">if</span> (pattern == <span class="keyword">null</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;Topic pattern to subscribe to cannot be null&quot;</span>);</span><br><span class="line"></span><br><span class="line">    acquireAndEnsureOpen();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        throwIfNoAssignorsConfigured();</span><br><span class="line">        log.info(<span class="string">&quot;Subscribed to pattern: &#x27;&#123;&#125;&#x27;&quot;</span>, pattern);</span><br><span class="line">        <span class="keyword">this</span>.subscriptions.subscribe(pattern, listener);</span><br><span class="line">        <span class="keyword">this</span>.coordinator.updatePatternSubscription(metadata.fetch());</span><br><span class="line">        <span class="keyword">this</span>.metadata.requestUpdateForNewTopics();</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        release();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>将 SubscriptionType 类型设置为 <strong>AUTO_PATTERN</strong>，并更新 SubscriptionState 中记录的 subscribedPattern 属性，设置为 pattern；</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">subscribe</span><span class="params">(Pattern pattern, ConsumerRebalanceListener listener)</span> </span>&#123;</span><br><span class="line">    registerRebalanceListener(listener);</span><br><span class="line">    setSubscriptionType(SubscriptionType.AUTO_PATTERN);</span><br><span class="line">    <span class="keyword">this</span>.subscribedPattern = pattern;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>调用 coordinator 的 <code>updatePatternSubscription ()</code> 方法，遍历所有 topic 的 metadata，找到所有满足 pattern 的 topic 列表，更新到 SubscriptionState 的 subscriptions 属性，并请求更新 Metadata；</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">updatePatternSubscription</span><span class="params">(Cluster cluster)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> Set&lt;String&gt; topicsToSubscribe = cluster.topics().stream()</span><br><span class="line">            .filter(subscriptions::matchesSubscribedPattern)</span><br><span class="line">            .collect(Collectors.toSet());</span><br><span class="line">    <span class="keyword">if</span> (subscriptions.subscribeFromPattern(topicsToSubscribe))</span><br><span class="line">        metadata.requestUpdateForNewTopics();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">boolean</span> <span class="title">subscribeFromPattern</span><span class="params">(Set&lt;String&gt; topics)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (subscriptionType != SubscriptionType.AUTO_PATTERN)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;Attempt to subscribe from pattern while subscription type set to &quot;</span> +</span><br><span class="line">                                           subscriptionType);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> changeSubscription(topics);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">changeSubscription</span><span class="params">(Set&lt;String&gt; topicsToSubscribe)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (subscription.equals(topicsToSubscribe))</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">    subscription = topicsToSubscribe;</span><br><span class="line">    <span class="keyword">if</span> (subscriptionType != SubscriptionType.USER_ASSIGNED) &#123;</span><br><span class="line">        groupSubscription = <span class="keyword">new</span> HashSet&lt;&gt;(groupSubscription);</span><br><span class="line">        groupSubscription.addAll(topicsToSubscribe);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        groupSubscription = <span class="keyword">new</span> HashSet&lt;&gt;(topicsToSubscribe);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">requestUpdateForNewTopics</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Override the timestamp of last refresh to let immediate update.</span></span><br><span class="line">    <span class="keyword">this</span>.lastRefreshMs = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">this</span>.requestVersion++;</span><br><span class="line">    requestUpdate();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Request an update of the current cluster metadata info, return the current updateVersion before the update</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">int</span> <span class="title">requestUpdate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.needUpdate = <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.updateVersion;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其他部分，两者基本一样，只是 pattern 模型在每次更新 topic-metadata 时，获取全局的 topic 列表，如果发现有新加入的符合条件的 topic，就立马去订阅，其他的地方，包括 group 管理、topic-partition 的分配都是一样的。</p>
+<h2 id="分配模式"><a href="#分配模式" class="headerlink" title="分配模式"></a>分配模式</h2><p>当调用 <code>assign ()</code> 方法手动分配 topic-partition 列表时，不会使用 consumer 的 Group 管理机制，也即是当 consumer group member 变化或 topic 的 metadata 信息变化时，不会触发 rebalance 操作。比如：当 topic 的 partition 增加时，这里无法感知，需要用户进行相应的处理，Apache Flink 就是使用的这种方式。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Manually assign a list of partitions to this consumer. This interface does not allow for incremental assignment</span></span><br><span class="line"><span class="comment"> * and will replace the previous assignment (if there is one).</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;</span></span><br><span class="line"><span class="comment"> * If the given list of topic partitions is empty, it is treated the same as &#123;<span class="doctag">@link</span> #unsubscribe()&#125;.</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;</span></span><br><span class="line"><span class="comment"> * Manual topic assignment through this method does not use the consumer&#x27;s group management</span></span><br><span class="line"><span class="comment"> * functionality. As such, there will be no rebalance operation triggered when group membership or cluster and topic</span></span><br><span class="line"><span class="comment"> * metadata change. Note that it is not possible to use both manual partition assignment with &#123;<span class="doctag">@link</span> #assign(Collection)&#125;</span></span><br><span class="line"><span class="comment"> * and group assignment with &#123;<span class="doctag">@link</span> #subscribe(Collection, ConsumerRebalanceListener)&#125;.</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;</span></span><br><span class="line"><span class="comment"> * If auto-commit is enabled, an async commit (based on the old assignment) will be triggered before the new</span></span><br><span class="line"><span class="comment"> * assignment replaces the old one.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> partitions The list of partitions to assign this consumer</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span> IllegalArgumentException If partitions is null or contains null or empty topics</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span> IllegalStateException If &#123;<span class="doctag">@code</span> subscribe()&#125; is called previously with topics or pattern</span></span><br><span class="line"><span class="comment"> *                               (without a subsequent call to &#123;<span class="doctag">@link</span> #unsubscribe()&#125;)</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">assign</span><span class="params">(Collection&lt;TopicPartition&gt; partitions)</span> </span>&#123;</span><br><span class="line">    acquireAndEnsureOpen();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (partitions == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;Topic partition collection to assign to cannot be null&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (partitions.isEmpty()) &#123;</span><br><span class="line">            <span class="keyword">this</span>.unsubscribe();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">for</span> (TopicPartition tp : partitions) &#123;</span><br><span class="line">                String topic = (tp != <span class="keyword">null</span>) ? tp.topic() : <span class="keyword">null</span>;</span><br><span class="line">                <span class="keyword">if</span> (topic == <span class="keyword">null</span> || topic.trim().isEmpty())</span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;Topic partitions to assign to cannot have null or empty topic&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            fetcher.clearBufferedDataForUnassignedPartitions(partitions);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// make sure the offsets of topic partitions the consumer is unsubscribing from</span></span><br><span class="line">            <span class="comment">// are committed since there will be no following rebalance</span></span><br><span class="line">            <span class="keyword">if</span> (coordinator != <span class="keyword">null</span>)</span><br><span class="line">                <span class="keyword">this</span>.coordinator.maybeAutoCommitOffsetsAsync(time.milliseconds());</span><br><span class="line"></span><br><span class="line">            log.info(<span class="string">&quot;Subscribed to partition(s): &#123;&#125;&quot;</span>, Utils.join(partitions, <span class="string">&quot;, &quot;</span>));</span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">this</span>.subscriptions.assignFromUser(<span class="keyword">new</span> HashSet&lt;&gt;(partitions)))</span><br><span class="line">                metadata.requestUpdateForNewTopics();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        release();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><code>assign ()</code> 方法是手动向 consumer 分配一些 topic-partition 列表，并且这个接口不允许增加分配的 topic-partition 列表，将会覆盖之前分配的 topic-partition 列表，如果给定的 topic-partition 列表为空，它的作用将会与 <code>unsubscribe ()</code> 方法一样。</p>
+<p>这种手动 topic 分配也不会使用 consumer 的 group 管理，当 group 的 member 变化或 topic 的 metadata 变化时，也不会触发 rebalance 操作。</p>
+</blockquote>
+<p>这里所说的 consumer 的 group 管理，就是前面所说的 consumer 如何加入 group 的管理过程。如果使用的是 assign 模式，也即是非 AUTO_TOPICS 或 AUTO_PATTERN 模式时，consumer 实例在调用 <code>poll ()</code> 方法时，不会向 GroupCoordinator 发送 join-group、sync-group、heartbeat 请求，也就是说 GroupCoordinator 拿不到这个 consumer 实例的相关信息，也不会去维护这个 member 是否存活，这种情况下就需要用户自己管理自己的处理程序。但是这种模式可以进行 offset commit，这将在下一篇文章进行分析。</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>根据上面的讲述，这里做一下小结，两种模式对比如下图所示：</p>
+<p><img src="/2020/11/24/kafka-consumer-subscribeandassign/image-20201124145646131.png" alt="image-20201124145646131"></p>
+<p>简单说明如下：</p>
+<table>
+<thead>
+<tr>
+<th align="center">模式</th>
+<th align="center">不同之处</th>
+<th align="center">相同之处</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>subscribe ()</code></td>
+<td align="center">使用 Kafka group 管理，自动进行 rebalance 操作</td>
+<td align="center">可以在 Kafka 保存 offset</td>
+</tr>
+<tr>
+<td align="center"><code>assign ()</code></td>
+<td align="center">用户自己进行相关的处理</td>
+<td align="center">也可以进行 offset commit，但是尽量保证 <code>group.id</code> 唯一性，如果使用一个与上面模式一样的 group，offset commit 请求将会被拒绝</td>
+</tr>
+</tbody></table>
+<h2 id="本文参考"><a href="#本文参考" class="headerlink" title="本文参考"></a>本文参考</h2><p><a target="_blank" rel="noopener" href="https://matt33.com/2017/11/18/consumer-subscribe/">https://matt33.com/2017/11/18/consumer-subscribe/</a></p>
+<p>声明：写作本文初衷是个人学习记录，鉴于本人学识有限，如有侵权或不当之处，请联系 <a href="mailto:wdshfut@163.com">wdshfut@163.com</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Kafka/" rel="tag"># Kafka</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/18/maven/" rel="prev" title="如何使用 maven">
+      <i class="fa fa-chevron-left"></i> 如何使用 maven
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/11/24/kafka-consumer-commitandpartition/" rel="next" title="KafkaConsumer 源码之 consumer 的手动 offset commit 机制和 partition 分配机制">
+      KafkaConsumer 源码之 consumer 的手动 offset commit 机制和 partition 分配机制 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%A2%E9%98%85%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.</span> <span class="nav-text">订阅模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E9%85%8D%E6%A8%A1%E5%BC%8F"><span class="nav-number">2.</span> <span class="nav-text">分配模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">小结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E6%96%87%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">本文参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="XiSun"
+      src="/images/header.jpg">
+  <p class="site-author-name" itemprop="name">XiSun</p>
+  <div class="site-description" itemprop="description">心如止水者，虽世间繁华之红尘纷扰，已然空无一物</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">XiSun</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">144k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">2:11</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
