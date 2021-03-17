@@ -153,6 +153,270 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/15/java-date/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="XiSun">
+      <meta itemprop="description" content="心如止水者，虽世间繁华之红尘纷扰，已然空无一物">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XiSun的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/03/15/java-date/" class="post-title-link" itemprop="url">java 中的日期和时间</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-15 17:00:58" itemprop="dateCreated datePublished" datetime="2021-03-15T17:00:58+08:00">2021-03-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-03-17 15:23:58" itemprop="dateModified" datetime="2021-03-17T15:23:58+08:00">2021-03-17</time>
+              </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>15k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>14 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="jdk-8-之前的日期和时间-API"><a href="#jdk-8-之前的日期和时间-API" class="headerlink" title="jdk 8 之前的日期和时间 API"></a>jdk 8 之前的日期和时间 API</h2><h3 id="java-lang-System-类"><a href="#java-lang-System-类" class="headerlink" title="java.lang.System 类"></a><code>java.lang.System</code> 类</h3><ul>
+<li><code>long currentTimeMillis()</code>：返回当前时间与 1970 年 1 月 1 日 0 时 0 分 0 秒之间以毫秒为单位的时间差，也被称为时间戳。</li>
+</ul>
+<h3 id="java-util-Date-类"><a href="#java-util-Date-类" class="headerlink" title="java.util.Date 类"></a><code>java.util.Date</code> 类</h3><ul>
+<li><p>两个构造器的使用：</p>
+<ul>
+<li><code>Date date = new Date();</code>：创建一个对应当前时间的 Date 对象。 </li>
+<li><code>Date date = new Date(1615816891380L);</code>：创建指定毫秒数的 Date 对象。</li>
+</ul>
+</li>
+<li><p>两个方法的使用：</p>
+<ul>
+<li><code>toString()</code>：把此 Date 对象转换为以下形式的 String：<code>dow mon dd hh:mm:ss zzz yyyy</code>，其中： dow 是一周中的某一天 (Sun，Mon，Tue，Wed，Thu，Fri，Sat)，zzz 是时间标准。</li>
+<li><code>getTime()</code>：返回自 1970 年 1 月 1 日 00:00:00 GMT 以来，此  Date 对象表示的毫秒数，即时间戳。</li>
+<li>其它很多方法都过时了，不建议使用。</li>
+</ul>
+</li>
+<li><p>区别于 <code>java.sql.Date</code> 类：</p>
+<ul>
+<li><p><code>java.sql.Date</code> 继承于 <code>java.util.Date</code>，是后者的子类，用于数据库中的日期。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 创建java.sal.Date对象</span></span><br><span class="line">        java.sql.Date date = <span class="keyword">new</span> java.sql.Date(System.currentTimeMillis());</span><br><span class="line">        System.out.println(date);<span class="comment">// 2021-03-15</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// java.util.Date对象转换为java.sql.Date对象</span></span><br><span class="line">        <span class="comment">// 情况一：多态</span></span><br><span class="line">        java.util.Date date1 = <span class="keyword">new</span> java.sql.Date(System.currentTimeMillis());</span><br><span class="line">        java.sql.Date date2 = (java.sql.Date) date1;</span><br><span class="line">        System.out.println(date2);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 情况二：</span></span><br><span class="line">        java.util.Date date3 = <span class="keyword">new</span> java.util.Date();</span><br><span class="line">        Date date4 = <span class="keyword">new</span> Date(date3.getTime());</span><br><span class="line">        System.out.println(date4);<span class="comment">// 2021-03-15</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="java-text-SimpleDateFormat-类"><a href="#java-text-SimpleDateFormat-类" class="headerlink" title="java.text.SimpleDateFormat 类"></a><code>java.text.SimpleDateFormat</code> 类</h3><ul>
+<li><p><code>java.util.Date</code> 类的 API 不易于国际化，大部分被废弃了，<code>java.text.SimpleDateFormat</code> 类是一个与语言环境无关的方式来格式化和解析日期的具体类。</p>
+</li>
+<li><p>它允许对 Date 类的格式化和解析。</p>
+<ul>
+<li>格式化：日期 —&gt; 字符串。</li>
+<li>解析：字符串 —&gt; 日期。</li>
+</ul>
+</li>
+<li><p>SimpleDateFormat 类的实例化</p>
+<ul>
+<li><p>使用默认构造器 <code>public SimpleDateFormat()</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        SimpleDateFormat sdf = <span class="keyword">new</span> SimpleDateFormat();</span><br><span class="line">        <span class="comment">// 格式化：日期---&gt;字符串</span></span><br><span class="line">        Date date = <span class="keyword">new</span> Date();</span><br><span class="line">        String format = sdf.format(date);</span><br><span class="line">        System.out.println(format);<span class="comment">// 21-3-16 下午8:46，默认格式化后的输出结果</span></span><br><span class="line">        <span class="comment">// 解析：字符串---&gt;日期</span></span><br><span class="line">        String str = <span class="string">&quot;21-3-16 下午8:46&quot;</span>;<span class="comment">// 默认能解析的格式</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Date parse = sdf.parse(str);</span><br><span class="line">            System.out.println(parse);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (ParseException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用带参构造器 <code>public SimpleDateFormat(String pattern)</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        SimpleDateFormat sdf = <span class="keyword">new</span> SimpleDateFormat(<span class="string">&quot;yyyy-MM-dd HH:mm:ss&quot;</span>);</span><br><span class="line">        <span class="comment">// 格式化：日期---&gt;字符串</span></span><br><span class="line">        Date date = <span class="keyword">new</span> Date();</span><br><span class="line">        String format = sdf.format(date);</span><br><span class="line">        System.out.println(format);<span class="comment">// 2021-03-16 21:59:37，按指定格式格式化后的输出结果</span></span><br><span class="line">        <span class="comment">// 解析：字符串---&gt;日期</span></span><br><span class="line">        String str = <span class="string">&quot;2021-3-16 9:02:13&quot;</span>;<span class="comment">// 按照指定格式书写的日期字符串</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Date parse = sdf.parse(str);</span><br><span class="line">            System.out.println(parse);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (ParseException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>对于带参的构造器，在解析的时候，字符串必须是符合该参数指定的格式，否则，会解析发生异常。</p>
+</li>
+</ul>
+</li>
+<li><p>实例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 一个人从1990-1-1开始，三天打鱼两天晒网，求指定时间是在打渔还是晒网。</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        SimpleDateFormat sdf = <span class="keyword">new</span> SimpleDateFormat(<span class="string">&quot;yyyy-MM-dd&quot;</span>);</span><br><span class="line">        Date startDate = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            startDate = sdf.parse(<span class="string">&quot;1990-1-1&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (ParseException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        Date nowDate = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            nowDate = sdf.parse(<span class="string">&quot;1990-1-1&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (ParseException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (startDate != <span class="keyword">null</span> &amp;&amp; nowDate != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">long</span> time = nowDate.getTime() - startDate.getTime();</span><br><span class="line">            <span class="keyword">long</span> day = time / <span class="number">1000</span> / <span class="number">60</span> / <span class="number">60</span> / <span class="number">24</span> + <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">long</span> l = day % <span class="number">5</span>;</span><br><span class="line">            System.out.println(day + <span class="string">&quot;, &quot;</span> + l);</span><br><span class="line">            <span class="keyword">if</span> (l == <span class="number">1</span> || l == <span class="number">2</span> | l == <span class="number">3</span>) &#123;</span><br><span class="line">                System.out.println(<span class="string">&quot;在打渔&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (l == <span class="number">0</span> || l == <span class="number">4</span>) &#123;</span><br><span class="line">                System.out.println(<span class="string">&quot;在晒网&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="java-util-Calendar-类-日历类"><a href="#java-util-Calendar-类-日历类" class="headerlink" title="java.util.Calendar 类 (日历类)"></a><code>java.util.Calendar</code> 类 (日历类)</h3><ul>
+<li><p>Calendar 是一个抽象类，主用用于完成日期字段之间相互操作的功能。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Calendar</span> <span class="keyword">implements</span> <span class="title">Serializable</span>, <span class="title">Cloneable</span>, <span class="title">Comparable</span>&lt;<span class="title">Calendar</span>&gt; </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>获取 Calendar实例的方法：</p>
+<ul>
+<li>创建它的子类 GregorianCalendar 的对象。</li>
+<li>调用静态方法 <code>Calendar.getInstance()</code>。</li>
+</ul>
+</li>
+<li><p>一个 Calendar 的实例是系统当前时间的抽象表示，常用方法如下：</p>
+<ul>
+<li><code>int get(int field)</code>：获取想要的时间信息。比如：YEAR、MONTH、DAY_OF_WEEK、HOUR_OF_DAY、MINUTE、SECOND 等。<ul>
+<li>获取月份时：一月是 0，二月是 1，以此类推，十二月是 11。</li>
+<li>获取星期时：周日是 1，周二是 2，以此类推，周六是 7。</li>
+</ul>
+</li>
+<li><code>void set(int field,int value)</code>：设置时间。</li>
+<li><code>void add(int field,int amount)</code>：当前时间基础上做增减。</li>
+<li><code>final Date getTime()</code>：Calendar 对象转换为 Date对象。</li>
+<li><code>final void setTime(Date date)</code>：Date 对象转换为 Calendar 对象。</li>
+</ul>
+</li>
+<li><p>实例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 1.实例化</span></span><br><span class="line">        <span class="comment">// 方式一：创建其子类(GregorianCalendar)的对象</span></span><br><span class="line">        <span class="comment">// 方式二：调用其静态方法getInstance()</span></span><br><span class="line">        Calendar calendar = Calendar.getInstance();<span class="comment">// 当前时间</span></span><br><span class="line">        System.out.println(calendar.getClass());<span class="comment">// class java.util.GregorianCalendar</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 2.常用方法</span></span><br><span class="line">        <span class="comment">// get()</span></span><br><span class="line">        System.out.println(<span class="string">&quot;年：&quot;</span> + calendar.get(Calendar.YEAR));<span class="comment">// 2021</span></span><br><span class="line">        System.out.println(<span class="string">&quot;月：&quot;</span> + (calendar.get(Calendar.MONTH) + <span class="number">1</span>));<span class="comment">// 月份，0代表1月，1代表2月，类推</span></span><br><span class="line">        System.out.println(<span class="string">&quot;日：&quot;</span> + calendar.get(Calendar.DAY_OF_MONTH));<span class="comment">// 一个月中的第几天</span></span><br><span class="line">        System.out.println(<span class="string">&quot;时：&quot;</span> + calendar.get(Calendar.HOUR));</span><br><span class="line">        System.out.println(<span class="string">&quot;分：&quot;</span> + calendar.get(Calendar.MINUTE));</span><br><span class="line">        System.out.println(<span class="string">&quot;秒：&quot;</span> + calendar.get(Calendar.SECOND));</span><br><span class="line">        System.out.println(<span class="string">&quot;星期：&quot;</span> + (calendar.get(Calendar.DAY_OF_WEEK) - <span class="number">1</span>));<span class="comment">// 一周中的第几天，1代表周日，2代表周一，类推</span></span><br><span class="line">        System.out.println(<span class="string">&quot;一年中第：&quot;</span> + calendar.get(Calendar.DAY_OF_YEAR));<span class="comment">// 一年中的第几天</span></span><br><span class="line">        <span class="comment">// set()</span></span><br><span class="line">        calendar.set(Calendar.YEAR, <span class="number">2020</span>);<span class="comment">// 更改calendar本身</span></span><br><span class="line">        System.out.println(<span class="string">&quot;重设之后的年：&quot;</span> + calendar.get(Calendar.YEAR));<span class="comment">// 2020</span></span><br><span class="line">        <span class="comment">// add()</span></span><br><span class="line">        calendar.add(Calendar.YEAR, <span class="number">2</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;加2年之后的年：&quot;</span> + calendar.get(Calendar.YEAR));<span class="comment">// 2022</span></span><br><span class="line">        calendar.add(Calendar.YEAR, -<span class="number">1</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;减1年之后的年：&quot;</span> + calendar.get(Calendar.YEAR));<span class="comment">// 2021</span></span><br><span class="line">        <span class="comment">// getTime()：Calendar---&gt;java.util.Date</span></span><br><span class="line">        Date date = calendar.getTime();</span><br><span class="line">        <span class="comment">// setTime()：java.util.Date---&gt;Calendar</span></span><br><span class="line">        Date date1 = <span class="keyword">new</span> Date(<span class="number">234234235235L</span>);</span><br><span class="line">        calendar.setTime(date1);<span class="comment">// 设置calendar为指定时间</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="jdk-8-之后的日期和时间-API"><a href="#jdk-8-之后的日期和时间-API" class="headerlink" title="jdk 8 之后的日期和时间 API"></a>jdk 8 之后的日期和时间 API</h2><p>如果我们可以跟别人说：”我们在 1502643933071 见面，别晚了！”那么就再简单不过了。但是我们希望时间与昼夜和四季有关，于是事情就变复杂了。jdk 1.0 中包含了一个 <code>java.util.Date</code> 类，但是它的大多数方法已经在 jdk 1.1 引入 <code>Calendar</code> 类之后被弃用了，但 Calendar 并不比 Date 好多少。它们面临的问题是：</p>
+<p>可变性：像日期和时间这样的类应该是不可变的。</p>
+<p>偏移性：Date 中的年份是从 1900 开始的，而月份都从 0 开始。</p>
+<p>格式化：格式化只对 Date 有用，Calendar 则不行。</p>
+<p>此外，它们也不是线程安全的，也不能处理闰秒等。</p>
+<p>第三次引入的 API 是成功的，并且 java 8 中引入的 <code>java.time</code> API 已经纠正了过去的缺陷，将来很长一段时间内它都会为我们服务。</p>
+<p>java 8 吸收了 Joda-Time 的精华，以一个新的开始为 java 创建优秀的 API。新的 <code>java.time</code> 中包含了所有关于本地日期 (LocalDate)、本地时间 (LocalTime)、本地日期时间 (LocalDateTime)、时区 (ZonedDateTime) 和持续时间 (Duration) 的类。历史悠久的 Date 类新增了 <code>toInstant()</code> 方法，用于把 Date 转换成新的表示形式。这些新增的本地化时间日期 API 大大简化了日期时间和本地化的管理。</p>
+<p>新时间日期 API：</p>
+<ul>
+<li><code>java.time</code> – 包含值对象的基础包。</li>
+<li><code>java.time.chrono</code> – 提供对不同的日历系统的访问。</li>
+<li><code>java.time.format</code> – 格式化和解析时间和日期。</li>
+<li><code>java.time.temporal</code> – 包括底层框架和扩展特性。</li>
+<li><code>java.time.zone</code> – 包含时区支持的类。</li>
+</ul>
+<p>说明：大多数开发者只会用到基础包和 format 包，也可能会用到 temporal 包。因此，尽管有 68 个新的公开类型，大多数开发者，大概将只会用到其中的三分之一。</p>
+<h3 id="java-time-LocalDate、java-time-LocalTime-和-java-time-LocalDateTime-类"><a href="#java-time-LocalDate、java-time-LocalTime-和-java-time-LocalDateTime-类" class="headerlink" title="java.time.LocalDate、java.time.LocalTime 和 java.time.LocalDateTime 类"></a><code>java.time.LocalDate</code>、<code>java.time.LocalTime</code> 和 <code>java.time.LocalDateTime</code> 类</h3><ul>
+<li><p><strong>LocalDate、LocalTime、LocalDateTime 类是其中较重要的几个类，它们的实例是不可变的对象，分别表示使用 ISO-8601日历系统的日期、时间、日期和时间。</strong>它们提供了简单的本地日期或时间，并不包含当前的时间信息，也不包含与时区相关的信息。</p>
+<ul>
+<li>LocalDate：代表 IOS 格式 (yyyy-MM-dd) 的日期，可以存储生日、纪念日等日期。</li>
+<li>LocalTime：表示一个时间，而不是日期。</li>
+<li>LocalDateTime：是用来表示日期和时间的，这是一个最常用的类之一。</li>
+</ul>
+</li>
+<li><p>ISO-8601日历系统是国际标准化组织制定的现代公民的日期和时间的表示法，也就是公历。</p>
+</li>
+<li><p>常用方法：</p>
+<img src="/2021/03/15/java-date/image-20210317105834503.png" alt="image-20210317105834503" style="zoom: 67%;">
+</li>
+<li><p>实例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// now()：获取当前的日期、时间、日期+时间</span></span><br><span class="line">        LocalDate date = LocalDate.now();</span><br><span class="line">        LocalTime time = LocalTime.now();</span><br><span class="line">        LocalDateTime dateTime = LocalDateTime.now();</span><br><span class="line">        System.out.println(date);<span class="comment">// 2021-03-17</span></span><br><span class="line">        System.out.println(time);<span class="comment">// 11:37:43.400</span></span><br><span class="line">        System.out.println(dateTime);<span class="comment">// 2021-03-17T11:37:43.400</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// of()：自定义指定的年、月、日、时、分、秒对应的时间对象，没有偏移量</span></span><br><span class="line">        LocalDate date1 = LocalDate.of(<span class="number">2020</span>, <span class="number">3</span>, <span class="number">17</span>);</span><br><span class="line">        LocalTime time1 = LocalTime.of(<span class="number">11</span>, <span class="number">4</span>, <span class="number">25</span>);</span><br><span class="line">        LocalDateTime dateTime1 = LocalDateTime.of(<span class="number">2020</span>, <span class="number">3</span>, <span class="number">17</span>, <span class="number">11</span>, <span class="number">05</span>, <span class="number">45</span>);</span><br><span class="line">        System.out.println(date1);<span class="comment">// 2020-03-17</span></span><br><span class="line">        System.out.println(time1);<span class="comment">// 11:04:25</span></span><br><span class="line">        System.out.println(dateTime1);<span class="comment">// 2020-03-17T11:05:45</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// getXxx()：获取指定的时间信息</span></span><br><span class="line">        System.out.println(<span class="string">&quot;年：&quot;</span> + dateTime.getYear());<span class="comment">// 2021</span></span><br><span class="line">        System.out.println(<span class="string">&quot;月：&quot;</span> + dateTime.getMonth());<span class="comment">// MARCH</span></span><br><span class="line">        System.out.println(<span class="string">&quot;月份数值：&quot;</span> + dateTime.getMonthValue());<span class="comment">// 3</span></span><br><span class="line">        System.out.println(<span class="string">&quot;日：&quot;</span> + dateTime.getDayOfMonth());<span class="comment">// 17</span></span><br><span class="line">        System.out.println(<span class="string">&quot;星期：&quot;</span> + dateTime.getDayOfWeek());<span class="comment">// WEDNESDAY</span></span><br><span class="line">        System.out.println(<span class="string">&quot;时：&quot;</span> + dateTime.getHour());<span class="comment">// 11</span></span><br><span class="line">        System.out.println(<span class="string">&quot;分：&quot;</span> + dateTime.getMinute());<span class="comment">// 37</span></span><br><span class="line">        System.out.println(<span class="string">&quot;秒：&quot;</span> + dateTime.getSecond());<span class="comment">// 18</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// withXX()：设置时间为指定的值并返回新的对象---不可变性</span></span><br><span class="line">        LocalDateTime dateTime2 = dateTime.withYear(<span class="number">2022</span>);</span><br><span class="line">        System.out.println(dateTime);<span class="comment">// 2021-03-17T11:37:43.400</span></span><br><span class="line">        System.out.println(dateTime2);<span class="comment">// 2022-03-17T11:37:43.400</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// plusXxx()：在当前时间基础上做增减操作并返回新的对象---不可变性</span></span><br><span class="line">        LocalDateTime dateTime3 = dateTime.plusYears(<span class="number">2</span>);<span class="comment">// 加2年</span></span><br><span class="line">        System.out.println(dateTime);<span class="comment">// 2021-03-17T11:37:43.400</span></span><br><span class="line">        System.out.println(dateTime3);<span class="comment">// 2023-03-17T11:37:43.400</span></span><br><span class="line">        LocalDateTime dateTime4 = dateTime.minusYears(<span class="number">2</span>);<span class="comment">// 减2年</span></span><br><span class="line">        System.out.println(dateTime);<span class="comment">// 2021-03-17T11:37:43.400</span></span><br><span class="line">        System.out.println(dateTime4);<span class="comment">// 2019-03-17T11:37:43.400</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="java-time-Instant-类-—-瞬时"><a href="#java-time-Instant-类-—-瞬时" class="headerlink" title="java.time.Instant 类 — 瞬时"></a><code>java.time.Instant</code> 类 — 瞬时</h3><ul>
+<li><p>Instant：时间线上的一个瞬时点，这可能被用来记录应用程序中的事件时间戳。</p>
+</li>
+<li><p>在处理时间和日期的时候，我们通常会想到年，月，日，时，分，秒。然而，这只是时间的一个模型，是面向人类的。第二种通用模型是面向机器的，或者说是连续的。在此模型中，时间线中的一个点表示为一个很大的数，这有利于计算机处理。在 UNIX 中，这个数从 1970 年开始，以秒为的单位；同样的，在 java 中，也是从 1970 年开始，但以毫秒为单位。</p>
+</li>
+<li><p><code>java.time</code> 包通过值类型 Instant 提供机器视图，不提供处理人类意义上的时间单位。Instant 表示时间线上的一点，而不需要任何上下文信息，例如，时区。概念上讲，它只是简单的表示自 1970 年 01 月 01 日 00 时 00 分 00 秒 (UTC) 开始的秒数。因为 <code>java.time</code> 包是基于纳秒计算的，所以 Instant 的精度可以达到纳秒级。</p>
+</li>
+<li><p>1秒 = 1000 毫秒 = 10^6 微秒 = 10^9 纳秒，即：1 ns = 10^-9 s。</p>
+</li>
+<li><p>常用方法：</p>
+<img src="/2021/03/15/java-date/image-20210317114853412.png" alt="image-20210317114853412" style="zoom:67%;">
+
+<blockquote>
+<p>时间戳是指格林威治时间 1970 年 01 月 01 日 00 时 00 分 00 秒 (北京时间 1970 年 01 月 01日 08 时 00 分 00 秒) 起至现在的总秒数。</p>
+</blockquote>
+</li>
+<li><p>实例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Instant instant = Instant.now();<span class="comment">// 默认UTC时区，本初子午线对应的标准时间</span></span><br><span class="line">        System.out.println(instant);<span class="comment">// 2021-03-17T03:50:15.672Z</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 添加时间的偏移量</span></span><br><span class="line">        OffsetDateTime now = instant.atOffset(ZoneOffset.ofHours(<span class="number">8</span>));<span class="comment">// 东八区时间，要加上8小时</span></span><br><span class="line">        System.out.println(now);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 获取自1970-01-01 00:00:00(UTC)到当前时间的毫秒数   ---&gt; Date类的getTime()方法</span></span><br><span class="line">        <span class="keyword">long</span> milli = instant.toEpochMilli();</span><br><span class="line">        System.out.println(milli);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 通过给定的毫秒数，获取Instant实例   ---&gt; new Date(long millis);</span></span><br><span class="line">        Instant instant1 = Instant.ofEpochMilli(<span class="number">1615953468824L</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="java-time-format-DateTimeFormatter-类"><a href="#java-time-format-DateTimeFormatter-类" class="headerlink" title="java.time.format.DateTimeFormatter 类"></a><code>java.time.format.DateTimeFormatter</code> 类</h3><ul>
+<li><p>格式化日期或时间，类似 SimpleDateFormat。</p>
+</li>
+<li><p>常用方法：</p>
+<img src="/2021/03/15/java-date/image-20210317142025329.png" alt="image-20210317142025329" style="zoom:67%;">
+</li>
+<li><p>实例化方式一：预定义的标准格式。如：<code>ISO_LOCAL_DATE_TIME</code>、<code>ISO_LOCAL_DATE</code>、<code>ISO_LOCAL_TIME</code>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;</span><br><span class="line">        <span class="comment">// 格式化：日期 ---&gt; 字符串</span></span><br><span class="line">        LocalDateTime localDateTime = LocalDateTime.now();</span><br><span class="line">        System.out.println(localDateTime);<span class="comment">// 2021-03-17T13:18:37.907</span></span><br><span class="line">        String str = formatter.format(localDateTime);</span><br><span class="line">        System.out.println(str);<span class="comment">// 2021-03-17T13:18:37.907</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 解析：字符串 ---&gt; 日期</span></span><br><span class="line">        String str1 = <span class="string">&quot;2021-03-17T13:17:33.274&quot;</span>;<span class="comment">// 只能解析此种格式的字符串</span></span><br><span class="line">        TemporalAccessor parse = formatter.parse(str1);</span><br><span class="line">        System.out.println(parse);<span class="comment">// &#123;&#125;,ISO resolved to 2021-03-17T13:17:33.274</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>实例化方式二，本地化相关的格式：</p>
+<ul>
+<li><p><code>ofLocalizedDateTime()</code>，三种格式：<code>FormatStyle.LONG</code> / <code>FormatStyle.MEDIUM</code> / <code>FormatStyle.SHORT</code> 适用于 LocalDateTime。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        LocalDateTime localDateTime = LocalDateTime.now();</span><br><span class="line">        System.out.println(localDateTime);<span class="comment">// 2021-03-17T13:29:37.732</span></span><br><span class="line"></span><br><span class="line">        DateTimeFormatter formatter1 = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG);</span><br><span class="line">        String str1 = formatter1.format(localDateTime);</span><br><span class="line">        System.out.println(str1);<span class="comment">// 2021年3月17日 下午01时29分37秒</span></span><br><span class="line">        DateTimeFormatter formatter2 = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM);</span><br><span class="line">        String str2 = formatter2.format(localDateTime);</span><br><span class="line">        System.out.println(str2);<span class="comment">// 2021-3-17 13:29:37</span></span><br><span class="line">        DateTimeFormatter formatter3 = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);</span><br><span class="line">        String str3 = formatter3.format(localDateTime);</span><br><span class="line">        System.out.println(str3);<span class="comment">// 21-3-17 下午1:29</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>ofLocalizedDate()</code>，四种格式：<code>FormatStyle.FULL</code> / <code>FormatStyle.LONG</code> / <code>FormatStyle.MEDIUM</code> / <code>FormatStyle.SHORT</code> 适用于LocalDate。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        LocalDate localDate = LocalDate.now();</span><br><span class="line">        System.out.println(localDate);<span class="comment">// 2021-03-17</span></span><br><span class="line"></span><br><span class="line">        DateTimeFormatter formatter1 = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL);</span><br><span class="line">        String str1 = formatter1.format(localDate);</span><br><span class="line">        System.out.println(str1);<span class="comment">// 2021年3月17日 星期三</span></span><br><span class="line">        DateTimeFormatter formatter2 = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG);</span><br><span class="line">        String str2 = formatter2.format(localDate);</span><br><span class="line">        System.out.println(str2);<span class="comment">// 2021年3月17日</span></span><br><span class="line">        DateTimeFormatter formatter3 = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM);</span><br><span class="line">        String str3 = formatter3.format(localDate);</span><br><span class="line">        System.out.println(str3);<span class="comment">// 2021-3-17</span></span><br><span class="line">        DateTimeFormatter formatter4 = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);</span><br><span class="line">        String str4 = formatter4.format(localDate);</span><br><span class="line">        System.out.println(str4);<span class="comment">// 21-3-17</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p><strong>实例化方式三：自定义的格式，最常用。</strong>如：<code>ofPattern(&quot;yyyy-MM-dd hh:mm:ss&quot;)</code>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(<span class="string">&quot;yyyy-MM-dd HH:mm:ss&quot;</span>);</span><br><span class="line">        String str = formatter.format(LocalDateTime.now());</span><br><span class="line">        System.out.println(str);<span class="comment">// 2021-03-17 13:13:52</span></span><br><span class="line">        TemporalAccessor accessor = formatter.parse(<span class="string">&quot;2021-02-17 13:18:09&quot;</span>);<span class="comment">// 字符串需要严格匹配自定义的格式</span></span><br><span class="line">        System.out.println(accessor);<span class="comment">// &#123;&#125;,ISO resolved to 2021-02-17T13:18:09</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="其他-API"><a href="#其他-API" class="headerlink" title="其他 API"></a>其他 API</h3><ul>
+<li><p><code>java.time.ZoneId</code>：该类中包含了所有的时区信息，一个时区的 ID，如 Europe/Paris。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// ZoneId: 类中包含了所有的时区信息</span></span><br><span class="line">        <span class="comment">// ZoneId的getAvailableZoneIds(): 获取所有的ZoneId</span></span><br><span class="line">        Set&lt;String&gt; zoneIds = ZoneId.getAvailableZoneIds();</span><br><span class="line">        <span class="keyword">for</span> (String s : zoneIds) &#123;</span><br><span class="line">            System.out.println(s);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// ZoneId的of(): 获取指定时区的时间</span></span><br><span class="line">        LocalDateTime localDateTime = LocalDateTime.now(ZoneId.of(<span class="string">&quot;Asia/Tokyo&quot;</span>));</span><br><span class="line">        System.out.println(localDateTime);</span><br><span class="line">        <span class="comment">// ZonedDateTime: 带时区的日期时间</span></span><br><span class="line">        <span class="comment">// ZonedDateTime的now(): 获取本时区的ZonedDateTime对象</span></span><br><span class="line">        ZonedDateTime zonedDateTime = ZonedDateTime.now();</span><br><span class="line">        System.out.println(zonedDateTime);</span><br><span class="line">        <span class="comment">// ZonedDateTime的now(ZoneId id): 获取指定时区的ZonedDateTime对象</span></span><br><span class="line">        ZonedDateTime zonedDateTime1 = ZonedDateTime.now(ZoneId.of(<span class="string">&quot;Asia/Tokyo&quot;</span>));</span><br><span class="line">        System.out.println(zonedDateTime1);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>java.time.ZonedDateTime</code>：一个在 ISO-8601日历系统时区的日期时间，如 2007-12-03T10:15:30+01:00 Europe/Paris。</p>
+<ul>
+<li>其中每个时区都对应着 ID，地区 ID 都为 “{区域}/{城市}” 的格式，例如：Asia/Shanghai 等。</li>
+</ul>
+</li>
+<li><p><code>java.time.Clock</code>：使用时区提供对当前即时、日期和时间的访问的时钟。</p>
+</li>
+<li><p><strong><code>java.time.Duration</code>：持续时间，用于计算两个 “时间” 间隔。</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// Duration: 用于计算两个&quot;时间&quot;间隔，以秒和纳秒为基准</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// between(): 静态方法，返回Duration对象，表示两个时间的间隔</span></span><br><span class="line">        LocalTime localTime = LocalTime.now();</span><br><span class="line">        LocalTime localTime1 = LocalTime.of(<span class="number">15</span>, <span class="number">23</span>, <span class="number">32</span>);</span><br><span class="line">        Duration duration = Duration.between(localTime1, localTime);</span><br><span class="line">        System.out.println(duration);</span><br><span class="line">        System.out.println(duration.getSeconds());</span><br><span class="line">        System.out.println(duration.getNano());</span><br><span class="line"></span><br><span class="line">        LocalDateTime localDateTime = LocalDateTime.of(<span class="number">2016</span>, <span class="number">6</span>, <span class="number">12</span>, <span class="number">15</span>, <span class="number">23</span>, <span class="number">32</span>);</span><br><span class="line">        LocalDateTime localDateTime1 = LocalDateTime.of(<span class="number">2017</span>, <span class="number">6</span>, <span class="number">12</span>, <span class="number">15</span>, <span class="number">23</span>, <span class="number">32</span>);</span><br><span class="line">        Duration duration1 = Duration.between(localDateTime1, localDateTime);</span><br><span class="line">        System.out.println(duration1.toDays());<span class="comment">// -365</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong><code>java.time.Period</code>：日期间隔，用于计算两个 “日期” 间隔。</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// Period:用于计算两个&quot;日期&quot;间隔，以年、月、日衡量</span></span><br><span class="line">        LocalDate localDate = LocalDate.now();<span class="comment">// 2021-3-17</span></span><br><span class="line">        LocalDate localDate1 = LocalDate.of(<span class="number">2028</span>, <span class="number">3</span>, <span class="number">18</span>);</span><br><span class="line">        Period period = Period.between(localDate, localDate1);</span><br><span class="line">        System.out.println(period);<span class="comment">// P7Y1D</span></span><br><span class="line">        System.out.println(period.getYears());<span class="comment">// 7</span></span><br><span class="line">        System.out.println(period.getMonths());<span class="comment">// 0</span></span><br><span class="line">        System.out.println(period.getDays());<span class="comment">// 1</span></span><br><span class="line">        Period period1 = period.withYears(<span class="number">2</span>);</span><br><span class="line">        System.out.println(period1);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>java.time.temporal.TemporalAdjuster</code>：时间校正器。有时我们可能需要获取诸如将日期调整到 “下一个工作日” 等操作。</p>
+</li>
+<li><p><code>java.time.temporal.TemporalAdjusters</code>：该类通过静态方法 <code>firstDayOfXxx()</code>/<code>lastDayOfXxx()</code>/<code>nextXxx()</code>，提供了大量的常用 TemporalAdjuster 的实现。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// TemporalAdjuster: 时间校正器</span></span><br><span class="line">        <span class="comment">// 获取当前日期的下一个周日是哪天？当前日期：2021-3-17</span></span><br><span class="line">        TemporalAdjuster temporalAdjuster = TemporalAdjusters.next(DayOfWeek.SUNDAY);</span><br><span class="line">        LocalDate localDateTime = LocalDate.now().with(temporalAdjuster);<span class="comment">// LocalDateTime.now().with(temporalAdjuster)</span></span><br><span class="line">        System.out.println(<span class="string">&quot;下一个周日是：&quot;</span> + localDateTime);<span class="comment">// 下一个周日是：2021-03-21</span></span><br><span class="line">        <span class="comment">// 获取下一个工作日是哪天？</span></span><br><span class="line">        LocalDate localDate = LocalDate.now().with(<span class="keyword">new</span> TemporalAdjuster() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> Temporal <span class="title">adjustInto</span><span class="params">(Temporal temporal)</span> </span>&#123;</span><br><span class="line">                LocalDate date = (LocalDate) temporal;</span><br><span class="line">                <span class="keyword">if</span> (date.getDayOfWeek().equals(DayOfWeek.FRIDAY)) &#123;</span><br><span class="line">                    <span class="keyword">return</span> date.plusDays(<span class="number">3</span>);</span><br><span class="line">                &#125; <span class="keyword">else</span> <span class="keyword">if</span> (date.getDayOfWeek().equals(DayOfWeek.SATURDAY)) &#123;</span><br><span class="line">                    <span class="keyword">return</span> date.plusDays(<span class="number">2</span>);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="keyword">return</span> date.plusDays(<span class="number">1</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        System.out.println(<span class="string">&quot;下一个工作日是：&quot;</span> + localDate);<span class="comment">// 下一个工作日是：2021-03-18</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="与传统日期处理的转换"><a href="#与传统日期处理的转换" class="headerlink" title="与传统日期处理的转换"></a>与传统日期处理的转换</h3><p><img src="/2021/03/15/java-date/image-20210317152323415.png" alt="image-20210317152323415"></p>
+<h2 id="本文参考"><a href="#本文参考" class="headerlink" title="本文参考"></a>本文参考</h2><p><a target="_blank" rel="noopener" href="https://www.gulixueyuan.com/goods/show/203?targetId=309&amp;preview=0">https://www.gulixueyuan.com/goods/show/203?targetId=309&amp;preview=0</a></p>
+<p>声明：写作本文初衷是个人学习记录，鉴于本人学识有限，如有侵权或不当之处，请联系 <a href="mailto:wdshfut@163.com">wdshfut@163.com</a>。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/04/java-thread/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -769,7 +1033,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-03-04 20:16:49" itemprop="dateModified" datetime="2021-03-04T20:16:49+08:00">2021-03-04</time>
+                <time title="修改时间：2021-03-15 11:07:49" itemprop="dateModified" datetime="2021-03-15T11:07:49+08:00">2021-03-15</time>
               </span>
 
           <br>
@@ -778,14 +1042,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>8.9k</span>
+              <span>11k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>8 分钟</span>
+              <span>10 分钟</span>
             </span>
 
         </div>
@@ -881,7 +1145,7 @@
 </li>
 <li><p>catch (ExceptionType e)：在 catch 语句块中是对异常对象进行处理的代码。</p>
 <ul>
-<li><p>每个 try 语句块可以伴随一个或多个 catch 语句，用于处理可能产生的不同类型的异常对象，当异常对象匹配到某一个 catch 时，就进入该 catch 中进行异常的处理，一旦处理完成，就跳出当前的 try - catch，结构，继续执行 finally 结构和其后的代码。</p>
+<li><p><strong>每个 try 语句块可以伴随一个或多个 catch 语句，用于处理可能产生的不同类型的异常对象，当异常对象匹配到某一个 catch 时，就进入该 catch 中进行异常的处理，一旦处理完成，就跳出当前的 try - catch，结构，继续执行 finally 结构和其后的代码。</strong></p>
 </li>
 <li><p>如果明确知道产生的是何种异常，可以用该异常类作为 catch 的参数；也可以用其父类作为 catch 的参数。比如：可以用 ArithmeticException 类作为参数的地方，就可以用 RuntimeException 类作为参数，或者用所有异常的父类 Exception 类作为参数。但不能是与 ArithmeticException 类无关的异常，如 NullPointerException，此时 catch 中的语句将不会执行。</p>
 </li>
@@ -944,6 +1208,15 @@
 </li>
 <li><p>实例：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Student</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Student student = <span class="keyword">new</span> Student();</span><br><span class="line">        student.regist(-<span class="number">100</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            student.regist2(-<span class="number">200</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception exception) &#123;</span><br><span class="line">            System.out.println(exception.getMessage());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> id;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">regist</span><span class="params">(<span class="keyword">int</span> id)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (id &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">this</span>.id = id;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 手动抛出异常</span></span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;输入的数据非法：&quot;</span> + id);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">regist2</span><span class="params">(<span class="keyword">int</span> id)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (id &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">this</span>.id = id;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 手动抛出异常，需要在方法中声明</span></span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> Exception(<span class="string">&quot;输入的数据非法：&quot;</span> + id);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>执行 throw 后，后面代码还会执行吗？</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExceptionTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> i = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">if</span> (i &gt; <span class="number">5</span>) &#123;</span><br><span class="line">            System.out.println(i);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> Exception(<span class="string">&quot;数据非法！&quot;</span>);<span class="comment">// 异常被try-catch</span></span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(<span class="string">&quot;123&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">输出结果：</span><br><span class="line">java.lang.Exception: 数据非法！</span><br><span class="line">	at cn.xisun.java.base.ExceptionTest.main(ExceptionTest.java:<span class="number">17</span>)</span><br><span class="line"><span class="number">123</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExceptionTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> i = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">if</span> (i &gt; <span class="number">5</span>) &#123;</span><br><span class="line">            System.out.println(i);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> Exception(<span class="string">&quot;数据非法！&quot;</span>);<span class="comment">// 异常被throws</span></span><br><span class="line">            System.out.println(<span class="string">&quot;123&quot;</span>);<span class="comment">// 编译不通过</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExceptionTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> i = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">if</span> (i &gt; <span class="number">5</span>) &#123;</span><br><span class="line">            System.out.println(i);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> Exception(<span class="string">&quot;数据非法！&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">&quot;123&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">输出结果：</span><br><span class="line">Exception in thread <span class="string">&quot;main&quot;</span> java.lang.Exception: 数据非法！</span><br><span class="line">	at cn.xisun.java.base.ExceptionTest.main(ExceptionTest.java:<span class="number">16</span>)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExceptionTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">get</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">int</span> a = i / <span class="number">0</span>;</span><br><span class="line">            System.out.println(a);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;发生异常&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">&quot;123&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; <span class="number">4</span>; i++) &#123;</span><br><span class="line">            System.out.println(i);</span><br><span class="line">            get(i);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">输出结果：</span><br><span class="line"><span class="number">1</span></span><br><span class="line">Exception in thread <span class="string">&quot;main&quot;</span> java.lang.RuntimeException: 发生异常</span><br><span class="line">	at cn.xisun.java.base.ExceptionTest.get(ExceptionTest.java:<span class="number">16</span>)</span><br><span class="line">	at cn.xisun.java.base.ExceptionTest.main(ExceptionTest.java:<span class="number">24</span>)</span><br></pre></td></tr></table></figure>
 
 </li>
 </ul>
@@ -1278,7 +1551,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-03-09 15:43:08" itemprop="dateModified" datetime="2021-03-09T15:43:08+08:00">2021-03-09</time>
+                <time title="修改时间：2021-03-11 21:57:59" itemprop="dateModified" datetime="2021-03-11T21:57:59+08:00">2021-03-11</time>
               </span>
 
           <br>
@@ -2165,7 +2438,7 @@
 <img src="/2021/02/10/java-base/image-20210223111838133.png" alt="image-20210223111838133" style="zoom:67%;">
 </li>
 <li><p>实例一：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ValueTransferTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">first</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> i = <span class="number">5</span>;</span><br><span class="line">        Value v = <span class="keyword">new</span> Value();</span><br><span class="line">        v.i = <span class="number">25</span>;</span><br><span class="line">        second(v, i);</span><br><span class="line">        System.out.println(v.i);<span class="comment">// 20</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">second</span><span class="params">(Value v, <span class="keyword">int</span> i)</span> </span>&#123;</span><br><span class="line">        i = <span class="number">0</span>;</span><br><span class="line">        v.i = <span class="number">20</span>;</span><br><span class="line">        Value val = <span class="keyword">new</span> Value();</span><br><span class="line">        v = val;java</span><br><span class="line">        System.out.println(v.i + <span class="string">&quot; &quot;</span> + i);<span class="comment">// 15 0</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        ValueTransferTest test = <span class="keyword">new</span> ValueTransferTest();</span><br><span class="line">        test.first();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Value</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">15</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ValueTransferTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">first</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> i = <span class="number">5</span>;</span><br><span class="line">        Value v = <span class="keyword">new</span> Value();</span><br><span class="line">        v.i = <span class="number">25</span>;</span><br><span class="line">        second(v, i);</span><br><span class="line">        System.out.println(v.i);<span class="comment">// 20</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">second</span><span class="params">(Value v, <span class="keyword">int</span> i)</span> </span>&#123;</span><br><span class="line">        i = <span class="number">0</span>;</span><br><span class="line">        v.i = <span class="number">20</span>;</span><br><span class="line">        Value val = <span class="keyword">new</span> Value();</span><br><span class="line">        v = val;</span><br><span class="line">        System.out.println(v.i + <span class="string">&quot; &quot;</span> + i);<span class="comment">// 15 0</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        ValueTransferTest test = <span class="keyword">new</span> ValueTransferTest();</span><br><span class="line">        test.first();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Value</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">15</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <img src="/2021/02/10/java-base/image-20210223113602448.png" alt="image-20210223113602448" style="zoom:67%;">
 </li>
@@ -3812,306 +4085,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/06/java-log/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/header.jpg">
-      <meta itemprop="name" content="XiSun">
-      <meta itemprop="description" content="心如止水者，虽世间繁华之红尘纷扰，已然空无一物">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XiSun的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/01/06/java-log/" class="post-title-link" itemprop="url">java 的日志处理</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-01-06 17:14:19" itemprop="dateCreated datePublished" datetime="2021-01-06T17:14:19+08:00">2021-01-06</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-12 15:26:56" itemprop="dateModified" datetime="2021-01-12T15:26:56+08:00">2021-01-12</time>
-              </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>16k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>14 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="常用日志处理工具"><a href="#常用日志处理工具" class="headerlink" title="常用日志处理工具"></a>常用日志处理工具</h2><p>常见的 log 日志处理工具有：log4j、Logging、commons-logging、slf4j、logback。其中，commons-loggin、slf4j 是一种日志抽象门面，不是具体的日志框架；log4j、logback 是具体的日志实现框架。</p>
-<p><strong>一般使用 slf4j + logback 处理日志</strong>，也可以使用 slf4j + log4j、commons-logging + log4j 这两种日志组合框架。</p>
-<h2 id="日志级别"><a href="#日志级别" class="headerlink" title="日志级别"></a>日志级别</h2><p>日志的输出都是分级别的，不同的场合设置不同的级别，以打印不同的日志。下面拿最普遍用的 log4j 日志框架来做个日志级别的说明，这个比较奇全，其他的日志框架也都大同小异。</p>
-<p>log4j 的级别类 org.apache.log4j.Level 里面定义了日志级别，日志输出优先级由高到底分别为以下 8 种：</p>
-<p><img src="/2021/01/06/java-log/165cb8810e985c1d" alt="img"></p>
-<table>
-<thead>
-<tr>
-<th>日志级别</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>OFF</td>
-<td>关闭：最高级别，不输出日志。</td>
-</tr>
-<tr>
-<td>FATAL</td>
-<td>致命：输出非常严重的可能会导致应用程序终止的错误。</td>
-</tr>
-<tr>
-<td>ERROR</td>
-<td>错误：输出错误，但应用还能继续运行。</td>
-</tr>
-<tr>
-<td>WARN</td>
-<td>警告：输出可能潜在的危险状况。</td>
-</tr>
-<tr>
-<td>INFO</td>
-<td>信息：输出应用运行过程的详细信息。</td>
-</tr>
-<tr>
-<td>DEBUG</td>
-<td>调试：输出更细致的对调试应用有用的信息。</td>
-</tr>
-<tr>
-<td>TRACE</td>
-<td>跟踪：输出更细致的程序运行轨迹。</td>
-</tr>
-<tr>
-<td>ALL</td>
-<td>所有：输出所有级别信息。</td>
-</tr>
-</tbody></table>
-<p>所以，日志优先级别标准顺序为：</p>
-<p>ALL &lt; TRACE &lt; DEBUG &lt; INFO &lt; WARN &lt; ERROR &lt; FATAL &lt; OFF</p>
-<p>如果日志设置为 L ，一个级别为 P 的输出日志只有当 P &gt;= L 时日志才会输出。</p>
-<p>即如果日志级别 L 设置 INFO，只有 P 的输出级别为 INFO、WARN，后面的日志才会正常输出。</p>
-<p>具体的输出关系可以参考下图：</p>
-<p><img src="/2021/01/06/java-log/165cb88312571bb0" alt="img"></p>
-<h2 id="Lombok"><a href="#Lombok" class="headerlink" title="Lombok"></a>Lombok</h2><p>Lombok 是一种 java 实用工具，可用来帮助开发人员消除 java 的冗长代码，尤其是对于简单的 java 对象 (POJO)。它通过注释实现这一目的。</p>
-<h3 id="引入"><a href="#引入" class="headerlink" title="引入"></a>引入</h3><p>IntelliJ 安装：</p>
-<p><img src="/2021/01/06/java-log/16140d77d80ebc6f" alt="img"></p>
-<blockquote>
-<p>Lombok 是侵入性很高的一个 library。</p>
-</blockquote>
-<p>maven 添加依赖：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;lombok&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;1.18.10&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
-
-<h3 id="注解说明"><a href="#注解说明" class="headerlink" title="注解说明"></a>注解说明</h3><p>常用注解：</p>
-<p><img src="/2021/01/06/java-log/lombok_overview.png" alt="img"></p>
-<ul>
-<li><code>@Getter</code> 和 <code>@Setter</code></li>
-</ul>
-<p>自动生成 getter 和 setter 方法。</p>
-<p><img src="/2021/01/06/java-log/lombok_getter_setter.png" alt="img"></p>
-<ul>
-<li><code>@ToString</code></li>
-</ul>
-<p>自动重写 <code>toString()</code> 方法，打印所有变量。也可以加其他参数，例如 <code>@ToString(exclude=”id”)</code> 排除 id 属性，或者 <code>@ToString(callSuper=true, includeFieldNames=true)</code> 调用父类的 <code>toString()</code> 方法，包含所有属性。</p>
-<p><img src="/2021/01/06/java-log/lombok_tostring.png" alt="img"></p>
-<ul>
-<li><code>@EqualsAndHashCode</code></li>
-</ul>
-<p>自动生成 <code>equals(Object other)</code> 和 <code>hashcode()</code> 方法，包括所有非静态变量和非 transient 的变量。</p>
-<p><img src="/2021/01/06/java-log/lombok_equalsandhashcode.png" alt="img"></p>
-<p>如果某些变量不想要加进判断，可以通过 exclude 排除，也可以使用 of 指定某些字段：</p>
-<p><img src="/2021/01/06/java-log/lombok_equalsandhashcode_exclude.png" alt="img"></p>
-<blockquote>
-<p>java 中规定，当两个 object equals 时，它们的 hashcode 一定要相同，反之，当 hashcode 相同时，object 不一定 equals。所以 equals 和 hashcode 要一起 implement，免得出现违反 java 规定的情形。</p>
-</blockquote>
-<ul>
-<li><code>@NoArgsConstructor</code>，<code>@AllArgsConstructor</code>，<code>@RequiredArgsConstructor</code></li>
-</ul>
-<p>这三个很像，都是自动生成该类的 constructor，差別只在生成的 constructor 的参数不一样而已。</p>
-<p><code>@NoArgsConstructor</code>：生成一个沒有参数的 constructor。</p>
-<p><img src="/2021/01/06/java-log/lombok_noargsconstructor.png" alt="img"></p>
-<blockquote>
-<p>在 java 中，如果沒有指定类的 constructor，java compiler 会自动生成一个无参构造器，但是如果自己写了 constructor 之后，java 就不会再自动生成无参构造器。但是，很多时候，无参构造器是必须的，因此，为避免不必要的麻烦，应在类上至少加上 <code>@NoArgsConstrcutor</code>。</p>
-</blockquote>
-<p><code>@AllArgsConstructor</code> ：生成一个包含所有参数的 constructor。</p>
-<p><img src="/2021/01/06/java-log/lombok_allargsconstructor.png" alt="img"></p>
-<p><code>@RequiredArgsConstructor</code>：生成一个包含 “特定参数” 的 constructor，特定参数指的是那些有加上 final 修饰词的变量。</p>
-<p><img src="/2021/01/06/java-log/lombok_requiredargsconstructor.png" alt="img"></p>
-<blockquote>
-<p>如果所有的变量都沒有用 final 修饰，<code>@RequiredArgsConstructor</code> 会生成一个沒有参数的 constructor。</p>
-</blockquote>
-<ul>
-<li><code>@Data</code></li>
-</ul>
-<p>等于同时添加了以下注解：<code>@Getter</code>，<code>@Setter</code>，<code>@ToString</code>，<code>@EqualsAndHashCode</code> 和 <code>@RequiredArgsConstructor</code>。</p>
-<p><img src="https://kucw.github.io/images/blog/lombok_data.png" alt="img"></p>
-<ul>
-<li><code>@Value</code></li>
-</ul>
-<p>把所有的变量都设成 final，其他的就跟 <code>@Data</code> 类似，等于同时添加了以下注解：<code>@Getter</code>，<code>@ToString</code>，<code>@EqualsAndHashCode</code> 和 <code>@RequiredArgsConstructor</code>。</p>
-<p><img src="/2021/01/06/java-log/lombok_value.png" alt="img"></p>
-<ul>
-<li>@Builder</li>
-</ul>
-<p>自动生成流式 set 值写法。</p>
-<p><img src="/2021/01/06/java-log/lombok_builder.png" alt="img"></p>
-<p>注意，虽然只要加上 <code>@Builder</code> 注解，我们就能用流式写法快速设定 Object 的值，但是 setter 还是不应该舍弃的，因为 Spring 或是其他框架，有很多地方都会用到 Object 的 getter/setter 方法来对属性取值/赋值。</p>
-<p>所以，通常是 <code>@Data</code> 和 <code>@Builder</code> 会一起用在同个类上，既方便流式写 code，也方便框架做事。比如：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="meta">@Builder</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Integer id;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><code>@Slf4j</code></li>
-</ul>
-<p>自动生成该类的 log 静态常量，要打日志就可以直接打，不用再手动 new log 静态常量了。</p>
-<p><img src="/2021/01/06/java-log/lombok_slf4j.png" alt="img"></p>
-<p>除了 <code>@Slf4j</code> 之外，Lombok 也提供其他日志框架的几种注解，像是 <code>@Log</code>，<code>@Log4j</code> 等，他们都可以创建一个静态常量 log，只是使用的 library 不一样而已。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Log</span> <span class="comment">// 对应的log语句如下</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> java.util.logging.Logger log = java.util.logging.Logger.getLogger(LogExample.class.getName());</span><br><span class="line"></span><br><span class="line"><span class="meta">@Log4j</span> <span class="comment">// 对应的log语句如下</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(LogExample.class);</span><br></pre></td></tr></table></figure>
-
-<p>更多的参考：<a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903557016076302">https://juejin.cn/post/6844903557016076302</a></p>
-<h2 id="Logback"><a href="#Logback" class="headerlink" title="Logback"></a>Logback</h2><h3 id="引入-1"><a href="#引入-1" class="headerlink" title="引入"></a>引入</h3><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;ch.qos.logback&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;logback-classic&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;1.2.3&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>logback 依赖中，含有对 slf4j 的依赖。</p>
-</blockquote>
-<h3 id="节点"><a href="#节点" class="headerlink" title="节点"></a>节点</h3><p>configuration 为主节点，其主要字节点如下：</p>
-<h4 id="property"><a href="#property" class="headerlink" title="property"></a>property</h4><p>定义变量值的标签，有两个属性，name 和 value，定义变量后，可以使 “${name}” 来使用变量。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;property name=<span class="string">&quot;logging.level&quot;</span> value=<span class="string">&quot;info&quot;</span>/&gt;</span><br></pre></td></tr></table></figure>
-
-<h4 id="appender"><a href="#appender" class="headerlink" title="appender"></a>appender</h4><p>日志打印的组件，定义打印过滤的条件、打印输出方式、滚动策略、编码方式、打印格式等。</p>
-<p>种类：</p>
-<ul>
-<li><p>ConsoleAppender：把日志添加到控制台。</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;appender name=<span class="string">&quot;STDOUT&quot;</span> <span class="class"><span class="keyword">class</span></span>=<span class="string">&quot;ch.qos.logback.core.ConsoleAppender&quot;</span>&gt;</span><br><span class="line">   &lt;encoder charset=<span class="string">&quot;utf-8&quot;</span>&gt;</span><br><span class="line">      &lt;pattern&gt;%d&#123;yyyy-MM-dd HH:mm:ss.SSS&#125; [%thread] %-6level %logger&#123;50&#125; - %msg%n&lt;/pattern&gt;</span><br><span class="line">   &lt;/encoder&gt;</span><br><span class="line">&lt;/appender&gt;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>FileAppender：把日志添加到文件。</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;appender name=<span class="string">&quot;ReactionExtractorAppender&quot;</span> <span class="class"><span class="keyword">class</span></span>=<span class="string">&quot;ch.qos.logback.core.FileAppender&quot;</span>&gt;</span><br><span class="line">    &lt;append&gt;true&lt;/append&gt;</span><br><span class="line">    &lt;filter <span class="class"><span class="keyword">class</span></span>=<span class="string">&quot;ch.qos.logback.classic.filter.ThresholdFilter&quot;</span>&gt;</span><br><span class="line">        &lt;level&gt;$&#123;logging.level&#125;&lt;/level&gt;</span><br><span class="line">    &lt;/filter&gt;</span><br><span class="line">    &lt;file&gt;</span><br><span class="line">        $&#123;logging.path&#125;/reaction-extractor.log</span><br><span class="line">    &lt;/file&gt;</span><br><span class="line">    &lt;encoder&gt;</span><br><span class="line">        &lt;pattern&gt;$&#123;message.format&#125;&lt;/pattern&gt;</span><br><span class="line">        &lt;charset&gt;UTF-8&lt;/charset&gt;</span><br><span class="line">    &lt;/encoder&gt;</span><br><span class="line">&lt;/appender&gt;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>RollingFileAppender：FileAppender 的子类，滚动记录文件，先将日志记录到指定文件，当符合某个条件时，将日志记录到其他文件。</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&lt;appender name=<span class="string">&quot;ReactionExtractorRollingAppender&quot;</span> <span class="class"><span class="keyword">class</span></span>=<span class="string">&quot;ch.qos.logback.core.rolling.RollingFileAppender&quot;</span>&gt;</span><br><span class="line">    &lt;append&gt;true&lt;/append&gt;</span><br><span class="line">    &lt;filter <span class="class"><span class="keyword">class</span></span>=<span class="string">&quot;ch.qos.logback.classic.filter.ThresholdFilter&quot;</span>&gt;</span><br><span class="line">        &lt;level&gt;$&#123;logging.level&#125;&lt;/level&gt;</span><br><span class="line">    &lt;/filter&gt;</span><br><span class="line">    &lt;rollingPolicy <span class="class"><span class="keyword">class</span></span>=<span class="string">&quot;ch.qos.logback.core.rolling.TimeBasedRollingPolicy&quot;</span>&gt;</span><br><span class="line">        &lt;FileNamePattern&gt;$&#123;logging.path&#125;/reaction-extractork-%d&#123;yyyy-MM-dd&#125;.log&lt;/FileNamePattern&gt;</span><br><span class="line">        &lt;MaxHistory&gt;30&lt;/MaxHistory&gt;</span><br><span class="line">    &lt;/rollingPolicy&gt;</span><br><span class="line">    &lt;encoder&gt;</span><br><span class="line">        &lt;pattern&gt;$&#123;message.format&#125;&lt;/pattern&gt;</span><br><span class="line">        &lt;charset&gt;UTF-8&lt;/charset&gt;</span><br><span class="line">    &lt;/encoder&gt;</span><br><span class="line">&lt;/appender&gt;</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<p>属性：</p>
-<ul>
-<li><p>name：指定 appender 的名称。</p>
-</li>
-<li><p>class：指定 appender 的全限定名。</p>
-</li>
-</ul>
-<p>子节点：</p>
-<ul>
-<li><p>append：默认为 true，表示日志被追加到文件结尾，如果是 false，清空现存文件。</p>
-</li>
-<li><p>filter：过滤器，执行完一个过滤器后返回 DENY，NEUTRAL，ACCEPT 三个枚举值中的一个。</p>
-<p>filter 的返回值含义：</p>
-<ol>
-<li>DENY：日志将立即被抛弃不再经过其他过滤器。</li>
-<li>NEUTRAL：有序列表里的下个过滤器过接着处理日志。</li>
-<li>ACCEPT：日志会被立即处理，不再经过剩余过滤器。</li>
-</ol>
-<p>filter 的两种类型：</p>
-<ol>
-<li><p>ThresholdFilter：临界值过滤器，过滤掉低于指定临界值的日志。当日志级别等于或高于临界值时，过滤器返回 NEUTRAL，当日志级别低于临界值时，日志会被拒绝。</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;filter <span class="class"><span class="keyword">class</span></span>=<span class="string">&quot;ch.qos.logback.classic.filter.ThresholdFilter&quot;</span>&gt;</span><br><span class="line">   &lt;level&gt;INFO&lt;/level&gt;</span><br><span class="line">&lt;/filter&gt;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>LevelFilter：级别过滤器，根据日志级别进行过滤。如果日志级别等于配置级别，过滤器会根据 onMath (用于配置符合过滤条件的操作) 和 onMismatch (用于配置不符合过滤条件的操作) 接收或拒绝日志。</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;filter <span class="class"><span class="keyword">class</span></span>=<span class="string">&quot;ch.qos.logback.classic.filter.LevelFilter&quot;</span>&gt;   </span><br><span class="line">   &lt;level&gt;INFO&lt;/level&gt;   </span><br><span class="line">   &lt;onMatch&gt;ACCEPT&lt;/onMatch&gt;   </span><br><span class="line">   &lt;onMismatch&gt;DENY&lt;/onMismatch&gt;   </span><br><span class="line">&lt;/filter&gt;</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-</li>
-<li><p>file：指定被写入的文件名，可以是相对目录，也可以是绝对目录，如果上级目录不存在会自动创建，没有默认值。</p>
-</li>
-<li><p>rollingPolicy：滚动策略，只有 appender 的 class 是 RollingFileAppender 时才需要配置。</p>
-<ol>
-<li><p>TimeBasedRollingPolicy：根据时间来制定滚动策略，既负责滚动也负责触发滚动。</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;rollingPolicy <span class="class"><span class="keyword">class</span></span>=<span class="string">&quot;ch.qos.logback.core.rolling.TimeBasedRollingPolicy&quot;</span>&gt;</span><br><span class="line">   &lt;!-- 日志文件输出的文件名：按天回滚 daily --&gt;</span><br><span class="line">   &lt;FileNamePattern&gt;</span><br><span class="line">       $&#123;logging.path&#125;/glmapper-spring-boot/glmapper-loggerone.log.%d&#123;yyyy-MM-dd HH:mm:ss.SSS&#125;</span><br><span class="line">   &lt;/FileNamePattern&gt;</span><br><span class="line">   &lt;!-- 日志文件保留天数 --&gt;</span><br><span class="line">   &lt;MaxHistory&gt;30&lt;/MaxHistory&gt;</span><br><span class="line">&lt;/rollingPolicy&gt;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>每天生成一个日志文件，日志文件保存 30 天。</p>
-</blockquote>
-</li>
-<li><p>FixedWindowRollingPolicy：根据固定窗口算法重命名文件的滚动策略。</p>
-</li>
-</ol>
-</li>
-<li><p>encoder：对记录事件进行格式化。主要作用是：把日志信息转换成字节数组，以及把字节数组写入到输出流。</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;encoder <span class="class"><span class="keyword">class</span></span>=<span class="string">&quot;ch.qos.logback.classic.encoder.PatternLayoutEncoder&quot;</span>&gt;</span><br><span class="line">   &lt;!-- 格式化输出：%d表示日期；%thread表示线程名；%-<span class="number">5l</span>evel：级别从左显示<span class="number">5</span>个字符宽度；%logger&#123;<span class="number">50</span>&#125; 表示logger名字最长<span class="number">50</span>个字符，否则按照句点分割；%msg：日志消息；%n是换行符 --&gt;</span><br><span class="line">   &lt;pattern&gt;%d&#123;yyyy-MM-dd HH:mm:ss.SSS&#125; [%thread] %-5level %logger&#123;50&#125; - %msg%n&lt;/pattern&gt;</span><br><span class="line">   &lt;charset&gt;UTF-8&lt;/charset&gt;</span><br><span class="line">&lt;/encoder&gt;</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<h4 id="logger"><a href="#logger" class="headerlink" title="logger"></a>logger</h4><p>用来设置某一个包或者具体的某一个类的日志打印级别以及指定 appender。</p>
-<p>属性：</p>
-<ul>
-<li>name：指定受此 logger 约束的某一个包或者具体的某一个类。</li>
-<li>level：设置打印级别 (TRACE，DEBUG，INFO，WARN，ERROR，ALL 和 OFF)，还有一个值 INHERITED 或者同义词 NULL，代表强制执行上级的级别。如果没有设置此属性，那么当前 logger 将会继承上级的级别。</li>
-<li>addtivity：设置是否向上级 logger 传递打印信息，默认为 true。</li>
-</ul>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;logger name=<span class="string">&quot;com.glmapper.spring.boot.controller&quot;</span> level=<span class="string">&quot;$&#123;logging.level&#125;&quot;</span> additivity=<span class="string">&quot;false&quot;</span>&gt;</span><br><span class="line">    &lt;appender-ref ref=<span class="string">&quot;GLMAPPER-LOGGERONE&quot;</span> /&gt;</span><br><span class="line">&lt;/logger&gt;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>com.glmapper.spring.boot.controller 这个包下的 ${logging.level} 级别的日志将会使用 GLMAPPER-LOGGERONE 来打印。</p>
-</blockquote>
-<h4 id="root"><a href="#root" class="headerlink" title="root"></a>root</h4><p>根 logger，也是一种 logger，但只有一个 level 属性。</p>
-<h3 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h3><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- 使用说明：</span><br><span class="line">        <span class="number">1.</span> logback核心jar包：logback-core-<span class="number">1.2</span>.<span class="number">3.</span>jar，logback-classic-<span class="number">1.2</span>.<span class="number">3.</span>jar，slf4j-api-<span class="number">1.7</span>.<span class="number">25.</span>jar</span><br><span class="line">            <span class="number">1</span>) logback官方建议配合slf4j使用</span><br><span class="line">            <span class="number">2</span>) logback手动下载地址：https:<span class="comment">//repo1.maven.org/maven2/ch/qos/logback/</span></span><br><span class="line">            <span class="number">3</span>) slf4j手动下载地址：https:<span class="comment">//www.mvnjar.com/org.slf4j/slf4j-api/1.7.25/detail.html</span></span><br><span class="line">            <span class="number">4</span>) jar包可以从maven仓库快速获取</span><br><span class="line">        <span class="number">2.</span> logback分为<span class="number">3</span>个组件：logback-core，logback-classic和logback-access</span><br><span class="line">            <span class="number">1</span>) 其中logback-core提供了logback的核心功能，是另外两个组件的基础</span><br><span class="line">            <span class="number">2</span>) logback-classic实现了slf4j的API，所以当想配合slf4j使用时，需要将logback-classic加入classpath</span><br><span class="line">            <span class="number">3</span>) logback-access是为了集成servlet环境而准备的，可提供HTTP-access的日志接口</span><br><span class="line">        <span class="number">3.</span> 配置中KafkaAppender的jar包：logback-kafka-appender-<span class="number">0.2</span>.<span class="number">0</span>-RC1.jar</span><br><span class="line">--&gt;</span><br><span class="line"></span><br><span class="line">&lt;!-- 参考：</span><br><span class="line">        https:<span class="comment">//juejin.im/post/5b51f85c5188251af91a7525</span></span><br><span class="line">        https:<span class="comment">//my.oschina.net/Declan/blog/1793444</span></span><br><span class="line">--&gt;</span><br><span class="line"></span><br><span class="line">&lt;!-- 说明：logback.xml配置文件，需放置在项目的resources路径下 --&gt;</span><br><span class="line"></span><br><span class="line">&lt;!-- configuration属性：</span><br><span class="line">        scan：热加载，当此属性设置为<span class="keyword">true</span>时，配置文件如果发生改变，将会被重新加载，默认值为<span class="keyword">true</span></span><br><span class="line">        scanPeriod：设置监测配置文件是否有修改的时间间隔，如果没有给出时间单位，默认单位是毫秒。当scan为<span class="keyword">true</span>时，此属性生效。默认的时间间隔为<span class="number">1</span>分钟</span><br><span class="line">        debug：当此属性设置为<span class="keyword">true</span>时，将打印出logback内部日志信息，实时查看logback运行状态。默认值为<span class="keyword">false</span></span><br><span class="line">        packagingData：是否打印包的信息。默认值为<span class="keyword">false</span></span><br><span class="line">--&gt;</span><br><span class="line"></span><br><span class="line">&lt;configuration</span><br><span class="line">        debug=<span class="string">&quot;false&quot;</span></span><br><span class="line">        xmlns=<span class="string">&quot;http://ch.qos.logback/xml/ns/logback&quot;</span></span><br><span class="line">        xmlns:xsi=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span><br><span class="line">        xsi:schemaLocation=<span class="string">&quot;http://ch.qos.logback/xml/ns/logback</span></span><br><span class="line"><span class="string">        https://raw.githubusercontent.com/enricopulatzo/logback-XSD/master/src/main/xsd/logback.xsd&quot;</span></span><br><span class="line">&gt;</span><br><span class="line">    &lt;!-- property：定义变量值，两个属性，name和value --&gt;</span><br><span class="line">    &lt;property name=<span class="string">&quot;logging.path&quot;</span> value=<span class="string">&quot;./&quot;</span>/&gt;</span><br><span class="line">    &lt;property name=<span class="string">&quot;logging.level&quot;</span> value=<span class="string">&quot;INFO&quot;</span>/&gt;</span><br><span class="line">    &lt;!-- 日志格式化：</span><br><span class="line">            %d：日期</span><br><span class="line">            %thread：线程名</span><br><span class="line">            %-<span class="number">5l</span>evel：日志级别，从左显示<span class="number">5</span>个字符宽度</span><br><span class="line">            %logger&#123;<span class="number">50</span>&#125;：logger名字最长<span class="number">50</span>个字符，超过的按照句点分割</span><br><span class="line">            %msg：日志消息</span><br><span class="line">            %n：换行符</span><br><span class="line">            %ex&#123;full, DISPLAY_EX_EVAL&#125;：异常信息，full表示全输出，可以替换为异常信息指定输出的行数</span><br><span class="line">    --&gt;</span><br><span class="line">    &lt;property name=<span class="string">&quot;message.format&quot;</span></span><br><span class="line">              value=<span class="string">&quot;%d&#123;yyyy-MM-dd HH:mm:ss.SSS&#125; [%thread] %-5level %logger&#123;50&#125; - %msg%n%ex&#123;full, DISPLAY_EX_EVAL&#125;&quot;</span>/&gt;</span><br><span class="line">    &lt;!-- kafka topic --&gt;</span><br><span class="line">    &lt;property name=<span class="string">&quot;topic.name&quot;</span> value=<span class="string">&quot;log-collect&quot;</span>/&gt;</span><br><span class="line">    &lt;!-- 本地地址 --&gt;</span><br><span class="line">    &lt;property name=<span class="string">&quot;bootstrap.servers&quot;</span> value=<span class="string">&quot;192.168.1.71:9092&quot;</span>/&gt;</span><br><span class="line">    &lt;!-- 集群地址 --&gt;</span><br><span class="line">    &lt;!-- &lt;property name=<span class="string">&quot;bootstrap.servers&quot;</span> value=<span class="string">&quot;hadoopdatanode1:9092,hadoopdatanode2:9092,hadoopdatanode3:9092&quot;</span>/&gt; --&gt;</span><br><span class="line"></span><br><span class="line">    &lt;!-- appender种类：</span><br><span class="line">            ConsoleAppender：把日志添加到控制台</span><br><span class="line">            FileAppender：把日志添加到文件</span><br><span class="line">            RollingFileAppender：滚动记录文件，先将日志记录到指定文件，当符合某个条件时，将日志记录到其他文件。FileAppender的子类</span><br><span class="line">    --&gt;</span><br><span class="line"></span><br><span class="line">    &lt;!-- 控制台输出日志 --&gt;</span><br><span class="line">    &lt;appender name=<span class="string">&quot;STDOUT&quot;</span> <span class="class"><span class="keyword">class</span></span>=<span class="string">&quot;ch.qos.logback.core.ConsoleAppender&quot;</span>&gt;</span><br><span class="line">        &lt;encoder&gt;</span><br><span class="line">            &lt;pattern&gt;%d&#123;yyyy-MM-dd HH:mm:ss.SSS&#125; [%thread] %-5level %logger&#123;50&#125; - %msg%n&lt;/pattern&gt;</span><br><span class="line">            &lt;charset&gt;UTF-8&lt;/charset&gt;</span><br><span class="line">        &lt;/encoder&gt;</span><br><span class="line">    &lt;/appender&gt;</span><br><span class="line"></span><br><span class="line">    &lt;!-- 自定义输出日志到文件 --&gt;</span><br><span class="line">    &lt;appender name=<span class="string">&quot;FileAppender&quot;</span> <span class="class"><span class="keyword">class</span></span>=<span class="string">&quot;ch.qos.logback.core.FileAppender&quot;</span>&gt;</span><br><span class="line">        &lt;!-- append：<span class="keyword">true</span>，日志被追加到文件结尾；<span class="keyword">false</span>，清空现存文件；默认是<span class="keyword">true</span> --&gt;</span><br><span class="line">        &lt;append&gt;true&lt;/append&gt;</span><br><span class="line">        &lt;!-- 级别过滤器：</span><br><span class="line">                ThresholdFilter：临界值过滤器，过滤掉低于指定临界值的日志</span><br><span class="line">                LevelFilter：级别过滤器，需配置onMatch和onMismatch</span><br><span class="line">        --&gt;</span><br><span class="line">        &lt;filter <span class="class"><span class="keyword">class</span></span>=<span class="string">&quot;ch.qos.logback.classic.filter.ThresholdFilter&quot;</span>&gt;</span><br><span class="line">            &lt;level&gt;$&#123;logging.level&#125;&lt;/level&gt;</span><br><span class="line">        &lt;/filter&gt;</span><br><span class="line">        &lt;file&gt;</span><br><span class="line">            $&#123;logging.path&#125;/base.log</span><br><span class="line">        &lt;/file&gt;</span><br><span class="line">        &lt;encoder&gt;</span><br><span class="line">            &lt;pattern&gt;$&#123;message.format&#125;&lt;/pattern&gt;</span><br><span class="line">            &lt;charset&gt;UTF-8&lt;/charset&gt;</span><br><span class="line">        &lt;/encoder&gt;</span><br><span class="line">    &lt;/appender&gt;</span><br><span class="line"></span><br><span class="line">    &lt;!-- 自定义异常输出日志文件 --&gt;</span><br><span class="line">    &lt;appender name=<span class="string">&quot;ErrorFileAppender&quot;</span> <span class="class"><span class="keyword">class</span></span>=<span class="string">&quot;ch.qos.logback.core.FileAppender&quot;</span>&gt;</span><br><span class="line">        &lt;append&gt;true&lt;/append&gt;</span><br><span class="line">        &lt;filter <span class="class"><span class="keyword">class</span></span>=<span class="string">&quot;ch.qos.logback.classic.filter.ThresholdFilter&quot;</span>&gt;</span><br><span class="line">            &lt;level&gt;$&#123;logging.level&#125;&lt;/level&gt;</span><br><span class="line">        &lt;/filter&gt;</span><br><span class="line">        &lt;file&gt;</span><br><span class="line">            $&#123;logging.path&#125;/error-file.log</span><br><span class="line">        &lt;/file&gt;</span><br><span class="line">        &lt;encoder&gt;</span><br><span class="line">            &lt;pattern&gt;$&#123;message.format&#125;&lt;/pattern&gt;</span><br><span class="line">            &lt;charset&gt;UTF-8&lt;/charset&gt;</span><br><span class="line">        &lt;/encoder&gt;</span><br><span class="line">    &lt;/appender&gt;</span><br><span class="line"></span><br><span class="line">    &lt;!-- 自定义输出日志：滚动记录日志 --&gt;</span><br><span class="line">    &lt;appender name=<span class="string">&quot;RollingFileAppender&quot;</span> <span class="class"><span class="keyword">class</span></span>=<span class="string">&quot;ch.qos.logback.core.rolling.RollingFileAppender&quot;</span>&gt;</span><br><span class="line">        &lt;append&gt;true&lt;/append&gt;</span><br><span class="line">        &lt;filter <span class="class"><span class="keyword">class</span></span>=<span class="string">&quot;ch.qos.logback.classic.filter.ThresholdFilter&quot;</span>&gt;</span><br><span class="line">            &lt;level&gt;$&#123;logging.level&#125;&lt;/level&gt;</span><br><span class="line">        &lt;/filter&gt;</span><br><span class="line">        &lt;!-- 滚动策略：每天生成一个日志文件，保存<span class="number">365</span>天的日志文件 --&gt;</span><br><span class="line">        &lt;rollingPolicy <span class="class"><span class="keyword">class</span></span>=<span class="string">&quot;ch.qos.logback.core.rolling.TimeBasedRollingPolicy&quot;</span>&gt;</span><br><span class="line">            &lt;!-- 日志文件输出的文件名：按天回滚 daily --&gt;</span><br><span class="line">            &lt;FileNamePattern&gt;$&#123;logging.path&#125;/reaction-log-%d&#123;yyyy-MM-dd HH:mm:ss.SSS&#125;.log&lt;/FileNamePattern&gt;</span><br><span class="line">            &lt;!-- 日志文件保留天数 --&gt;</span><br><span class="line">            &lt;MaxHistory&gt;365&lt;/MaxHistory&gt;</span><br><span class="line">        &lt;/rollingPolicy&gt;</span><br><span class="line">        &lt;encoder&gt;</span><br><span class="line">            &lt;pattern&gt;$&#123;message.format&#125;&lt;/pattern&gt;</span><br><span class="line">            &lt;charset&gt;UTF-8&lt;/charset&gt;</span><br><span class="line">        &lt;/encoder&gt;</span><br><span class="line">        &lt;!-- 日志文件最大的大小 --&gt;</span><br><span class="line">        &lt;triggeringPolicy <span class="class"><span class="keyword">class</span></span>=<span class="string">&quot;ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy&quot;</span>&gt;</span><br><span class="line">            &lt;MaxFileSize&gt;50MB&lt;/MaxFileSize&gt;</span><br><span class="line">        &lt;/triggeringPolicy&gt;</span><br><span class="line">    &lt;/appender&gt;</span><br><span class="line"></span><br><span class="line">    &lt;!-- 输出日志到kafka，参考：https:<span class="comment">//github.com/danielwegener/logback-kafka-appender --&gt;</span></span><br><span class="line">    &lt;appender name=<span class="string">&quot;KafkaAppender&quot;</span> <span class="class"><span class="keyword">class</span></span>=<span class="string">&quot;com.github.danielwegener.logback.kafka.KafkaAppender&quot;</span>&gt;</span><br><span class="line">        &lt;encoder&gt;</span><br><span class="line">            &lt;pattern&gt;$&#123;message.format&#125;&lt;/pattern&gt;</span><br><span class="line">        &lt;/encoder&gt;</span><br><span class="line">        &lt;topic&gt;$&#123;topic.name&#125;&lt;/topic&gt;</span><br><span class="line">        &lt;keyingStrategy <span class="class"><span class="keyword">class</span></span>=<span class="string">&quot;com.github.danielwegener.logback.kafka.keying.NoKeyKeyingStrategy&quot;</span>/&gt;</span><br><span class="line">        &lt;deliveryStrategy <span class="class"><span class="keyword">class</span></span>=<span class="string">&quot;com.github.danielwegener.logback.kafka.delivery.AsynchronousDeliveryStrategy&quot;</span>/&gt;</span><br><span class="line">        &lt;!-- Optional parameter to use a fixed partition --&gt;</span><br><span class="line">        &lt;!-- &lt;partition&gt;0&lt;/partition&gt; --&gt;</span><br><span class="line">        &lt;!-- Optional parameter to include log timestamps into the kafka message --&gt;</span><br><span class="line">        &lt;!-- &lt;appendTimestamp&gt;true&lt;/appendTimestamp&gt; --&gt;</span><br><span class="line">        &lt;!-- each &lt;producerConfig&gt; translates to regular kafka-<span class="function">client <span class="title">config</span> <span class="params">(format: key=value)</span> --&gt;</span></span><br><span class="line"><span class="function">        &lt;!-- producer configs are documented here: https:<span class="comment">//kafka.apache.org/documentation.html#newproducerconfigs --&gt;</span></span></span><br><span class="line"><span class="function">        &lt;!-- bootstrap.servers is the only mandatory producerConfig --&gt;</span></span><br><span class="line">        &lt;producerConfig&gt;bootstrap.servers=$&#123;bootstrap.servers&#125;&lt;/producerConfig&gt;</span><br><span class="line">        &lt;!-- <span class="keyword">this</span> is the fallback appender <span class="keyword">if</span> kafka is not available. --&gt;</span><br><span class="line">        &lt;appender-ref ref=<span class="string">&quot;FileAppender&quot;</span>/&gt;</span><br><span class="line">    &lt;/appender&gt;</span><br><span class="line"></span><br><span class="line">    &lt;!-- 异步输出日志</span><br><span class="line">            步骤：异步输出日志就是Logger.info负责往Queue(BlockingQueue)中放日志，然后再起个线程把Queue中的日志写到磁盘上</span><br><span class="line">            参考：https:<span class="comment">//blog.csdn.net/lkforce/article/details/76637071</span></span><br><span class="line">     --&gt;</span><br><span class="line">    &lt;appender name=<span class="string">&quot;ASYNC&quot;</span> <span class="class"><span class="keyword">class</span></span>=<span class="string">&quot;ch.qos.logback.classic.AsyncAppender&quot;</span>&gt;</span><br><span class="line">        &lt;!-- 不丢失日志。默认的，如果队列的<span class="number">80</span>%已满，则会丢弃TRACT、DEBUG、INFO级别的日志 --&gt;</span><br><span class="line">        &lt;discardingThreshold&gt;0&lt;/discardingThreshold&gt;</span><br><span class="line">        &lt;!-- 更改默认的队列的深度，该值会影响性能。默认值为<span class="number">256</span> --&gt;</span><br><span class="line">        &lt;queueSize&gt;100&lt;/queueSize&gt;</span><br><span class="line">        &lt;!-- 添加附加的appender，最多只能添加一个，此处指定后，在root下不要再指定该appender，否则会输出两次 --&gt;</span><br><span class="line">        &lt;appender-ref ref=<span class="string">&quot;KafkaAppender&quot;</span>/&gt;</span><br><span class="line">    &lt;/appender&gt;</span><br><span class="line"></span><br><span class="line">    &lt;!--日志异步到数据库：未做测试，配置正确与否未知，先记录于此 --&gt;</span><br><span class="line">    &lt;!--&lt;appender name=<span class="string">&quot;DB&quot;</span> <span class="class"><span class="keyword">class</span></span>=<span class="string">&quot;ch.qos.logback.classic.db.DBAppender&quot;</span>&gt;</span><br><span class="line">        &lt;connectionSource <span class="class"><span class="keyword">class</span></span>=<span class="string">&quot;ch.qos.logback.core.db.DriverManagerConnectionSource&quot;</span>&gt;</span><br><span class="line">            &lt;dataSource <span class="class"><span class="keyword">class</span></span>=<span class="string">&quot;com.mchange.v2.c3p0.ComboPooledDataSource&quot;</span>&gt;</span><br><span class="line">                &lt;driverClass&gt;com.mysql.jdbc.Driver&lt;/driverClass&gt;</span><br><span class="line">                &lt;url&gt;jdbc:mysql:<span class="comment">//127.0.0.1:3306/databaseName&lt;/url&gt;</span></span><br><span class="line">                &lt;user&gt;root&lt;/user&gt;</span><br><span class="line">                &lt;password&gt;root&lt;/password&gt;</span><br><span class="line">            &lt;/dataSource&gt;</span><br><span class="line">        &lt;/connectionSource&gt;</span><br><span class="line">    &lt;/appender&gt;--&gt;</span><br><span class="line"></span><br><span class="line">    &lt;!-- 关闭指定包下的日志输出，name里面的内容可以是包路径，或者具体要忽略的文件名称 --&gt;</span><br><span class="line">    &lt;logger name=<span class="string">&quot;org.apache.flink&quot;</span> level=<span class="string">&quot;OFF&quot;</span>/&gt;</span><br><span class="line">    &lt;!-- 将指定包下指定级别的日志，输出到指定的appender中</span><br><span class="line">            addtivity：是否向上级logger传递打印信息。默认是<span class="keyword">true</span>。若此包下的日志单独输出到文件中，应设置为<span class="keyword">false</span>，否则在root日志也会记录一遍 --&gt;</span><br><span class="line">    &lt;logger name=<span class="string">&quot;org.apache.kafka&quot;</span> level=<span class="string">&quot;ERROR&quot;</span> addtivity=<span class="string">&quot;false&quot;</span>&gt;</span><br><span class="line">        &lt;!-- 指定此包下的error级别信息，输出到指定的收集文件 --&gt;</span><br><span class="line">        &lt;appender-ref ref=<span class="string">&quot;ErrorFileAppender&quot;</span>/&gt;</span><br><span class="line">    &lt;/logger&gt;</span><br><span class="line"></span><br><span class="line">    &lt;root level=<span class="string">&quot;$&#123;logging.level&#125;&quot;</span>&gt;</span><br><span class="line">        &lt;!--&lt;appender-ref ref=<span class="string">&quot;STDOUT&quot;</span>/&gt;--&gt;</span><br><span class="line">        &lt;!--&lt;appender-ref ref=<span class="string">&quot;FileAppender&quot;</span>/&gt;--&gt;</span><br><span class="line">        &lt;appender-ref ref=<span class="string">&quot;ASYNC&quot;</span>/&gt;</span><br><span class="line">    &lt;/root&gt;</span><br><span class="line">&lt;/configuration&gt;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>根据实际情况，对 appender 进行取舍，实际使用时不要所有的都添加到 logback.xml 配置文件中。</p>
-</blockquote>
-<h2 id="本文参考"><a href="#本文参考" class="headerlink" title="本文参考"></a>本文参考</h2><p><a target="_blank" rel="noopener" href="https://kucw.github.io/blog/2020/3/java-lombok/">https://kucw.github.io/blog/2020/3/java-lombok/</a></p>
-<p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903641535479821">https://juejin.cn/post/6844903641535479821</a></p>
-<p>声明：写作本文初衷是个人学习记录，鉴于本人学识有限，如有侵权或不当之处，请联系 <a href="mailto:wdshfut@163.com">wdshfut@163.com</a>。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -4179,7 +4156,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-count">31</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -4222,12 +4199,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">476k</span>
+    <span title="站点总字数">517k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">7:13</span>
+    <span title="站点阅读时长">7:50</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
