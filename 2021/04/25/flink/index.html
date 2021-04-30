@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Flink 流处理简介Flink 官网：https:&#x2F;&#x2F;flink.apache.org&#x2F; Apache Flink is a framework and distributed processing engine for stateful computations over unbounded and bounded data streams. Apache Flink 是一个框架和分布式处理引">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Flink 入门">
+<meta property="og:url" content="http://example.com/2021/04/25/flink/index.html">
+<meta property="og:site_name" content="XiSun的博客">
+<meta property="og:description" content="Flink 流处理简介Flink 官网：https:&#x2F;&#x2F;flink.apache.org&#x2F; Apache Flink is a framework and distributed processing engine for stateful computations over unbounded and bounded data streams. Apache Flink 是一个框架和分布式处理引">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2021/04/25/flink/image-20210425162301927.png">
+<meta property="og:image" content="http://example.com/2021/04/25/flink/image-20210425162650326.png">
+<meta property="og:image" content="http://example.com/2021/04/25/flink/image-20210425165553312.png">
+<meta property="og:image" content="http://example.com/2021/04/25/flink/image-20210425165954248.png">
+<meta property="og:image" content="http://example.com/2021/04/25/flink/image-20210425170357898.png">
+<meta property="og:image" content="http://example.com/2021/04/25/flink/image-20210425171740295.png">
+<meta property="og:image" content="http://example.com/2021/04/25/flink/image-20210425171848097.png">
+<meta property="og:image" content="http://example.com/2021/04/25/flink/image-20210425172005916.png">
+<meta property="og:image" content="http://example.com/2021/04/25/flink/image-20210425172711551.png">
+<meta property="og:image" content="http://example.com/2021/04/25/flink/image-20210426131311252.png">
+<meta property="og:image" content="http://example.com/2021/04/25/flink/image-20210426152309423.png">
+<meta property="og:image" content="http://example.com/2021/04/25/flink/image-20210426142005687.png">
+<meta property="og:image" content="http://example.com/2021/04/25/flink/image-20210426211230030.png">
+<meta property="og:image" content="http://example.com/2021/04/25/flink/image-20210426211322730.png">
+<meta property="og:image" content="http://example.com/2021/04/25/flink/image-20210426211446599.png">
+<meta property="og:image" content="http://example.com/2021/04/25/flink/image-20210426211550431.png">
+<meta property="og:image" content="http://example.com/2021/04/25/flink/image-20210427100238674.png">
+<meta property="og:image" content="http://example.com/2021/04/25/flink/image-20210427102627506.png">
+<meta property="og:image" content="http://example.com/2021/04/25/flink/image-20210427103016003.png">
+<meta property="og:image" content="http://example.com/2021/04/25/flink/image-20210427103111560.png">
+<meta property="og:image" content="http://example.com/2021/04/25/flink/image-20210427103303879.png">
+<meta property="og:image" content="http://example.com/2021/04/25/flink/image-20210427110351124.png">
+<meta property="og:image" content="http://example.com/2021/04/25/flink/image-20210427114221318.png">
+<meta property="og:image" content="http://example.com/2021/04/25/flink/image-20210427143509692.png">
+<meta property="og:image" content="http://example.com/2021/04/25/flink/image-20210427143943176.png">
+<meta property="og:image" content="http://example.com/2021/04/25/flink/image-20210427151039156.png">
+<meta property="og:image" content="http://example.com/2021/04/25/flink/image-20210428091400383.png">
+<meta property="og:image" content="http://example.com/2021/04/25/flink/Users/XiSun/AppData/Roaming/Typora/typora-user-images/image-20210429130112584.png">
+<meta property="og:image" content="http://example.com/2021/04/25/flink/Users/XiSun/AppData/Roaming/Typora/typora-user-images/image-20210429131505870.png">
+<meta property="og:image" content="http://example.com/2021/04/25/flink/Users/XiSun/AppData/Roaming/Typora/typora-user-images/image-20210429130649590.png">
+<meta property="og:image" content="http://example.com/2021/04/25/flink/Users/XiSun/AppData/Roaming/Typora/typora-user-images/image-20210429131832931.png">
+<meta property="article:published_time" content="2021-04-25T05:01:45.000Z">
+<meta property="article:modified_time" content="2021-04-30T01:08:25.893Z">
+<meta property="article:author" content="XiSun">
+<meta property="article:tag" content="flink">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2021/04/25/flink/image-20210425162301927.png">
+
+<link rel="canonical" href="http://example.com/2021/04/25/flink/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Flink 入门 | XiSun的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">XiSun的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Learning is endless</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/25/flink/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="XiSun">
+      <meta itemprop="description" content="心如止水者，虽世间繁华之红尘纷扰，已然空无一物">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XiSun的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Flink 入门
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-04-25 13:01:45" itemprop="dateCreated datePublished" datetime="2021-04-25T13:01:45+08:00">2021-04-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-04-30 09:08:25" itemprop="dateModified" datetime="2021-04-30T09:08:25+08:00">2021-04-30</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>26k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>24 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Flink-流处理简介"><a href="#Flink-流处理简介" class="headerlink" title="Flink 流处理简介"></a>Flink 流处理简介</h2><p>Flink 官网：<a target="_blank" rel="noopener" href="https://flink.apache.org/">https://flink.apache.org/</a></p>
+<p>Apache Flink is a framework and distributed processing engine for stateful computations over unbounded and bounded data streams.</p>
+<p>Apache Flink 是一个<strong>框架</strong>和<strong>分布式处理引擎</strong>，用于对<strong>无界和有界数据流</strong>进行<strong>状态</strong>计算。</p>
+<p>为什么选择 Flink：</p>
+<ul>
+<li>流数据更真实地反映了我们的生活方式。</li>
+<li>传统的数据架构是基于有限数据集的。</li>
+<li>我们的目标：<ul>
+<li>低延迟</li>
+<li>高吞吐</li>
+<li>结果的准确性和良好的容错性</li>
+</ul>
+</li>
+</ul>
+<p>哪些行业需要处理流数据：</p>
+<ul>
+<li>电商和市场营销<ul>
+<li>数据报表、广告投放、业务流程需要。</li>
+</ul>
+</li>
+<li>物联网 (IOT)<ul>
+<li>传感器实时数据采集和显示、实时报警，交通运输业。</li>
+</ul>
+</li>
+<li>电信业<ul>
+<li>基站流量调配。</li>
+</ul>
+</li>
+<li>银行和金融业<ul>
+<li>实时结算和通知推送，实时检测异常行为。</li>
+</ul>
+</li>
+</ul>
+<p>传统数据处理架构：</p>
+<ul>
+<li><p>事务处理架构：</p>
+<img src="/2021/04/25/flink/image-20210425162301927.png" alt="image-20210425162301927" style="zoom:67%;">
+
+<ul>
+<li>特点：实时性好，但数据量大时，难以进行高并发处理。(低延迟、低吞吐)</li>
+</ul>
+</li>
+<li><p>分析处理架构：</p>
+<img src="/2021/04/25/flink/image-20210425162650326.png" alt="image-20210425162650326" style="zoom: 80%;">
+
+<ul>
+<li>特点：将数据从业务数据库复制到数仓，再进行分析和查询。能够处理大数据，高并发，但实时性差。(高延迟、高吞吐)</li>
+</ul>
+</li>
+</ul>
+<p>有状态的流式处理 (第一代)：</p>
+<img src="/2021/04/25/flink/image-20210425165553312.png" alt="image-20210425165553312" style="zoom:67%;">
+
+<ul>
+<li>数据存储于内存当中，达到 Periodic Checkpoint 条件时，执行持久化存储。能够做到低延迟、高吞吐，但分布式架构下，难以保证数据的顺序。</li>
+</ul>
+<p>lambda 架构 (第二代)：</p>
+<img src="/2021/04/25/flink/image-20210425165954248.png" alt="image-20210425165954248" style="zoom:67%;">
+
+<ul>
+<li>采用两套系统，同时保证低延迟和结果准确：<ul>
+<li>批处理系统处理速度慢，但准确性高。</li>
+<li>流处理系统处理速度快，但准确性差。</li>
+<li>缺点：实现一个功能，但需要维护两套系统，开发成本高。</li>
+</ul>
+</li>
+</ul>
+<p>流处理系统的演变：</p>
+<img src="/2021/04/25/flink/image-20210425170357898.png" alt="image-20210425170357898" style="zoom:67%;">
+
+<ul>
+<li>Storm 能够做到低延迟，Spark Streaming 能做到高吞吐，而 Flink 不仅综合了它们的优点，同时还能做得更好。</li>
+<li>Flink 可以看作第三代流处理架构。</li>
+</ul>
+<p>Flink 的特点：</p>
+<ul>
+<li><p><strong>事件驱动 (Event-driven)</strong></p>
+<img src="/2021/04/25/flink/image-20210425171740295.png" alt="image-20210425171740295" style="zoom:80%;">
+</li>
+<li><p><strong>基于流的世界观</strong></p>
+<img src="/2021/04/25/flink/image-20210425171848097.png" alt="image-20210425171848097" style="zoom:80%;">
+
+<ul>
+<li>在 Flink 的世界观中，一切都是由流组成的，离线数据是有界的流，实时数据是一个没有界限的流，这就是所谓的<strong>有界流</strong>和<strong>无界流</strong>。</li>
+</ul>
+</li>
+<li><p><strong>分层 API</strong></p>
+<img src="/2021/04/25/flink/image-20210425172005916.png" alt="image-20210425172005916" style="zoom:67%;">
+
+<ul>
+<li>越顶层越抽象，表达含义越简明，使用越方便。</li>
+<li>越底层越具体，表达能力越丰富，使用越灵活。</li>
+</ul>
+</li>
+<li><p>支持事件时间 (event-time) 和处理时间 (processing-time) 语义。</p>
+</li>
+<li><p>精确一次 (exactly-once) 的状态一致性保证。</p>
+</li>
+<li><p>低延迟，每秒处理数百万个事件，毫秒级延迟。</p>
+</li>
+<li><p>与众多常用存储系统的连接。</p>
+</li>
+<li><p>高可用，动态扩展，实现 7 * 24 小时全天候运行。</p>
+</li>
+</ul>
+<p>Flink vs Spark Streaming：</p>
+<ul>
+<li><p>Flink 是流处理 (stream) 架构，Spark Streaming 是微批处理 (micro-batching) 架构。</p>
+<img src="/2021/04/25/flink/image-20210425172711551.png" alt="image-20210425172711551" style="zoom:67%;">
+</li>
+<li><p>数据模型</p>
+<ul>
+<li>Spark 采用 RDD 模型，Spark Streaming 的 DStream 实际上也就是一组组小批数据 RDD 的集合。—&gt; 底层实现基于微批</li>
+<li>Flink 基本数据模型是数据流，以及事件 (Event) 序列。—&gt; 底层实现就是流，一个一个的处理</li>
+</ul>
+</li>
+<li><p>运行时架构</p>
+<ul>
+<li>Spark 是批计算，将 DAG 划分为不同的 stage，一个完成后才可以计算下一个。—&gt; 需要等待</li>
+<li>Flink 是标准的流执行模式，一个事件在一个节点处理完后可以直接发往下一个节点进行处理。—&gt; 不需要等待</li>
+</ul>
+</li>
+</ul>
+<h2 id="QuickStart"><a href="#QuickStart" class="headerlink" title="QuickStart"></a>QuickStart</h2><p>添加依赖：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">project</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0&quot;</span></span></span><br><span class="line"><span class="tag">         <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span></span><br><span class="line"><span class="tag">         <span class="attr">xsi:schemaLocation</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">modelVersion</span>&gt;</span>4.0.0<span class="tag">&lt;/<span class="name">modelVersion</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>cn.xisun.flink<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>xisun-flink<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0-SNAPSHOT<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">maven.compiler.source</span>&gt;</span>8<span class="tag">&lt;/<span class="name">maven.compiler.source</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">maven.compiler.target</span>&gt;</span>8<span class="tag">&lt;/<span class="name">maven.compiler.target</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">flink.version</span>&gt;</span>1.12.1<span class="tag">&lt;/<span class="name">flink.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">scala.binary.version</span>&gt;</span>2.12<span class="tag">&lt;/<span class="name">scala.binary.version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.flink<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>flink-java<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;flink.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.flink<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>flink-streaming-java_$&#123;scala.binary.version&#125;<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;flink.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.flink<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>flink-clients_$&#123;scala.binary.version&#125;<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;flink.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>flink-streaming-java_2.12：2.12 是 scala 版本，Flink 底层组件依赖 scala。</p>
+<p>Flink 1.11 版本之后，需要添加 flink-clients_2.12 依赖，否则会报异常 <code>java.lang.IllegalStateException: No ExecutorFactory found to execute the application.</code>。</p>
+</blockquote>
+<p><strong>批处理实现 WordCount：</strong></p>
+<ul>
+<li><p>hello.txt 文件内容：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">hello java</span><br><span class="line">hello world</span><br><span class="line">hello flink</span><br><span class="line">hello spark</span><br><span class="line">hello scala</span><br><span class="line">how are you</span><br><span class="line">fine thank you</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>代码实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> cn.xisun.flink;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.common.functions.FlatMapFunction;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.java.DataSet;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.java.ExecutionEnvironment;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.java.tuple.Tuple2;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.util.Collector;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> XiSun</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Date</span> 2021/4/25 20:39</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WordCount</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 自定义类，实现FlatMapFunction接口</span></span><br><span class="line"><span class="comment">     * 参数说明：</span></span><br><span class="line"><span class="comment">     * 		String：传入数据类型</span></span><br><span class="line"><span class="comment">     * 		Tuple2&lt;String, Integer&gt;：传出数据类型</span></span><br><span class="line"><span class="comment">     * Tuple2&lt;T0, T1&gt;：Flink自身实现的元组，注意不要用scala的</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">MyFlatMapper</span> <span class="keyword">implements</span> <span class="title">FlatMapFunction</span>&lt;<span class="title">String</span>, <span class="title">Tuple2</span>&lt;<span class="title">String</span>, <span class="title">Integer</span>&gt;&gt; </span>&#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">flatMap</span><span class="params">(String line, Collector&lt;Tuple2&lt;String, Integer&gt;&gt; out)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">            <span class="comment">// 按空格分词</span></span><br><span class="line">            String[] words = line.split(<span class="string">&quot; &quot;</span>);</span><br><span class="line">            <span class="comment">// 遍历所有word，包装成二元组输出</span></span><br><span class="line">            <span class="keyword">for</span> (String str : words) &#123;</span><br><span class="line">                <span class="comment">// 每一个word，都包装成一个二元组对象，并计数为1，然后用out收集</span></span><br><span class="line">                out.collect(<span class="keyword">new</span> Tuple2&lt;&gt;(str, <span class="number">1</span>));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 1.创建批处理执行环境</span></span><br><span class="line">        ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 2.从resources路径下的文件中读取数据，是按照一行一行读取的</span></span><br><span class="line">        String inputPath = <span class="string">&quot;src/main/resources/hello.txt&quot;</span>;</span><br><span class="line">        DataSet&lt;String&gt; inputDataSet = env.readTextFile(inputPath);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 3.对数据集进行处理，按空格分词展开，转换成(word, 1)这样的二元组进行统计</span></span><br><span class="line">        DataSet&lt;Tuple2&lt;String, Integer&gt;&gt; resultSet = inputDataSet.flatMap(<span class="keyword">new</span> MyFlatMapper())</span><br><span class="line">                .groupBy(<span class="number">0</span>)<span class="comment">// 按照元组第一个位置的word分组</span></span><br><span class="line">                .sum(<span class="number">1</span>);<span class="comment">// 按照元组第二个位置上的数据求和</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 4.打印输出</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            resultSet.print();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception exception) &#123;</span><br><span class="line">            exception.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>输出结果：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">SLF4J: Failed to load class &quot;org.slf4j.impl.StaticLoggerBinder&quot;.</span><br><span class="line">SLF4J: Defaulting to no-operation (NOP) logger implementation</span><br><span class="line">SLF4J: See http:<span class="comment">//www.slf4j.org/codes.html#StaticLoggerBinder for further details.</span></span><br><span class="line">(scala,<span class="number">1</span>)</span><br><span class="line">(you,<span class="number">2</span>)</span><br><span class="line">(flink,<span class="number">1</span>)</span><br><span class="line">(world,<span class="number">1</span>)</span><br><span class="line">(hello,<span class="number">5</span>)</span><br><span class="line">(are,<span class="number">1</span>)</span><br><span class="line">(java,<span class="number">1</span>)</span><br><span class="line">(thank,<span class="number">1</span>)</span><br><span class="line">(fine,<span class="number">1</span>)</span><br><span class="line">(how,<span class="number">1</span>)</span><br><span class="line">(spark,<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">Process finished with exit code <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p><strong>流处理实现 WordCount：</strong></p>
+<ul>
+<li><p>基于文件读取数据，非真正的流式数据。</p>
+</li>
+<li><p>批处理 —&gt; 几组或所有数据到达后才处理；流处理 —&gt; 有数据来就直接处理，不等数据堆叠到一定数量级。</p>
+</li>
+<li><p><strong>这里不像批处理有groupBy —&gt; 所有数据统一处理，而是用流处理的 keyBy—&gt; 每一个数据都对 key 进行 hash 计算，进行类似分区的操作，来一个数据就处理一次，所有中间过程都有输出！</strong></p>
+</li>
+<li><p><strong>并行度：开发环境的并行度默认就是计算机的 CPU 逻辑核数。</strong></p>
+</li>
+<li><p>代码实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> cn.xisun.flink;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.java.tuple.Tuple2;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.datastream.DataStream;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> XiSun</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Date</span> 2021/4/25 20:45</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StreamWordCount</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 1.创建流处理执行环境</span></span><br><span class="line">        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 设置并行度，可选操作，默认值 = 当前计算机的CPU逻辑核数(设置成1即为单线程处理)</span></span><br><span class="line">        env.setParallelism(<span class="number">4</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 2.从resources路径下的文件中读取数据，是按照一行一行读取的</span></span><br><span class="line">        String inputPath = <span class="string">&quot;src/main/resources/hello.txt&quot;</span>;</span><br><span class="line">        DataStream&lt;String&gt; inputDataStream = env.readTextFile(inputPath);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 3.对数据集进行处理，按空格分词展开，转换成(word, 1)这样的二元组进行统计</span></span><br><span class="line">        DataStream&lt;Tuple2&lt;String, Integer&gt;&gt; resultStream = inputDataStream.flatMap(<span class="keyword">new</span> WordCount.MyFlatMapper())</span><br><span class="line">                .keyBy(<span class="number">0</span>)</span><br><span class="line">                .sum(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 4.打印输出</span></span><br><span class="line">        resultStream.print();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 5.执行任务</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            env.execute();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception exception) &#123;</span><br><span class="line">            exception.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><code>env.execute()</code> 之前的代码，可以理解为是在定义任务，只有执行 <code>env.execute()</code> 后，Flink 才把前面的代码片段当作一个任务整体 (每个线程根据这个任务操作，并行处理流数据)。</p>
+</blockquote>
+</li>
+<li><p>输出结果：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">SLF4J: Failed to load class &quot;org.slf4j.impl.StaticLoggerBinder&quot;.</span><br><span class="line">SLF4J: Defaulting to no-operation (NOP) logger implementation</span><br><span class="line">SLF4J: See http:<span class="comment">//www.slf4j.org/codes.html#StaticLoggerBinder for further details.</span></span><br><span class="line"><span class="number">2</span>&gt; (java,<span class="number">1</span>)</span><br><span class="line"><span class="number">7</span>&gt; (flink,<span class="number">1</span>)</span><br><span class="line"><span class="number">1</span>&gt; (scala,<span class="number">1</span>)</span><br><span class="line"><span class="number">1</span>&gt; (spark,<span class="number">1</span>)</span><br><span class="line"><span class="number">4</span>&gt; (are,<span class="number">1</span>)</span><br><span class="line"><span class="number">3</span>&gt; (hello,<span class="number">1</span>)</span><br><span class="line"><span class="number">3</span>&gt; (hello,<span class="number">2</span>)</span><br><span class="line"><span class="number">6</span>&gt; (how,<span class="number">1</span>)</span><br><span class="line"><span class="number">3</span>&gt; (thank,<span class="number">1</span>)</span><br><span class="line"><span class="number">3</span>&gt; (hello,<span class="number">3</span>)</span><br><span class="line"><span class="number">3</span>&gt; (hello,<span class="number">4</span>)</span><br><span class="line"><span class="number">5</span>&gt; (fine,<span class="number">1</span>)</span><br><span class="line"><span class="number">5</span>&gt; (you,<span class="number">1</span>)</span><br><span class="line"><span class="number">5</span>&gt; (you,<span class="number">2</span>)</span><br><span class="line"><span class="number">5</span>&gt; (world,<span class="number">1</span>)</span><br><span class="line"><span class="number">3</span>&gt; (hello,<span class="number">5</span>)</span><br><span class="line"></span><br><span class="line">Process finished with exit code <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>因为是流处理，所以所有中间过程都会被输出，前面的序号就是并行执行任务的线程编号。</p>
+<p>线程最大编号为 7，是因为本机配置是 4 核 8 处理器，默认并行度为 8。</p>
+</blockquote>
+</li>
+</ul>
+<p><strong>流式数据源测试：</strong></p>
+<ul>
+<li><p>开启适用于 Linux 的 Windows 子系统。</p>
+<img src="/2021/04/25/flink/image-20210426131311252.png" alt="image-20210426131311252" style="zoom: 80%;">
+</li>
+<li><p>第一次使用时，需要先安装 ubuntu 系统：</p>
+<img src="/2021/04/25/flink/image-20210426152309423.png" alt="image-20210426152309423" style="zoom:80%;">
+</li>
+<li><p>通过 <code>nc -lk &lt;port&gt;</code> 命令打开一个 socket 服务，用于模拟实时的流数据。</p>
+</li>
+<li><p>代码实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> cn.xisun.flink;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.java.tuple.Tuple2;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.java.utils.ParameterTool;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.datastream.DataStream;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> XiSun</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Date</span> 2021/4/26 10:40</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StreamWordCount</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 1.创建流处理执行环境</span></span><br><span class="line">        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 设置并行度，默认值 = 当前计算机的CPU逻辑核数(设置成1即为单线程处理)</span></span><br><span class="line">        env.setParallelism(<span class="number">4</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 2.从数据流中读取数据</span></span><br><span class="line">        DataStream&lt;String&gt; inputDataStream = env.socketTextStream(<span class="string">&quot;localhost&quot;</span>, <span class="number">7777</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 3.对数据集进行处理，按空格分词展开，转换成(word, 1)这样的二元组进行统计</span></span><br><span class="line">        DataStream&lt;Tuple2&lt;String, Integer&gt;&gt; resultStream = inputDataStream.flatMap(<span class="keyword">new</span> WordCount.MyFlatMapper())</span><br><span class="line">                .keyBy(<span class="number">0</span>)</span><br><span class="line">                .sum(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 4.打印输出</span></span><br><span class="line">        resultStream.print();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 5.执行任务</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            env.execute();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception exception) &#123;</span><br><span class="line">            exception.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>生产环境时，一般是在程序的启动参数中设置主机和端口号，此时，可以通过 ParameterTool 工具提取参数：</p>
+<p><img src="/2021/04/25/flink/image-20210426142005687.png" alt="image-20210426142005687"></p>
+<blockquote>
+<p>参数设置格式：<code>--host localhost --port 7777</code>。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 用parameter tool工具从程序启动参数中提取配置项</span></span><br><span class="line">ParameterTool parameterTool = ParameterTool.fromArgs(args);</span><br><span class="line">String host = parameterTool.get(<span class="string">&quot;host&quot;</span>);</span><br><span class="line"><span class="keyword">int</span> port = parameterTool.getInt(<span class="string">&quot;port&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 2.从数据流中读取数据</span></span><br><span class="line">DataStream&lt;String&gt; inputDataStream = env.socketTextStream(host, port);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>输出结果：在本地开启的 socket 中输入数据，并观察 IDEA 的 console 输出。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">xisun@DESKTOP-OM8IACS:/mnt/c/Users/Xisun/Desktop$ nc -lk 7777</span><br><span class="line">hello world</span><br><span class="line">hello flink</span><br><span class="line">hello scala</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">SLF4J: Failed to load class &quot;org.slf4j.impl.StaticLoggerBinder&quot;.</span><br><span class="line">SLF4J: Defaulting to no-operation (NOP) logger implementation</span><br><span class="line">SLF4J: See http:<span class="comment">//www.slf4j.org/codes.html#StaticLoggerBinder for further details.</span></span><br><span class="line"><span class="number">3</span>&gt; (world,<span class="number">1</span>)</span><br><span class="line"><span class="number">2</span>&gt; (hello,<span class="number">1</span>)</span><br><span class="line"><span class="number">4</span>&gt; (flink,<span class="number">1</span>)</span><br><span class="line"><span class="number">2</span>&gt; (hello,<span class="number">2</span>)</span><br><span class="line"><span class="number">1</span>&gt; (scala,<span class="number">1</span>)</span><br><span class="line"><span class="number">2</span>&gt; (hello,<span class="number">3</span>)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="Flink-部署"><a href="#Flink-部署" class="headerlink" title="Flink 部署"></a>Flink 部署</h2><h3 id="Standalone-模式"><a href="#Standalone-模式" class="headerlink" title="Standalone 模式"></a>Standalone 模式</h3><ul>
+<li><p>下载：<a target="_blank" rel="noopener" href="https://flink.apache.org/downloads.html#apache-flink-1122">https://flink.apache.org/downloads.html#apache-flink-1122</a></p>
+<ul>
+<li><p>地址：<a target="_blank" rel="noopener" href="https://flink.apache.org/downloads.html#apache-flink-1122">https://flink.apache.org/downloads.html#apache-flink-1122</a></p>
+</li>
+<li><p>Flink 组件：</p>
+<p><img src="/2021/04/25/flink/image-20210426211230030.png" alt="image-20210426211230030"></p>
+</li>
+<li><p>其他组件 (hadoop)：</p>
+<p><img src="/2021/04/25/flink/image-20210426211322730.png" alt="image-20210426211322730"></p>
+</li>
+<li><p>解压到指定目录，并把 hadoop 的组件添加到 Flink 解压路径的 lib 目录下：</p>
+<p><img src="/2021/04/25/flink/image-20210426211446599.png" alt="image-20210426211446599"></p>
+<p><img src="/2021/04/25/flink/image-20210426211550431.png" alt="image-20210426211550431"></p>
+</li>
+<li><p>打开 wsl 控制台，安装 JDK：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">xisun@DESKTOP-OM8IACS:/mnt/d/tools/flink-1.12.2<span class="variable">$sudo</span> apt update</span><br><span class="line">xisun@DESKTOP-OM8IACS:/mnt/d/tools/flink-1.12.2<span class="variable">$sudo</span> apt install openjdk-8-jdk</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">xisun@DESKTOP-OM8IACS:/mnt/d/tools/flink-1.12.2$ java -version</span><br><span class="line">openjdk version <span class="string">&quot;1.8.0_282&quot;</span></span><br><span class="line">OpenJDK Runtime Environment (build 1.8.0_282-8u282-b08-0ubuntu1~20.04-b08)</span><br><span class="line">OpenJDK 64-Bit Server VM (build 25.282-b08, mixed mode)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>在 Ubuntu 20.04 系统下安装 OpenJDK 11 和 OpenJDK 8 的方法：<a target="_blank" rel="noopener" href="https://ywnz.com/linuxjc/6984.html">https://ywnz.com/linuxjc/6984.html</a></p>
+</blockquote>
+</li>
+<li><p>查看 JDK 安装路径，并在 Flink 的 conf/flink-conf.yaml 文件中配置 Java 环境：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># Java</span><br><span class="line">env.java.home: /usr/lib/jvm/java-8-openjdk-amd64</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>建议不要使用 Windows 系统下安装的 JDK 路径，可能会有问题。</p>
+</blockquote>
+</li>
+<li><p>启动 Flink 集群：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">xisun@DESKTOP-OM8IACS:/mnt/c/Users/Ziyoo/Desktop$ bash /mnt/d/tools/flink-1.12.2/bin/start-cluster.sh</span><br><span class="line">Starting cluster.</span><br><span class="line">Starting standalonesession daemon on host DESKTOP-OM8IACS.</span><br><span class="line">Starting taskexecutor daemon on host DESKTOP-OM8IACS.</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">xisun@DESKTOP-OM8IACS:/mnt/c/Users/Ziyoo/Desktop$ jps</span><br><span class="line">7347 Jps</span><br><span class="line">6956 StandaloneSessionClusterEntrypoint</span><br><span class="line">7246 TaskManagerRunner</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>前端页面访问：localhost:8081。(8081 是默认端口)</p>
+<p><img src="/2021/04/25/flink/image-20210427100238674.png" alt="image-20210427100238674"></p>
+</li>
+<li><p>上传 jar 包：Submit New Job —&gt; Add New，将打包好的 jar 包添加上来。</p>
+<p><img src="/2021/04/25/flink/image-20210427102627506.png" alt="image-20210427102627506"></p>
+</li>
+<li><p>设置启动参数：</p>
+<p><img src="/2021/04/25/flink/image-20210427103016003.png" alt="image-20210427103016003"></p>
+<ul>
+<li><p>Show Plan 查看任务执行计划：</p>
+<p><img src="/2021/04/25/flink/image-20210427103111560.png" alt="image-20210427103111560"></p>
+</li>
+</ul>
+</li>
+<li><p>Submit 提交任务：</p>
+<ul>
+<li><p>提交失败：</p>
+<p><img src="/2021/04/25/flink/image-20210427103303879.png" alt="image-20210427103303879"></p>
+<blockquote>
+<p>提交任务时，如果 slot 的数量低于设置的线程数量，会提交失败，会一直等待分配更多的资源。—&gt; 增加 slot 数量或者降低任务线程数量。</p>
+</blockquote>
+</li>
+<li><p>提交成功：(需要先启动本机的 socket 服务)</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">xisun@DESKTOP-OM8IACS:/mnt/c/Users/Ziyoo/Desktop$ nc -tl 7777</span><br><span class="line">hello world</span><br><span class="line">hello flink</span><br><span class="line">hellojava^[[D^[[D^[[D</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/04/25/flink/image-20210427110351124.png" alt="image-20210427110351124"></p>
+</li>
+</ul>
+</li>
+<li><p>s</p>
+</li>
+</ul>
+</li>
+<li><p>s</p>
+</li>
+</ul>
+<p>并行度优先级：任务 -&gt; 程序全局 -&gt; 提交job时设置的并行度 -&gt; 配置文件默认的并行度</p>
+<h2 id="Flink-运行架构"><a href="#Flink-运行架构" class="headerlink" title="Flink 运行架构"></a>Flink 运行架构</h2><h3 id="Flink-运行时的组件"><a href="#Flink-运行时的组件" class="headerlink" title="Flink 运行时的组件"></a>Flink 运行时的组件</h3><img src="/2021/04/25/flink/image-20210427114221318.png" alt="image-20210427114221318" style="zoom:67%;">
+
+<h4 id="作业管理器-JobManager"><a href="#作业管理器-JobManager" class="headerlink" title="作业管理器 (JobManager)"></a>作业管理器 (JobManager)</h4><ul>
+<li>控制一个应用程序执行的主进程，也就是说，<strong>每个应用程序都会被一个不同的 JobManager 所控制执行。</strong></li>
+<li>JobManager 会先接收到要执行的应用程序，这个应用程序会包括：作业图 (JobGraph)、逻辑数据流图 (logical dataflow graph) 和打包了所有的类、库和其它资源的 Jar 包。</li>
+<li>JobManager 会把 JobGraph 转换成一个物理层面的数据流图，这个图被叫做 “执行图” (ExecutionGraph)，包含了所有可以并发执行的任务。</li>
+<li>JobManager 会向资源管理器 (ResourceManager) 请求执行任务必要的资源，也就是任务管理器 (TaskManager) 上的插槽 (slot)。一旦它获取到了足够的资源，就会将执行图分发到真正运行它们的 TaskManager 上。而在运行过程中，JobManager 会负责所有需要中央协调的操作，比如说检查点 (checkpoints) 的协调。</li>
+</ul>
+<h4 id="任务管理器-TaskManager"><a href="#任务管理器-TaskManager" class="headerlink" title="任务管理器 (TaskManager)"></a>任务管理器 (TaskManager)</h4><ul>
+<li>Flink 中的工作进程。通常在 Flink 中会有多个 TaskManager 运行，每一个 TaskManager 都包含了一定数量的插槽 (slots)。插槽的数量限制了 TaskManager 能够执行的任务数量。</li>
+<li>启动之后，<strong>TaskManager 会向资源管理器 (ResourceManager) 注册它的插槽；</strong>收到资源管理器 (ResourceManager) 的指令后，TaskManager 就会将一个或者多个插槽提供给 JobManager 调用，然后 JobManager 就可以向插槽分配任务 (tasks) 来执行了。</li>
+<li>在执行过程中，一个 TaskManager 可以跟其它运行同一应用程序的 TaskManager 交换数据。</li>
+</ul>
+<h4 id="资源管理器-ResourceManager"><a href="#资源管理器-ResourceManager" class="headerlink" title="资源管理器 (ResourceManager)"></a>资源管理器 (ResourceManager)</h4><ul>
+<li>主要负责管理任务管理器 (TaskManager) 的插槽 (slot)，TaskManger 插槽是 Flink 中定义的处理资源单元。</li>
+<li>Flink 为不同的环境和资源管理工具提供了不同资源管理器，比如 YARN、Mesos、K8s，以及 Standalone 部署。</li>
+<li>当 JobManager 申请插槽资源时，ResourceManager 会将有空闲插槽的 TaskManager 分配给 JobManager。如果 ResourceManager 没有足够的插槽来满足 JobManager 的请求，它还可以向资源提供平台发起会话，以提供启动 TaskManager 进程的容器。</li>
+<li>另外，<strong>ResourceManager 还负责终止空闲的 TaskManager，释放计算资源。</strong></li>
+</ul>
+<h4 id="分发器-Dispatcher"><a href="#分发器-Dispatcher" class="headerlink" title="分发器 (Dispatcher)"></a>分发器 (Dispatcher)</h4><ul>
+<li>可以跨作业运行，它为应用提交提供了 REST 接口。</li>
+<li>当一个应用被提交执行时，分发器就会启动并将应用移交给一个 JobManager。</li>
+<li>Dispatcher 也会启动一个 Web UI，用来方便地展示和监控作业执行的信息。</li>
+<li>Dispatcher 在架构中可能并不是必需的，这取决于应用提交运行的方式。</li>
+</ul>
+<h3 id="任务提交流程"><a href="#任务提交流程" class="headerlink" title="任务提交流程"></a>任务提交流程</h3><p>当一个应用提交执行时，Flink 的各个组件交互协作的过程如下：</p>
+<img src="/2021/04/25/flink/image-20210427143509692.png" alt="image-20210427143509692" style="zoom:80%;">
+
+<blockquote>
+<p>上图中 步骤 7 指 TaskManager 为 JobManager 提供 slots，步骤 8 表示 JobManager 提交要在 slots 中执行的任务给 TaskManager。</p>
+</blockquote>
+<p>上图是从一个较为高层级的视角来看应用中各组件的交互协作。</p>
+<p> 如果部署的集群环境不同 (例如 YARN，Mesos，Kubernetes，Standalone等)，其中一些步骤可以被省略，或是有些组件会运行在同一个 JVM 进程中。</p>
+<p> 具体地，如果我们将 Flink 集群部署到 YARN 上，那么就会有如下的提交流程：</p>
+<img src="/2021/04/25/flink/image-20210427143943176.png" alt="image-20210427143943176" style="zoom:80%;">
+
+<ul>
+<li>Flink 任务提交后，Client 向 HDFS 上传 Flink 的 Jar 包和配置。</li>
+<li>之后，Client 向 Yarn ResourceManager 提交任务，Yarn ResourceManager 分配 Container 资源并通知对应的 NodeManager 启动 ApplicationMaster.</li>
+<li>ApplicationMaster 启动后加载 Flink 的 Jar 包和配置构建环境，然后启动 JobManager，之后，<strong>JobManager 向 Flink 自身的 ResourceManager 申请资源，Flink 自身的 ResourceManager 再向 Yarn 的 ResourceManager 申请资源 (因为是 yarn 模式，所有资源归 yarn ResourceManager 管理)，</strong>申请到资源后，启动 TaskManager。</li>
+<li>Yarn ResourceManager 分配 Container 资源后 ， 由 ApplicationMaster 通知资源所在节点的 NodeManager 启动 TaskManager。</li>
+<li>NodeManager 加载 Flink 的 Jar 包和配置构建环境并启动 TaskManager，TaskManager 启动后向 JobManager 发送心跳包，并等待 JobManager 向其分配任务。</li>
+</ul>
+<h3 id="任务调度原理"><a href="#任务调度原理" class="headerlink" title="任务调度原理"></a>任务调度原理</h3><img src="/2021/04/25/flink/image-20210427151039156.png" alt="image-20210427151039156" style="zoom:80%;">
+
+<ul>
+<li>客户端不是运行时和程序执行的一部分，但它用于准备并发送 dataflow (JobGraph) 给 Master (JobManager)，然后，客户端断开连接或者维持连接以等待接收计算结果。</li>
+<li>当 Flink 集群启动后，首先会启动一个 JobManger 和一个或多个的 TaskManager。由 Client 提交任务给 JobManager，JobManager 再调度任务到各个 TaskManager 去执行，然后 TaskManager 将心跳和统计信息汇报给 JobManager。TaskManager 之间以流的形式进行数据的传输。上述三者均为独立的 JVM 进程。</li>
+<li>Client 为提交 Job 的客户端，可以是运行在任何机器上 (与 JobManager 环境连通即可)。提交 Job 后，Client 可以结束进程 (Streaming 的任务)，也可以不结束并等待结果返回。</li>
+<li>JobManager 会产生一个执行图 (Dataflow Graph)，主要负责调度 Job 并协调 Task 做 checkpoint，职责上很像 Storm 的 Nimbus。从 Client 处接收到 Job 和 Jar 包等资源后，会生成优化后的执行计划，并以 Task 的单元调度到各个 TaskManager 去执行。</li>
+<li>TaskManager 在启动的时候就设置好了槽位数 (Slot)，每个 slot 能启动一个 Task，Task 为线程。从 JobManager 处接收需要部署的 Task，部署启动后，与自己的上游建立 Netty 连接，接收数据并处理。(如果一个 Slot 中启动多个线程，那么这几个线程类似 CPU 调度一样共用同一个 slot)</li>
+</ul>
+<h4 id="TaskManger-与-Slots"><a href="#TaskManger-与-Slots" class="headerlink" title="TaskManger 与 Slots"></a>TaskManger 与 Slots</h4><h2 id="Flink-流处理-API"><a href="#Flink-流处理-API" class="headerlink" title="Flink 流处理 API"></a>Flink 流处理 API</h2><img src="/2021/04/25/flink/image-20210428091400383.png" alt="image-20210428091400383" style="zoom:80%;">
+
+<h3 id="Environment"><a href="#Environment" class="headerlink" title="Environment"></a>Environment</h3><h4 id="getExecutionEnvironment"><a href="#getExecutionEnvironment" class="headerlink" title="getExecutionEnvironment"></a>getExecutionEnvironment</h4><ul>
+<li><p>创建一个执行环境，表示当前执行程序的上下文。 如果程序是独立调用的，则此方法返回本地执行环境；如果从命令行客户端调用程序以提交到集群，则此方法返回此集群的执行环境，也就是说，getExecutionEnvironment 会根据查询运行的方式决定返回什么样的运行环境，是最常用的一种创建执行环境的方式。</p>
+</li>
+<li><p>批处理执行环境：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>流处理执行环境：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果没有设置并行度，会以 flink-conf.yaml 中的配置为准，默认是 1：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># The parallelism used for programs that did not specify and other parallelism.</span><br><span class="line"></span><br><span class="line">parallelism.default: 1</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h4 id="createLocalEnvironment"><a href="#createLocalEnvironment" class="headerlink" title="createLocalEnvironment"></a>createLocalEnvironment</h4><ul>
+<li><p>返回本地执行环境，需要在调用时指定默认的并行度：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LocalStreamEnvironment env = StreamExecutionEnvironment.createLocalEnvironment(<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h4 id="createRemoteEnvironment"><a href="#createRemoteEnvironment" class="headerlink" title="createRemoteEnvironment"></a>createRemoteEnvironment</h4><ul>
+<li><p>返回集群执行环境，将 Jar 提交到远程服务器。需要在调用时指定 JobManager 的 IP 和端口号，并指定要在集群中运行的 Jar 包。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">StreamExecutionEnvironment env =</span><br><span class="line">        StreamExecutionEnvironment.createRemoteEnvironment(<span class="string">&quot;jobmanage-hostname&quot;</span>, <span class="number">6123</span>, <span class="string">&quot;YOURPATH//WordCount.jar&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="Source"><a href="#Source" class="headerlink" title="Source"></a>Source</h3><h4 id="从集合读取数据"><a href="#从集合读取数据" class="headerlink" title="从集合读取数据"></a>从集合读取数据</h4><p>代码实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 传感器温度读数的数据类型</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> XiSun</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Date</span> 2021/4/28 20:59</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SensorReading</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 属性：id，时间戳，温度值</span></span><br><span class="line">    <span class="keyword">private</span> String id;</span><br><span class="line">    <span class="keyword">private</span> Long timestamp;</span><br><span class="line">    <span class="keyword">private</span> Double temperature;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">SensorReading</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">SensorReading</span><span class="params">(String id, Long timestamp, Double temperature)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.id = id;</span><br><span class="line">        <span class="keyword">this</span>.timestamp = timestamp;</span><br><span class="line">        <span class="keyword">this</span>.temperature = temperature;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getId</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> id;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setId</span><span class="params">(String id)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.id = id;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Long <span class="title">getTimestamp</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> timestamp;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setTimestamp</span><span class="params">(Long timestamp)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.timestamp = timestamp;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Double <span class="title">getTemperature</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> temperature;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setTemperature</span><span class="params">(Double temperature)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.temperature = temperature;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;SensorReading&#123;&quot;</span> +</span><br><span class="line">                <span class="string">&quot;id=&#x27;&quot;</span> + id + <span class="string">&#x27;\&#x27;&#x27;</span> +</span><br><span class="line">                <span class="string">&quot;, timestamp=&quot;</span> + timestamp +</span><br><span class="line">                <span class="string">&quot;, temperature=&quot;</span> + temperature +</span><br><span class="line">                <span class="string">&#x27;&#125;&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> XiSun</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Date</span> 2021/4/28 20:59</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SourceTest1_Collection</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 1.Source: 从集合读取数据</span></span><br><span class="line">        DataStream&lt;SensorReading&gt; sensorDataStream = env.fromCollection(</span><br><span class="line">                Arrays.asList(</span><br><span class="line">                        <span class="keyword">new</span> SensorReading(<span class="string">&quot;sensor_1&quot;</span>, <span class="number">1547718199L</span>, <span class="number">35.8</span>),</span><br><span class="line">                        <span class="keyword">new</span> SensorReading(<span class="string">&quot;sensor_6&quot;</span>, <span class="number">1547718201L</span>, <span class="number">15.4</span>),</span><br><span class="line">                        <span class="keyword">new</span> SensorReading(<span class="string">&quot;sensor_7&quot;</span>, <span class="number">1547718202L</span>, <span class="number">6.7</span>),</span><br><span class="line">                        <span class="keyword">new</span> SensorReading(<span class="string">&quot;sensor_10&quot;</span>, <span class="number">1547718205L</span>, <span class="number">38.1</span>)</span><br><span class="line">                )</span><br><span class="line">        );</span><br><span class="line"></span><br><span class="line">        DataStream&lt;Integer&gt; intDataStream = env.fromElements(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 2. 打印，参数为数据流的名称</span></span><br><span class="line">        sensorDataStream.print(<span class="string">&quot;sensorDataName&quot;</span>);</span><br><span class="line">        intDataStream.print(<span class="string">&quot;intDataStreamName&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 3. 执行，参数为Job的名称</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            env.execute(<span class="string">&quot;JobName&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception exception) &#123;</span><br><span class="line">            exception.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">SLF4J: Failed to load class &quot;org.slf4j.impl.StaticLoggerBinder&quot;.</span><br><span class="line">SLF4J: Defaulting to no-operation (NOP) logger implementation</span><br><span class="line">SLF4J: See http:<span class="comment">//www.slf4j.org/codes.html#StaticLoggerBinder for further details.</span></span><br><span class="line">intDataStreamName:<span class="number">1</span>&gt; <span class="number">8</span></span><br><span class="line">intDataStreamName:<span class="number">5</span>&gt; <span class="number">4</span></span><br><span class="line">intDataStreamName:<span class="number">4</span>&gt; <span class="number">3</span></span><br><span class="line">sensorDataName:<span class="number">5</span>&gt; SensorReading&#123;id=<span class="string">&#x27;sensor_7&#x27;</span>, timestamp=<span class="number">1547718202</span>, temperature=<span class="number">6.7</span>&#125;</span><br><span class="line">sensorDataName:<span class="number">3</span>&gt; SensorReading&#123;id=<span class="string">&#x27;sensor_1&#x27;</span>, timestamp=<span class="number">1547718199</span>, temperature=<span class="number">35.8</span>&#125;</span><br><span class="line">intDataStreamName:<span class="number">3</span>&gt; <span class="number">2</span></span><br><span class="line">sensorDataName:<span class="number">4</span>&gt; SensorReading&#123;id=<span class="string">&#x27;sensor_6&#x27;</span>, timestamp=<span class="number">1547718201</span>, temperature=<span class="number">15.4</span>&#125;</span><br><span class="line">intDataStreamName:<span class="number">2</span>&gt; <span class="number">1</span></span><br><span class="line">intDataStreamName:<span class="number">2</span>&gt; <span class="number">9</span></span><br><span class="line">intDataStreamName:<span class="number">7</span>&gt; <span class="number">6</span></span><br><span class="line">intDataStreamName:<span class="number">6</span>&gt; <span class="number">5</span></span><br><span class="line">sensorDataName:<span class="number">6</span>&gt; SensorReading&#123;id=<span class="string">&#x27;sensor_10&#x27;</span>, timestamp=<span class="number">1547718205</span>, temperature=<span class="number">38.1</span>&#125;</span><br><span class="line">intDataStreamName:<span class="number">8</span>&gt; <span class="number">7</span></span><br><span class="line"></span><br><span class="line">Process finished with exit code <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="从文件读取数据"><a href="#从文件读取数据" class="headerlink" title="从文件读取数据"></a>从文件读取数据</h4><p>代码实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> XiSun</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Date</span> 2021/4/28 22:10</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SourceTest2_File</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 单线程读取文件，按顺序逐行读取，如果不设置，则多线程读取，文件内容会乱序</span></span><br><span class="line">        env.setParallelism(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 从文件读取数据</span></span><br><span class="line">        DataStream&lt;String&gt; dataStream = env.readTextFile(<span class="string">&quot;src/main/resources/sensor.txt&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 打印输出</span></span><br><span class="line">        dataStream.print();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            env.execute();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>文件内容：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">sensor_1,1547718199,35.8</span><br><span class="line">sensor_6,1547718201,15.4</span><br><span class="line">sensor_7,1547718202,6.7</span><br><span class="line">sensor_10,1547718205,38.1</span><br><span class="line">sensor_1,1547718207,36.3</span><br><span class="line">sensor_1,1547718209,32.8</span><br><span class="line">sensor_1,1547718212,37.1</span><br></pre></td></tr></table></figure>
+
+<p>设置 <code>env.setParallelism(1);</code> 的输出结果：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">SLF4J: Failed to load class &quot;org.slf4j.impl.StaticLoggerBinder&quot;.</span><br><span class="line">SLF4J: Defaulting to no-operation (NOP) logger implementation</span><br><span class="line">SLF4J: See http:<span class="comment">//www.slf4j.org/codes.html#StaticLoggerBinder for further details.</span></span><br><span class="line">sensor_1,<span class="number">1547718199</span>,<span class="number">35.8</span></span><br><span class="line">sensor_6,<span class="number">1547718201</span>,<span class="number">15.4</span></span><br><span class="line">sensor_7,<span class="number">1547718202</span>,<span class="number">6.7</span></span><br><span class="line">sensor_10,<span class="number">1547718205</span>,<span class="number">38.1</span></span><br><span class="line">sensor_1,<span class="number">1547718207</span>,<span class="number">36.3</span></span><br><span class="line">sensor_1,<span class="number">1547718209</span>,<span class="number">32.8</span></span><br><span class="line">sensor_1,<span class="number">1547718212</span>,<span class="number">37.1</span></span><br><span class="line"></span><br><span class="line">Process finished with exit code <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<p>不设置 <code>env.setParallelism(1);</code> 的输出结果 (每次输出结果不同)：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">SLF4J: Failed to load class &quot;org.slf4j.impl.StaticLoggerBinder&quot;.</span><br><span class="line">SLF4J: Defaulting to no-operation (NOP) logger implementation</span><br><span class="line">SLF4J: See http:<span class="comment">//www.slf4j.org/codes.html#StaticLoggerBinder for further details.</span></span><br><span class="line"><span class="number">6</span>&gt; sensor_1,<span class="number">1547718199</span>,<span class="number">35.8</span></span><br><span class="line"><span class="number">2</span>&gt; sensor_10,<span class="number">1547718205</span>,<span class="number">38.1</span></span><br><span class="line"><span class="number">3</span>&gt; sensor_1,<span class="number">1547718207</span>,<span class="number">36.3</span></span><br><span class="line"><span class="number">1</span>&gt; sensor_7,<span class="number">1547718202</span>,<span class="number">6.7</span></span><br><span class="line"><span class="number">6</span>&gt; sensor_6,<span class="number">1547718201</span>,<span class="number">15.4</span></span><br><span class="line"><span class="number">5</span>&gt; sensor_1,<span class="number">1547718212</span>,<span class="number">37.1</span></span><br><span class="line"><span class="number">4</span>&gt; sensor_1,<span class="number">1547718209</span>,<span class="number">32.8</span></span><br><span class="line"></span><br><span class="line">Process finished with exit code <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="从-kafka-消息队列读取数据"><a href="#从-kafka-消息队列读取数据" class="headerlink" title="从 kafka 消息队列读取数据"></a>从 kafka 消息队列读取数据</h4><p>添加依赖：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.flink<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>flink-connector-kafka_$&#123;scala.binary.version&#125;<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;flink.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>代码实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> XiSun</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Date</span> 2021/4/28 22:15</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SourceTest3_Kafka</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line"></span><br><span class="line">        Properties properties = <span class="keyword">new</span> Properties();</span><br><span class="line">        properties.setProperty(<span class="string">&quot;bootstrap.servers&quot;</span>, <span class="string">&quot;localhost:9092&quot;</span>);</span><br><span class="line">        <span class="comment">// 下面这些次要参数</span></span><br><span class="line">        properties.setProperty(<span class="string">&quot;group.id&quot;</span>, <span class="string">&quot;consumer-group&quot;</span>);</span><br><span class="line">        properties.setProperty(<span class="string">&quot;auto.offset.reset&quot;</span>, <span class="string">&quot;latest&quot;</span>);</span><br><span class="line">        properties.setProperty(<span class="string">&quot;key.deserializer&quot;</span>, <span class="string">&quot;org.apache.kafka.common.serialization.StringDeserializer&quot;</span>);</span><br><span class="line">        properties.setProperty(<span class="string">&quot;value.deserializer&quot;</span>, <span class="string">&quot;org.apache.kafka.common.serialization.StringDeserializer&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// flink添加外部数据源</span></span><br><span class="line">        DataStream&lt;String&gt; dataStream = env.addSource(<span class="keyword">new</span> FlinkKafkaConsumer&lt;String&gt;(<span class="string">&quot;sensor&quot;</span>, <span class="keyword">new</span> SimpleStringSchema(), properties));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 打印输出</span></span><br><span class="line">        dataStream.print();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            env.execute();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="自定义-Source"><a href="#自定义-Source" class="headerlink" title="自定义 Source"></a>自定义 Source</h4><p>代码实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> XiSun</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Date</span> 2021/4/28 22:25</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SourceTest4_UDF</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line"><span class="comment">//        env.setParallelism(1);</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 从自定义Source读取数据</span></span><br><span class="line">        DataStream&lt;SensorReading&gt; dataStream = env.addSource(<span class="keyword">new</span> MySensorSource());</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 打印输出</span></span><br><span class="line">        dataStream.print();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            env.execute();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 实现自定义的SourceFunction，随机生成传感器数据</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">MySensorSource</span> <span class="keyword">implements</span> <span class="title">SourceFunction</span>&lt;<span class="title">SensorReading</span>&gt; </span>&#123;</span><br><span class="line">        <span class="comment">// 定义一个标识位，用来控制数据的产生</span></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">boolean</span> running = <span class="keyword">true</span>;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">(SourceContext&lt;SensorReading&gt; ctx)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">            <span class="comment">// 定义一个随机数发生器</span></span><br><span class="line">            Random random = <span class="keyword">new</span> Random();</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 设置10个传感器的初始温度</span></span><br><span class="line">            HashMap&lt;String, Double&gt; sensorTempMap = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">                sensorTempMap.put(<span class="string">&quot;sensor_&quot;</span> + (i + <span class="number">1</span>), <span class="number">60</span> + random.nextGaussian() * <span class="number">20</span>);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">while</span> (running) &#123;</span><br><span class="line">                <span class="keyword">for</span> (String sensorId : sensorTempMap.keySet()) &#123;</span><br><span class="line">                    <span class="comment">// 在当前温度基础上随机波动</span></span><br><span class="line">                    Double newtemp = sensorTempMap.get(sensorId) + random.nextGaussian();</span><br><span class="line">                    sensorTempMap.put(sensorId, newtemp);</span><br><span class="line">                    ctx.collect(<span class="keyword">new</span> SensorReading(sensorId, System.currentTimeMillis(), newtemp));</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">// 控制输出频率</span></span><br><span class="line">                Thread.sleep(<span class="number">1000L</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">cancel</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            running = <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果 (程序会一直输出下去)：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">SLF4J: Failed to load class &quot;org.slf4j.impl.StaticLoggerBinder&quot;.</span><br><span class="line">SLF4J: Defaulting to no-operation (NOP) logger implementation</span><br><span class="line">SLF4J: See http:<span class="comment">//www.slf4j.org/codes.html#StaticLoggerBinder for further details.</span></span><br><span class="line"><span class="number">2</span>&gt; SensorReading&#123;id=<span class="string">&#x27;sensor_7&#x27;</span>, timestamp=<span class="number">1619670947828</span>, temperature=<span class="number">57.523519020755195</span>&#125;</span><br><span class="line"><span class="number">6</span>&gt; SensorReading&#123;id=<span class="string">&#x27;sensor_1&#x27;</span>, timestamp=<span class="number">1619670947828</span>, temperature=<span class="number">60.16683595604395</span>&#125;</span><br><span class="line"><span class="number">6</span>&gt; SensorReading&#123;id=<span class="string">&#x27;sensor_9&#x27;</span>, timestamp=<span class="number">1619670947831</span>, temperature=<span class="number">42.125026316308286</span>&#125;</span><br><span class="line"><span class="number">4</span>&gt; SensorReading&#123;id=<span class="string">&#x27;sensor_10&#x27;</span>, timestamp=<span class="number">1619670947826</span>, temperature=<span class="number">82.58226594512607</span>&#125;</span><br><span class="line"><span class="number">5</span>&gt; SensorReading&#123;id=<span class="string">&#x27;sensor_4&#x27;</span>, timestamp=<span class="number">1619670947828</span>, temperature=<span class="number">78.73909616880852</span>&#125;</span><br><span class="line"><span class="number">4</span>&gt; SensorReading&#123;id=<span class="string">&#x27;sensor_5&#x27;</span>, timestamp=<span class="number">1619670947831</span>, temperature=<span class="number">26.71490359887942</span>&#125;</span><br><span class="line"><span class="number">5</span>&gt; SensorReading&#123;id=<span class="string">&#x27;sensor_6&#x27;</span>, timestamp=<span class="number">1619670947831</span>, temperature=<span class="number">85.09026456845346</span>&#125;</span><br><span class="line"><span class="number">1</span>&gt; SensorReading&#123;id=<span class="string">&#x27;sensor_2&#x27;</span>, timestamp=<span class="number">1619670947828</span>, temperature=<span class="number">64.90731492147165</span>&#125;</span><br><span class="line"><span class="number">3</span>&gt; SensorReading&#123;id=<span class="string">&#x27;sensor_3&#x27;</span>, timestamp=<span class="number">1619670947822</span>, temperature=<span class="number">31.96909359527708</span>&#125;</span><br><span class="line"><span class="number">3</span>&gt; SensorReading&#123;id=<span class="string">&#x27;sensor_8&#x27;</span>, timestamp=<span class="number">1619670947831</span>, temperature=<span class="number">86.34172370619932</span>&#125;</span><br><span class="line"><span class="number">4</span>&gt; SensorReading&#123;id=<span class="string">&#x27;sensor_1&#x27;</span>, timestamp=<span class="number">1619670948831</span>, temperature=<span class="number">60.71931724451548</span>&#125;</span><br><span class="line"><span class="number">6</span>&gt; SensorReading&#123;id=<span class="string">&#x27;sensor_7&#x27;</span>, timestamp=<span class="number">1619670948831</span>, temperature=<span class="number">57.36109139383153</span>&#125;</span><br><span class="line"><span class="number">3</span>&gt; SensorReading&#123;id=<span class="string">&#x27;sensor_4&#x27;</span>, timestamp=<span class="number">1619670948831</span>, temperature=<span class="number">78.1152626762054</span>&#125;</span><br><span class="line"><span class="number">5</span>&gt; SensorReading&#123;id=<span class="string">&#x27;sensor_2&#x27;</span>, timestamp=<span class="number">1619670948831</span>, temperature=<span class="number">63.90599072985537</span>&#125;</span><br><span class="line"><span class="number">2</span>&gt; SensorReading&#123;id=<span class="string">&#x27;sensor_10&#x27;</span>, timestamp=<span class="number">1619670948831</span>, temperature=<span class="number">82.1517010383502</span>&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<h3 id="Transform"><a href="#Transform" class="headerlink" title="Transform"></a>Transform</h3><h4 id="基本转换算子"><a href="#基本转换算子" class="headerlink" title="基本转换算子"></a>基本转换算子</h4><p>map、flatMap、filter 通常被统一称为<strong>基本转换算子 (简单转换算子)。</strong></p>
+<p><strong>map：</strong></p>
+<img src="/2021/04/25/flink/Users\XiSun\AppData\Roaming\Typora\typora-user-images\image-20210429130112584.png" alt="image-20210429130112584" style="zoom:80%;">
+
+<p><strong>flatMap：</strong></p>
+<img src="/2021/04/25/flink/Users\XiSun\AppData\Roaming\Typora\typora-user-images\image-20210429131505870.png" alt="image-20210429131505870" style="zoom:80%;">
+
+<p><strong>filter：</strong></p>
+<img src="/2021/04/25/flink/Users\XiSun\AppData\Roaming\Typora\typora-user-images\image-20210429130649590.png" alt="image-20210429130649590" style="zoom:80%;">
+
+<p>代码实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> XiSun</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Date</span> 2021/4/28 10:39</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TransformTest1_Base</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line">        <span class="comment">// env.setParallelism(1);</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 从文件读取数据</span></span><br><span class="line">        DataStream&lt;String&gt; inputStream = env.readTextFile(<span class="string">&quot;src/main/resources/sensor.txt&quot;</span>).setParallelism(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 1.map，把String转换成长度输出</span></span><br><span class="line">        DataStream&lt;Integer&gt; mapStream = inputStream.map(<span class="keyword">new</span> MapFunction&lt;String, Integer&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> Integer <span class="title">map</span><span class="params">(String value)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> value.length();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 2.flatmap，按逗号分割字符串</span></span><br><span class="line">        DataStream&lt;String&gt; flatMapStream = inputStream.flatMap(<span class="keyword">new</span> FlatMapFunction&lt;String, String&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">flatMap</span><span class="params">(String value, Collector&lt;String&gt; out)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                String[] fields = value.split(<span class="string">&quot;,&quot;</span>);</span><br><span class="line">                <span class="keyword">for</span> (String field : fields)</span><br><span class="line">                    out.collect(field);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 3.filter，筛选&quot;sensor_1&quot;开头的id对应的数据</span></span><br><span class="line">        DataStream&lt;String&gt; filterStream = inputStream.filter(<span class="keyword">new</span> FilterFunction&lt;String&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">filter</span><span class="params">(String value)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> value.startsWith(<span class="string">&quot;sensor_1&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 4.打印输出</span></span><br><span class="line">        mapStream.print(<span class="string">&quot;map&quot;</span>);</span><br><span class="line">        flatMapStream.print(<span class="string">&quot;flatMap&quot;</span>);</span><br><span class="line">        filterStream.print(<span class="string">&quot;filter&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 5.执行任务</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            env.execute();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">SLF4J: Failed to load class &quot;org.slf4j.impl.StaticLoggerBinder&quot;.</span><br><span class="line">SLF4J: Defaulting to no-operation (NOP) logger implementation</span><br><span class="line">SLF4J: See http:<span class="comment">//www.slf4j.org/codes.html#StaticLoggerBinder for further details.</span></span><br><span class="line">map:<span class="number">5</span>&gt; <span class="number">24</span></span><br><span class="line">map:<span class="number">5</span>&gt; <span class="number">24</span></span><br><span class="line">flatMap:<span class="number">4</span>&gt; sensor_1</span><br><span class="line">flatMap:<span class="number">4</span>&gt; <span class="number">1547718199</span></span><br><span class="line">flatMap:<span class="number">4</span>&gt; <span class="number">35.8</span></span><br><span class="line">flatMap:<span class="number">4</span>&gt; sensor_1</span><br><span class="line">flatMap:<span class="number">4</span>&gt; <span class="number">1547718212</span></span><br><span class="line">flatMap:<span class="number">4</span>&gt; <span class="number">37.1</span></span><br><span class="line">flatMap:<span class="number">6</span>&gt; sensor_7</span><br><span class="line">flatMap:<span class="number">6</span>&gt; <span class="number">1547718202</span></span><br><span class="line">flatMap:<span class="number">6</span>&gt; <span class="number">6.7</span></span><br><span class="line">map:<span class="number">6</span>&gt; <span class="number">24</span></span><br><span class="line">filter:<span class="number">3</span>&gt; sensor_1,<span class="number">1547718199</span>,<span class="number">35.8</span></span><br><span class="line">filter:<span class="number">3</span>&gt; sensor_1,<span class="number">1547718212</span>,<span class="number">37.1</span></span><br><span class="line">filter:<span class="number">6</span>&gt; sensor_10,<span class="number">1547718205</span>,<span class="number">38.1</span></span><br><span class="line">map:<span class="number">4</span>&gt; <span class="number">24</span></span><br><span class="line">map:<span class="number">1</span>&gt; <span class="number">23</span></span><br><span class="line">map:<span class="number">3</span>&gt; <span class="number">24</span></span><br><span class="line">map:<span class="number">2</span>&gt; <span class="number">25</span></span><br><span class="line">filter:<span class="number">1</span>&gt; sensor_1,<span class="number">1547718207</span>,<span class="number">36.3</span></span><br><span class="line">filter:<span class="number">2</span>&gt; sensor_1,<span class="number">1547718209</span>,<span class="number">32.8</span></span><br><span class="line">flatMap:<span class="number">5</span>&gt; sensor_6</span><br><span class="line">flatMap:<span class="number">5</span>&gt; <span class="number">1547718201</span></span><br><span class="line">flatMap:<span class="number">5</span>&gt; <span class="number">15.4</span></span><br><span class="line">flatMap:<span class="number">3</span>&gt; sensor_1</span><br><span class="line">flatMap:<span class="number">3</span>&gt; <span class="number">1547718209</span></span><br><span class="line">flatMap:<span class="number">3</span>&gt; <span class="number">32.8</span></span><br><span class="line">flatMap:<span class="number">2</span>&gt; sensor_1</span><br><span class="line">flatMap:<span class="number">2</span>&gt; <span class="number">1547718207</span></span><br><span class="line">flatMap:<span class="number">2</span>&gt; <span class="number">36.3</span></span><br><span class="line">flatMap:<span class="number">1</span>&gt; sensor_10</span><br><span class="line">flatMap:<span class="number">1</span>&gt; <span class="number">1547718205</span></span><br><span class="line">flatMap:<span class="number">1</span>&gt; <span class="number">38.1</span></span><br><span class="line"></span><br><span class="line">Process finished with exit code <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="聚合操作算子"><a href="#聚合操作算子" class="headerlink" title="聚合操作算子"></a>聚合操作算子</h4><ul>
+<li>DataStream 里没有 reduce 和 sum 这类聚合操作的方法，因为 <strong>Flink 设计中，所有数据必须先分组才能做聚合操作。</strong></li>
+<li><strong>先 keyBy 得到 KeyedStream，然后调用其 reduce、sum 等聚合操作方法。(先分组后聚合)</strong></li>
+</ul>
+<p>常见的聚合操作算子主要有：</p>
+<ul>
+<li>keyBy</li>
+<li>滚动聚合算子Rolling Aggregation</li>
+<li>reduce</li>
+</ul>
+<p><strong>keyBy：</strong></p>
+<img src="/2021/04/25/flink/Users\XiSun\AppData\Roaming\Typora\typora-user-images\image-20210429131832931.png" alt="image-20210429131832931" style="zoom:80%;">
+
+<ul>
+<li>DataStream —&gt; KeyedStream：逻辑地将一个流拆分成不相交的分区，每个分区包含具有相同 key 的元素，在内部以 hash 的形式实现的。</li>
+<li>keyBy 会重新分区。相同的 key 一定在同一个分区，而不同的 key 可能会在一个分区，因为是通过 hash 原理实现的，可能存在取模操作。</li>
+</ul>
+<p><strong>滚动聚合算子 (Rolling Aggregation)：</strong></p>
+<p>这些算子可以针对 KeyedStream 的每一个支流做聚合，包括：</p>
+<ul>
+<li><code>sum()</code></li>
+<li><code>min()</code></li>
+<li><code>max()</code></li>
+<li><code>minBy()</code></li>
+<li><code>maxBy()</code></li>
+</ul>
+<h2 id="本文参考"><a href="#本文参考" class="headerlink" title="本文参考"></a>本文参考</h2><p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1qy4y1q728">https://www.bilibili.com/video/BV1qy4y1q728</a></p>
+<p>声明：写作本文初衷是个人学习记录，鉴于本人学识有限，如有侵权或不当之处，请联系 <a href="mailto:wdshfut@163.com">wdshfut@163.com</a>。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/flink/" rel="tag"># flink</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/04/23/spring-webflux/" rel="prev" title="Spring 之 WebFlux">
+      <i class="fa fa-chevron-left"></i> Spring 之 WebFlux
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Flink-%E6%B5%81%E5%A4%84%E7%90%86%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">Flink 流处理简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#QuickStart"><span class="nav-number">2.</span> <span class="nav-text">QuickStart</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Flink-%E9%83%A8%E7%BD%B2"><span class="nav-number">3.</span> <span class="nav-text">Flink 部署</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Standalone-%E6%A8%A1%E5%BC%8F"><span class="nav-number">3.1.</span> <span class="nav-text">Standalone 模式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Flink-%E8%BF%90%E8%A1%8C%E6%9E%B6%E6%9E%84"><span class="nav-number">4.</span> <span class="nav-text">Flink 运行架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Flink-%E8%BF%90%E8%A1%8C%E6%97%B6%E7%9A%84%E7%BB%84%E4%BB%B6"><span class="nav-number">4.1.</span> <span class="nav-text">Flink 运行时的组件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%9C%E4%B8%9A%E7%AE%A1%E7%90%86%E5%99%A8-JobManager"><span class="nav-number">4.1.1.</span> <span class="nav-text">作业管理器 (JobManager)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%BB%E5%8A%A1%E7%AE%A1%E7%90%86%E5%99%A8-TaskManager"><span class="nav-number">4.1.2.</span> <span class="nav-text">任务管理器 (TaskManager)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B5%84%E6%BA%90%E7%AE%A1%E7%90%86%E5%99%A8-ResourceManager"><span class="nav-number">4.1.3.</span> <span class="nav-text">资源管理器 (ResourceManager)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E5%8F%91%E5%99%A8-Dispatcher"><span class="nav-number">4.1.4.</span> <span class="nav-text">分发器 (Dispatcher)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%BB%E5%8A%A1%E6%8F%90%E4%BA%A4%E6%B5%81%E7%A8%8B"><span class="nav-number">4.2.</span> <span class="nav-text">任务提交流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E5%8E%9F%E7%90%86"><span class="nav-number">4.3.</span> <span class="nav-text">任务调度原理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#TaskManger-%E4%B8%8E-Slots"><span class="nav-number">4.3.1.</span> <span class="nav-text">TaskManger 与 Slots</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Flink-%E6%B5%81%E5%A4%84%E7%90%86-API"><span class="nav-number">5.</span> <span class="nav-text">Flink 流处理 API</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Environment"><span class="nav-number">5.1.</span> <span class="nav-text">Environment</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#getExecutionEnvironment"><span class="nav-number">5.1.1.</span> <span class="nav-text">getExecutionEnvironment</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#createLocalEnvironment"><span class="nav-number">5.1.2.</span> <span class="nav-text">createLocalEnvironment</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#createRemoteEnvironment"><span class="nav-number">5.1.3.</span> <span class="nav-text">createRemoteEnvironment</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Source"><span class="nav-number">5.2.</span> <span class="nav-text">Source</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%8E%E9%9B%86%E5%90%88%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE"><span class="nav-number">5.2.1.</span> <span class="nav-text">从集合读取数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%8E%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE"><span class="nav-number">5.2.2.</span> <span class="nav-text">从文件读取数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%8E-kafka-%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE"><span class="nav-number">5.2.3.</span> <span class="nav-text">从 kafka 消息队列读取数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89-Source"><span class="nav-number">5.2.4.</span> <span class="nav-text">自定义 Source</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Transform"><span class="nav-number">5.3.</span> <span class="nav-text">Transform</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E8%BD%AC%E6%8D%A2%E7%AE%97%E5%AD%90"><span class="nav-number">5.3.1.</span> <span class="nav-text">基本转换算子</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%81%9A%E5%90%88%E6%93%8D%E4%BD%9C%E7%AE%97%E5%AD%90"><span class="nav-number">5.3.2.</span> <span class="nav-text">聚合操作算子</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E6%96%87%E5%8F%82%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">本文参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="XiSun"
+      src="/images/header.jpg">
+  <p class="site-author-name" itemprop="name">XiSun</p>
+  <div class="site-description" itemprop="description">心如止水者，虽世间繁华之红尘纷扰，已然空无一物</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">XiSun</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">897k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">13:35</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
