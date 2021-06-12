@@ -153,6 +153,341 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/18/java-enumandannonation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="XiSun">
+      <meta itemprop="description" content="心如止水者，虽世间繁华之红尘纷扰，已然空无一物">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XiSun的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/03/18/java-enumandannonation/" class="post-title-link" itemprop="url">Java 中的枚举类和注解</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-18 21:18:56" itemprop="dateCreated datePublished" datetime="2021-03-18T21:18:56+08:00">2021-03-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-04-09 16:00:30" itemprop="dateModified" datetime="2021-04-09T16:00:30+08:00">2021-04-09</time>
+              </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>15k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>14 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="枚举类-Enum-的使用"><a href="#枚举类-Enum-的使用" class="headerlink" title="枚举类 (Enum) 的使用"></a>枚举类 (Enum) 的使用</h2><p>枚举类的理解：</p>
+<ul>
+<li>类的对象只有有限个，确定的，则此类称为枚举类。</li>
+<li>当需要定义一组常量时，强烈建议使用枚举类。</li>
+<li><strong>如果枚举类中只有一个对象，则可以作为单例模式的实现方式。</strong></li>
+<li>jdk 5.0 之后，可以在 switch 表达式中使用 Enum 定义的枚举类的对象作为表达式，case 子句可以直接使用枚举值的名字，无需添加枚举类作为限定。</li>
+</ul>
+<p>如何定义枚举类：</p>
+<ul>
+<li><p>方式一：jdk 5.0 之前需要自定义枚举类。</p>
+<ul>
+<li><p>私有化类的构造器，保证不能在类的外部创建其对象。</p>
+</li>
+<li><p>在类的内部创建枚举类的实例。声明为：<code>public static final</code>。</p>
+</li>
+<li><p>对象如果有实例变量，应该声明为 <code>private final</code>，并在构造器中初始化。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        System.out.println(Season.SPRING);<span class="comment">// Season&#123;SEASONNAME=&#x27;春天&#x27;, SEASONDESC=&#x27;春暖花开&#x27;&#125;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 自定义枚举类</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Season</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 1.声明Season对象的属性：private final 修饰 --- 常量</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String SEASONNAME;<span class="comment">//季节的名称</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String SEASONDESC;<span class="comment">//季节的描述</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 2.私有化类的构造器，并给对象的属性赋值</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Season</span><span class="params">(String seasonName, String seasonDesc)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.SEASONNAME = seasonName;</span><br><span class="line">        <span class="keyword">this</span>.SEASONDESC = seasonDesc;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 3.提供当前枚举类的多个对象</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Season SPRING = <span class="keyword">new</span> Season(<span class="string">&quot;春天&quot;</span>, <span class="string">&quot;春暖花开&quot;</span>);</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Season SUMMER = <span class="keyword">new</span> Season(<span class="string">&quot;夏天&quot;</span>, <span class="string">&quot;夏日炎炎&quot;</span>);</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Season AUTUMN = <span class="keyword">new</span> Season(<span class="string">&quot;秋天&quot;</span>, <span class="string">&quot;秋高气爽&quot;</span>);</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Season WINTER = <span class="keyword">new</span> Season(<span class="string">&quot;冬天&quot;</span>, <span class="string">&quot;白雪皑皑&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 4.其他诉求一：获取枚举类对象的属性</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getSEASONNAME</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> SEASONNAME;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getSEASONDESC</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> SEASONDESC;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 5.其他诉求二：提供toString()</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Season&#123;&quot;</span> +</span><br><span class="line">                <span class="string">&quot;SEASONNAME=&#x27;&quot;</span> + SEASONNAME + <span class="string">&#x27;\&#x27;&#x27;</span> +</span><br><span class="line">                <span class="string">&quot;, SEASONDESC=&#x27;&quot;</span> + SEASONDESC + <span class="string">&#x27;\&#x27;&#x27;</span> +</span><br><span class="line">                <span class="string">&#x27;&#125;&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>方式二：jdk 5.0 之后，可以使用新增的 enum 关键字定义枚举类。</p>
+<ul>
+<li><p><strong>使用 enum 关键字定义的枚举类默认继承了 <code>java.lang.Enum</code> 类，因此不能再继承其他类。</strong></p>
+</li>
+<li><p>枚举类的构造器只能使用 private 权限修饰符。</p>
+</li>
+<li><p><strong>枚举类的所有实例必须在枚举类中显式列出，以 “,” 分隔，以 “;” 结尾</strong>。列出的实例系统会默认添加 <code>public static final</code> 修饰。</p>
+</li>
+<li><p><strong>必须在枚举类的第一行声明枚举类对象。</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        System.out.println(Season.SPRING);<span class="comment">// SPRING</span></span><br><span class="line">        System.out.println(<span class="string">&quot;enum的父类是：&quot;</span> + Season.class.getSuperclass());<span class="comment">// class java.lang.Enum</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用enum关键字定义枚举类</span></span><br><span class="line"><span class="class"><span class="keyword">enum</span> <span class="title">Season</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 1.首行提供当前枚举类的多个对象: 多个对象之间以&quot;,&quot;隔开，末尾的对象以&quot;;&quot;结束</span></span><br><span class="line">    SPRING(<span class="string">&quot;春天&quot;</span>, <span class="string">&quot;春暖花开&quot;</span>),</span><br><span class="line"></span><br><span class="line">    SUMMER(<span class="string">&quot;夏天&quot;</span>, <span class="string">&quot;夏日炎炎&quot;</span>),</span><br><span class="line"></span><br><span class="line">    AUTUMN(<span class="string">&quot;秋天&quot;</span>, <span class="string">&quot;秋高气爽&quot;</span>),</span><br><span class="line"></span><br><span class="line">    WINTER(<span class="string">&quot;冬天&quot;</span>, <span class="string">&quot;白雪皑皑&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 2.声明Season对象的属性：private final 修饰 --- 常量</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String SEASONNAME;<span class="comment">//季节的名称</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String SEASONDESC;<span class="comment">//季节的描述</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 3.私有化类的构造器，并给对象的属性赋值</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Season</span><span class="params">(String seasonName, String seasonDesc)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.SEASONNAME = seasonName;</span><br><span class="line">        <span class="keyword">this</span>.SEASONDESC = seasonDesc;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 4.其他诉求一：获取枚举类对象的属性</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getSEASONNAME</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> SEASONNAME;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getSEASONDESC</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> SEASONDESC;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 5.其他诉求二：提供toString()，一般不重写</span></span><br><span class="line">    <span class="comment">/*@Override</span></span><br><span class="line"><span class="comment">    public String toString() &#123;</span></span><br><span class="line"><span class="comment">        return &quot;Season&#123;&quot; +</span></span><br><span class="line"><span class="comment">                &quot;SEASONNAME=&#x27;&quot; + SEASONNAME + &#x27;\&#x27;&#x27; +</span></span><br><span class="line"><span class="comment">                &quot;, SEASONDESC=&#x27;&quot; + SEASONDESC + &#x27;\&#x27;&#x27; +</span></span><br><span class="line"><span class="comment">                &#x27;&#125;&#x27;;</span></span><br><span class="line"><span class="comment">    &#125;*/</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+</li>
+</ul>
+<p>Enum 类中的常用方法：</p>
+<img src="/2021/03/18/java-enumandannonation/image-20210319105202941.png" alt="image-20210319105202941" style="zoom:80%;">
+
+<ul>
+<li><p><code>values()</code>：返回枚举类型的对象数组，该方法可以很方便地遍历枚举类的所有的枚举值。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Thread.State[] values = Thread.State.values();</span><br><span class="line">        <span class="keyword">for</span> (Thread.State value : values) &#123;</span><br><span class="line">            System.out.print(value + <span class="string">&quot; &quot;</span>);<span class="comment">// NEW RUNNABLE BLOCKED WAITING TIMED_WAITING TERMINATED</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>valueOf(String str)</code>：可以把一个字符串转为对应的枚举类对象。要求字符串必须是枚举类对象的 “名字”，如不是，会抛出运行时异常：<code>java.lang.IllegalArgumentException</code>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Thread.State aNew = Thread.State.valueOf(<span class="string">&quot;NEW&quot;</span>);</span><br><span class="line">        System.out.println(aNew);<span class="comment">// NEW</span></span><br><span class="line">        Thread.State dead = Thread.State.valueOf(<span class="string">&quot;DEAD&quot;</span>);</span><br><span class="line">        System.out.println(dead);<span class="comment">// java.lang.IllegalArgumentException: No enum constant java.lang.Thread.State.DEAD</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>toString()</code>：返回当前枚举类对象常量的名称。</p>
+</li>
+</ul>
+<p>使用 enum 关键字定义的枚举类实现接口的情况：</p>
+<ul>
+<li><p>和普通 java 类一样，枚举类可以实现一个或多个接口。</p>
+</li>
+<li><p><strong>若每个枚举值在调用实现的接口的方法时，如果呈现出相同的行为方式，则只要统一实现该方法即可。</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Season spring = Season.SPRING;</span><br><span class="line">        spring.show();<span class="comment">// 这是一个季节</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">Info</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">show</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用enum关键字定义枚举类</span></span><br><span class="line"><span class="class"><span class="keyword">enum</span> <span class="title">Season</span> <span class="keyword">implements</span> <span class="title">Info</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 1.首行提供当前枚举类的多个对象: 多个对象之间以&quot;,&quot;隔开，末尾的对象以&quot;;&quot;结束</span></span><br><span class="line">    SPRING(<span class="string">&quot;春天&quot;</span>, <span class="string">&quot;春暖花开&quot;</span>),</span><br><span class="line"></span><br><span class="line">    SUMMER(<span class="string">&quot;夏天&quot;</span>, <span class="string">&quot;夏日炎炎&quot;</span>),</span><br><span class="line"></span><br><span class="line">    AUTUMN(<span class="string">&quot;秋天&quot;</span>, <span class="string">&quot;秋高气爽&quot;</span>),</span><br><span class="line"></span><br><span class="line">    WINTER(<span class="string">&quot;冬天&quot;</span>, <span class="string">&quot;白雪皑皑&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 2.声明Season对象的属性：private final 修饰 --- 常量</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String SEASONNAME;<span class="comment">//季节的名称</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String SEASONDESC;<span class="comment">//季节的描述</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 3.私有化类的构造器，并给对象的属性赋值</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Season</span><span class="params">(String seasonName, String seasonDesc)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.SEASONNAME = seasonName;</span><br><span class="line">        <span class="keyword">this</span>.SEASONDESC = seasonDesc;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 4.其他诉求一：获取枚举类对象的属性</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getSEASONNAME</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> SEASONNAME;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getSEASONDESC</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> SEASONDESC;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 每个枚举值在调用实现的接口的方法时，呈现出相同的行为方式</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">show</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;这是一个季节&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 5.其他诉求二：提供toString()，一般不重写</span></span><br><span class="line">    <span class="comment">/*@Override</span></span><br><span class="line"><span class="comment">    public String toString() &#123;</span></span><br><span class="line"><span class="comment">        return &quot;Season&#123;&quot; +</span></span><br><span class="line"><span class="comment">                &quot;SEASONNAME=&#x27;&quot; + SEASONNAME + &#x27;\&#x27;&#x27; +</span></span><br><span class="line"><span class="comment">                &quot;, SEASONDESC=&#x27;&quot; + SEASONDESC + &#x27;\&#x27;&#x27; +</span></span><br><span class="line"><span class="comment">                &#x27;&#125;&#x27;;</span></span><br><span class="line"><span class="comment">    &#125;*/</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>若需要每个枚举值在调用实现的接口的方法时，呈现出不同的行为方式，则可以让每个枚举值分别来实现该方法。</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Season spring = Season.SPRING;</span><br><span class="line">        spring.show();<span class="comment">// 现在是春天</span></span><br><span class="line">        Season winter = Season.WINTER;</span><br><span class="line">        winter.show();<span class="comment">// 现在是冬天</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">Info</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">show</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用enum关键字定义枚举类</span></span><br><span class="line"><span class="class"><span class="keyword">enum</span> <span class="title">Season</span> <span class="keyword">implements</span> <span class="title">Info</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 1.首行提供当前枚举类的多个对象: 多个对象之间以&quot;,&quot;隔开，末尾的对象以&quot;;&quot;结束</span></span><br><span class="line">    SPRING(<span class="string">&quot;春天&quot;</span>, <span class="string">&quot;春暖花开&quot;</span>) &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">show</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;现在是春天&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    SUMMER(<span class="string">&quot;夏天&quot;</span>, <span class="string">&quot;夏日炎炎&quot;</span>) &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">show</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;现在是夏天&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    AUTUMN(<span class="string">&quot;秋天&quot;</span>, <span class="string">&quot;秋高气爽&quot;</span>) &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">show</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;现在是秋天&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    WINTER(<span class="string">&quot;冬天&quot;</span>, <span class="string">&quot;白雪皑皑&quot;</span>) &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">show</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;现在是冬天&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 2.声明Season对象的属性：private final 修饰 --- 常量</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String SEASONNAME;<span class="comment">//季节的名称</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String SEASONDESC;<span class="comment">//季节的描述</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 3.私有化类的构造器，并给对象的属性赋值</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Season</span><span class="params">(String seasonName, String seasonDesc)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.SEASONNAME = seasonName;</span><br><span class="line">        <span class="keyword">this</span>.SEASONDESC = seasonDesc;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 4.其他诉求一：获取枚举类对象的属性</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getSEASONNAME</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> SEASONNAME;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getSEASONDESC</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> SEASONDESC;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 5.其他诉求二：提供toString()，一般不重写</span></span><br><span class="line">    <span class="comment">/*@Override</span></span><br><span class="line"><span class="comment">    public String toString() &#123;</span></span><br><span class="line"><span class="comment">        return &quot;Season&#123;&quot; +</span></span><br><span class="line"><span class="comment">                &quot;SEASONNAME=&#x27;&quot; + SEASONNAME + &#x27;\&#x27;&#x27; +</span></span><br><span class="line"><span class="comment">                &quot;, SEASONDESC=&#x27;&quot; + SEASONDESC + &#x27;\&#x27;&#x27; +</span></span><br><span class="line"><span class="comment">                &#x27;&#125;&#x27;;</span></span><br><span class="line"><span class="comment">    &#125;*/</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="注解-Annotation-的使用"><a href="#注解-Annotation-的使用" class="headerlink" title="注解 (Annotation) 的使用"></a>注解 (Annotation) 的使用</h2><p>注解的概述：</p>
+<ul>
+<li>从 jdk 5.0 开始，java 增加了对元数据 (MetaData) 的支持，也就是 Annotation (注解)。</li>
+<li><strong>Annotation 其实就是代码里的特殊标记，这些标记可以在编译、类加载、运行时被读取，并执行相应的处理。</strong>通过使用 Annotation，程序员可以在不改变原有逻辑的情况下，在源文件中嵌入一些补充信息。代码分析工具、开发工具和部署工具可以通过这些补充信息进行验证或者进行部署。</li>
+<li>Annotation 可以像修饰符一样被使用，<strong>可用于修饰包、类、构造器、方法、 成员变量、参数、局部变量的声明</strong>，这些信息被保存在 Annotation 的 “name = value” 对中。</li>
+<li>在 JavaSE 中，注解的使用目的比较简单，例如标记过时的功能，忽略警告等。在 JavaEE/Android 中注解占据了更重要的角色，例如用来配置应用程序的任何切面，代替 JavaEE 旧版中所遗留的繁冗代码和 XML 配置等。</li>
+<li>未来的开发模式都是基于注解的，JPA 是基于注解的，Spring 2.5 以上都是基于注解的，Hibernate 3.x 以后也是基于注解的，现在的 Struts2 有一部分也是基于注解的。<strong>注解是一种趋势，一定程度上可以说：框架 = 注解 + 反射 + 设计模式。</strong></li>
+</ul>
+<p>常见的 Annotation 示例：</p>
+<ul>
+<li><p>使用 Annotation 时要在其前面增加 @ 符号，并把该 Annotation 当成一个修饰符使用，用于修饰它支持的程序元素。</p>
+</li>
+<li><p>示例一：生成文档相关的注解。</p>
+<ul>
+<li><p><code>@author</code>：标明开发该类模块的作者，多个作者之间使用 “,”分割。</p>
+</li>
+<li><p><code>@version</code>：标明该类模块的版本。</p>
+</li>
+<li><p><code>@see</code>：参考转向，也就是相关主题。</p>
+</li>
+<li><p><code>@since</code>：从哪个版本开始增加的。</p>
+</li>
+<li><p><code>@param</code>：对方法中某参数的说明，如果没有参数就不能写。</p>
+</li>
+<li><p><code>@return</code>：对方法返回值的说明，如果方法的返回值类型是 void 就不能写。</p>
+</li>
+<li><p><code>@exception</code>：对方法可能抛出的异常进行说明 ，如果方法没有用 throws 显式抛出的异常就不能写其中。</p>
+<ul>
+<li><code>@param</code>、<code>@return</code> 和 <code>@exception</code> 这三个标记都是只用于方法的。</li>
+<li><code>@param</code> 的格式要求：<code>@param 形参名 形参类型 形参说明</code>。</li>
+<li><code>@return</code> 的格式要求：<code>@return 返回值类型 返回值说明</code>。</li>
+<li><code>@exception</code> 的格式要求：<code>@exception 异常类型 异常说明</code>。</li>
+<li><code>@param</code> 和 <code>@exception</code> 可以并列多个。</li>
+</ul>
+</li>
+<li><p>实例：</p>
+<img src="/2021/03/18/java-enumandannonation/image-20210319132720608.png" alt="image-20210319132720608" style="zoom: 50%;">
+</li>
+</ul>
+</li>
+<li><p>示例二： 在编译时进行格式查 (jdk 内置的三个基本注解)。</p>
+<ul>
+<li><p><code>@Override</code>：限定重写父类方法，该注解只能用于方法。</p>
+</li>
+<li><p><code>@Deprecated</code>：用于表示所修饰的元素 (类，方法等) 已过时，通常是因为所修饰的结构危险或存在更好的选择。</p>
+</li>
+<li><p><code>@SuppressWarnings</code>：抑制编译器警告。</p>
+</li>
+<li><p>实例：</p>
+<img src="/2021/03/18/java-enumandannonation/image-20210319133056651.png" alt="image-20210319133056651" style="zoom: 50%;">
+</li>
+</ul>
+</li>
+<li><p>示例三： 跟踪代码依赖性，实现替代配置文件功能。</p>
+<ul>
+<li><p>Servlet 3.0 提供了注解 (annotation)，使得不再需要在 web.xml 文件中进行 Servlet 的部署：</p>
+<img src="/2021/03/18/java-enumandannonation/image-20210319133522948.png" alt="image-20210319133522948" style="zoom: 67%;">
+</li>
+<li><p>spring 框架中关于事务的管理：</p>
+<img src="/2021/03/18/java-enumandannonation/image-20210319133646310.png" alt="image-20210319133646310" style="zoom:67%;">
+
+</li>
+</ul>
+</li>
+</ul>
+<p>自定义注解：参照 <code>@SuppressWarnings</code>定义。</p>
+<ul>
+<li><p>注解声明为：<code>@interface</code>。</p>
+</li>
+<li><p>自定义注解自动继承了 <code>java.lang.annotation.Annotation</code> 接口。</p>
+</li>
+<li><p><strong>Annotation 的成员变量在 Annotation 定义中以无参数方法的形式来声明。</strong>其方法名和返回值定义了该成员的名字和类型，我们称为配置参数。<strong>类型只能是八种基本数据类型、String 类型 、Class 类型 、Enum 类型 、Annotation 类型，以上所有类型的数组。</strong></p>
+</li>
+<li><p>可以在定义 Annotation 的成员变量时为其指定初始值，<strong>指定成员变量的初始值可使用 default 关键字。</strong></p>
+</li>
+<li><p><strong>没有成员定义的 Annotation 称为标记 (是一个标识作用)；包含成员变量的 Annotation 称为元数据 Annotation。</strong></p>
+</li>
+<li><p><strong>如果注解只有一个成员，建议使用参数名为 value。</strong></p>
+</li>
+<li><p><strong>如果注解有成员，那么使用时必须指定参数值，除非它有默认值。</strong>格式是 “参数名 = 参数值”，如果只有一个参数成员，且名称为 value，可以省略 “value=”，直接写参数值。</p>
+</li>
+<li><p><strong>自定义注解必须配上注解的信息处理流程才有意义 (使用反射，能够得到注解的内容，然后根据内容和注解的对象建立关系，比如 Servlet 的注解)。</strong></p>
+</li>
+<li><p>实例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MyAnnotation &#123;</span><br><span class="line">    String[] value() <span class="keyword">default</span> <span class="string">&quot;自定义的注解&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p><strong>jdk 中的元注解：</strong></p>
+<ul>
+<li><p>jdk 的元注解是用于修饰其他注解而定义的，即对现有注解进行解释说明的注解。</p>
+<ul>
+<li>元数据：对数据进行修饰的数据。比如：<code>String name = &quot;Tom&quot;;</code>，Tom 是数据，而 String 和 name 就是修饰 Tom 的元数据。</li>
+</ul>
+</li>
+<li><p>jdk 5.0 提供了 4 个标准的 meta-annotation 类型，分别是：</p>
+<ul>
+<li><p><code>@Retention</code>：只能用于修饰一个 Annotation 定义，用于指定该 Annotation 的生命周期。<code>@Rentention</code> 包含一个 RetentionPolicy 类型的成员变量，使用 <code>@Rentention</code> 时必须为该 value 成员变量指定值： </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@Target(ElementType.ANNOTATION_TYPE)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> Retention &#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns the retention policy.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the retention policy</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">RetentionPolicy <span class="title">value</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">enum</span> <span class="title">RetentionPolicy</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Annotations are to be discarded by the compiler.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    SOURCE,</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Annotations are to be recorded in the class file by the compiler</span></span><br><span class="line"><span class="comment">     * but need not be retained by the VM at run time.  This is the default</span></span><br><span class="line"><span class="comment">     * behavior.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    CLASS,</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Annotations are to be recorded in the class file by the compiler and</span></span><br><span class="line"><span class="comment">     * retained by the VM at run time, so they may be read reflectively.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@see</span> java.lang.reflect.AnnotatedElement</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    RUNTIME</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><code>RetentionPolicy.SOURCE</code>：在源文件中有效，即源文件保留，编译器直接丢弃这种策略的注释。</p>
+</li>
+<li><p><code>RetentionPolicy.CLASS</code>：在 class 文件 中有效，即 class 保留，当运行 java 程序时，JVM 不会保留注解。这是默认值。</p>
+</li>
+<li><p><code>RetentionPolicy.RUNTIME</code>：在运行时有效，即运行时保留，当运行 java 程序时，JVM 会保留注释。程序可以通过反射获取该注释。</p>
+</li>
+<li><p><strong>只有声明为 RUNTIME 生命周期的注解，才能通过反射获取。</strong></p>
+</li>
+<li><p>实例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MyAnnotation &#123;</span><br><span class="line">    String[] value() <span class="keyword">default</span> <span class="string">&quot;自定义的注解&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<img src="/2021/03/18/java-enumandannonation/1616158959(1).jpg" alt="1616158959(1)" style="zoom: 80%;">
+</li>
+</ul>
+</li>
+<li><p><code>@Target</code>：用于修饰 Annotation 定义，用于指定被修饰的 Annotation 能用于修饰哪些程序元素。 @Target 也包含一个名为 value 的成员变量。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@Target(ElementType.ANNOTATION_TYPE)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> Target &#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns an array of the kinds of elements an annotation type</span></span><br><span class="line"><span class="comment">     * can be applied to.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> an array of the kinds of elements an annotation type</span></span><br><span class="line"><span class="comment">     * can be applied to</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    ElementType[] value();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">enum</span> <span class="title">ElementType</span> </span>&#123;</span><br><span class="line">    <span class="comment">/** Class, interface (including annotation type), or enum declaration */</span></span><br><span class="line">    TYPE,</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** Field declaration (includes enum constants) */</span></span><br><span class="line">    FIELD,</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** Method declaration */</span></span><br><span class="line">    METHOD,</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** Formal parameter declaration */</span></span><br><span class="line">    PARAMETER,</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** Constructor declaration */</span></span><br><span class="line">    CONSTRUCTOR,</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** Local variable declaration */</span></span><br><span class="line">    LOCAL_VARIABLE,</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** Annotation type declaration */</span></span><br><span class="line">    ANNOTATION_TYPE,</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** Package declaration */</span></span><br><span class="line">    PACKAGE,</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Type parameter declaration</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@since</span> 1.8</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    TYPE_PARAMETER,</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Use of a type</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@since</span> 1.8</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    TYPE_USE</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>各取值含义如下：</p>
+<img src="/2021/03/18/java-enumandannonation/image-20210319212832068.png" alt="image-20210319212832068" style="zoom:80%;">
+</li>
+<li><p>实例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target(ElementType.TYPE)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MyAnnotation &#123;</span><br><span class="line">    String[] value() <span class="keyword">default</span> <span class="string">&quot;自定义的注解&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@MyAnnotation(&quot;修改了默认值&quot;)</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Person</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p><code>@Documented</code>：用于指定被该元 Annotation 修饰的 Annotation 类将被 javadoc 工具提取成文档。默认情况下，javadoc 是不包括注解的。如果希望一个注解在被 javadoc 解析生成文档时能保存下来，需要添加此注解。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@Target(ElementType.ANNOTATION_TYPE)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> Documented &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>定义为 <code>@Documented</code> 的注解，必须设置 <code>@Retention</code> 值为 RUNTIME。</li>
+</ul>
+</li>
+<li><p><code>@Inherited</code>：被它修饰的 Annotation 将具有继承性。如果某个类使用了被 <code>@Inherited</code> 修饰的 Annotation，则其子类将自动具有该注解。</p>
+<ul>
+<li>比如：如果把标有 <code>@Inherited</code> 注解的自定义的注解标注在类级别上，子类则可以继承父类类级别的注解。</li>
+<li>实际应用中，使用较少。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>自定义注解时，通常都会指明 <code>@Retention</code> 和 <code>@Target</code> 这两个注解。</strong></p>
+</li>
+</ul>
+<p><strong>利用反射获取注解信息：</strong> </p>
+<ul>
+<li><p>jdk 5.0 在 <code>java.lang.reflect</code> 包下新增了 AnnotatedElement 接口，该接口代表程序中可以接受注解的程序元素。</p>
+</li>
+<li><p>当一个 Annotation 类型被定义为运行时 Annotation 后，该注解才是运行时可见，当 class 文件被载入时保存在 class 文件中的 Annotation 才会被虚拟机读取。</p>
+</li>
+<li><p>程序可以调用 AnnotatedElement 对象的如下方法来访问 Annotation 信息：</p>
+<p><img src="/2021/03/18/java-enumandannonation/image-20210320104859016.png" alt="image-20210320104859016"></p>
+</li>
+<li><p>实例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@Target(ElementType.TYPE)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MyAnnotation &#123;</span><br><span class="line">    String[] value() <span class="keyword">default</span> <span class="string">&quot;自定义的注解&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@MyAnnotation(&quot;修改了默认值&quot;)</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Person</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Class&lt;Person&gt; clazz = Person.class;</span><br><span class="line"></span><br><span class="line">        Annotation[] annotations = clazz.getAnnotations();</span><br><span class="line">        <span class="keyword">for</span> (Annotation annotation : annotations) &#123;</span><br><span class="line">            System.out.println(annotation);<span class="comment">// @cn.xisun.java.base.MyAnnotation(value=[修改了默认值])</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        Annotation annotation = clazz.getAnnotation(MyAnnotation.class);</span><br><span class="line">        MyAnnotation myAnnotation = (MyAnnotation) annotation;</span><br><span class="line">        String[] info = myAnnotation.value();</span><br><span class="line">        System.out.println(Arrays.toString(info));<span class="comment">// [修改了默认值]</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>jdk 8.0 中注解的新特性：</p>
+<ul>
+<li><p>java 8.0 对注解处理提供了两点改进：可重复的注解及可用于类型的注解。此外，反射也得到了加强，在 java 8.0 中能够得到方法参数的名称。这会简化标注在方法参数上的注解。</p>
+</li>
+<li><p><strong>可重复注解：</strong></p>
+<ul>
+<li><p>jdk 8.0 之前的写法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@Target(ElementType.TYPE)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MyAnnotation &#123;</span><br><span class="line">    String[] value() <span class="keyword">default</span> <span class="string">&quot;自定义的注解&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义新数组，值为需要重复注解对象的数组 </span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@interface</span> MyAnnotations &#123;</span><br><span class="line">    MyAnnotation[] value();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// jdk 8.0之前的写法：</span></span><br><span class="line"><span class="meta">@MyAnnotations(&#123;@MyAnnotation(&quot;注解1&quot;), @MyAnnotation(&quot;注解2&quot;)&#125;)</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Person</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Class&lt;Person&gt; clazz = Person.class;</span><br><span class="line"></span><br><span class="line">        Annotation[] annotations = clazz.getAnnotations();</span><br><span class="line">        <span class="keyword">for</span> (Annotation annotation : annotations) &#123;</span><br><span class="line">            System.out.println(annotation);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        Annotation annotation = clazz.getAnnotation(MyAnnotations.class);</span><br><span class="line">        MyAnnotations myAnnotation = (MyAnnotations) annotation;</span><br><span class="line">        MyAnnotation[] info = myAnnotation.value();</span><br><span class="line">        System.out.println(Arrays.toString(info));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">输出结果：</span><br><span class="line"><span class="meta">@cn</span>.xisun.java.base.MyAnnotations(value=[<span class="meta">@cn</span>.xisun.java.base.MyAnnotation(value=[注解<span class="number">1</span>]), <span class="meta">@cn</span>.xisun.java.base.MyAnnotation(value=[=注解<span class="number">2</span>])])</span><br><span class="line">[<span class="meta">@cn</span>.xisun.java.base.MyAnnotation(value=[注解<span class="number">1</span>]), <span class="meta">@cn</span>.xisun.java.base.MyAnnotation(value=[注解<span class="number">2</span>])]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>jdk 8.0 之后的写法：利用 <code>@Repeatable</code>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Repeatable(MyAnnotations.class)</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@Target(ElementType.TYPE)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MyAnnotation &#123;</span><br><span class="line">    String[] value() <span class="keyword">default</span> <span class="string">&quot;自定义的注解&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@Target(ElementType.TYPE)</span></span><br><span class="line"><span class="meta">@interface</span> MyAnnotations &#123;</span><br><span class="line">    MyAnnotation[] value();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@MyAnnotation(&quot;注解1&quot;)</span></span><br><span class="line"><span class="meta">@MyAnnotation(&quot;注解2&quot;)</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Person</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Class&lt;Person&gt; clazz = Person.class;</span><br><span class="line"></span><br><span class="line">        Annotation[] annotations = clazz.getAnnotations();</span><br><span class="line">        <span class="keyword">for</span> (Annotation annotation : annotations) &#123;</span><br><span class="line">            System.out.println(annotation);<span class="comment">// @cn.xisun.java.base.MyAnnotation(value=[修改了默认值])</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        Annotation annotation = clazz.getAnnotation(MyAnnotations.class);</span><br><span class="line">        MyAnnotations myAnnotation = (MyAnnotations) annotation;</span><br><span class="line">        MyAnnotation[] info = myAnnotation.value();</span><br><span class="line">        System.out.println(Arrays.toString(info));<span class="comment">// [修改了默认值]</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p><strong>类型注解：</strong></p>
+<ul>
+<li><p>jdk 8.0 之后，关于元注解 <code>@Target</code> 的参数类型 ElementType 枚举值多了两个：TYPE_PARAMETER 和 TYPE_USE。、</p>
+<ul>
+<li><p><code>ElementType.TYPE_PARAMETER</code>：表示该注解能写在类型变量的声明语句中，如：泛型声明。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestTypeDefine</span>&lt;@<span class="title">TypeDefine</span>() <span class="title">U</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> U u;</span><br><span class="line">    <span class="keyword">public</span> &lt;<span class="meta">@TypeDefine()</span> T&gt; <span class="function"><span class="keyword">void</span> <span class="title">test</span><span class="params">(T t)</span></span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Target(&#123;ElementType.TYPE_PARAMETER&#125;)</span></span><br><span class="line"><span class="meta">@interface</span> TypeDefine&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>ElementType.TYPE_USE</code>：表示该注解能写在使用类型的任何语句中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target(ElementType.TYPE_USE)</span></span><br><span class="line"><span class="meta">@interface</span> MyAnnotation &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@MyAnnotation</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AnnotationTest</span>&lt;<span class="title">U</span>&gt; </span>&#123;</span><br><span class="line">    <span class="meta">@MyAnnotation</span></span><br><span class="line">    <span class="keyword">private</span> String name;<span class="comment">// 对属性添加注解</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;<span class="meta">@MyAnnotation</span> T&gt; <span class="function"><span class="keyword">void</span> <span class="title">method</span><span class="params">(T t)</span> </span>&#123;&#125;<span class="comment">// 对泛型添加注解</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">(<span class="meta">@MyAnnotation</span> String arg)</span> <span class="keyword">throws</span> @MyAnnotation Exception </span>&#123;&#125;<span class="comment">// 对异常添加注解</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        AnnotationTest&lt;<span class="meta">@MyAnnotation</span> String&gt; t = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">int</span> a = (<span class="meta">@MyAnnotation</span> <span class="keyword">int</span>) <span class="number">2L</span>;</span><br><span class="line">        <span class="meta">@MyAnnotation</span></span><br><span class="line">        <span class="keyword">int</span> b = <span class="number">10</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p><strong>在 java 8.0 之前，注解只能是在声明的地方所使用，从 java 8.0 开始，注解可以应用在任何地方。</strong></p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="本文参考"><a href="#本文参考" class="headerlink" title="本文参考"></a>本文参考</h2><p><a target="_blank" rel="noopener" href="https://www.gulixueyuan.com/goods/show/203?targetId=309&amp;preview=0">https://www.gulixueyuan.com/goods/show/203?targetId=309&amp;preview=0</a></p>
+<p>声明：写作本文初衷是个人学习记录，鉴于本人学识有限，如有侵权或不当之处，请联系 <a href="mailto:wdshfut@163.com">wdshfut@163.com</a>。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/18/java-math/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3900,264 +4235,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/19/maven-repository/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/header.jpg">
-      <meta itemprop="name" content="XiSun">
-      <meta itemprop="description" content="心如止水者，虽世间繁华之红尘纷扰，已然空无一物">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XiSun的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/01/19/maven-repository/" class="post-title-link" itemprop="url">maven 仓库的配置方式以及依赖的下载顺序</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-01-19 16:17:18" itemprop="dateCreated datePublished" datetime="2021-01-19T16:17:18+08:00">2021-01-19</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-04-09 15:51:24" itemprop="dateModified" datetime="2021-04-09T15:51:24+08:00">2021-04-09</time>
-              </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>10k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>9 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>maven 仓库分为本地仓库和远程仓库，而远程仓库又分为 maven 中央仓库、其他远程仓库和私服 (私有服务器)。</p>
-<p><img src="/2021/01/19/maven-repository/image-20210409155046796.png" alt="image-20210409155046796"></p>
-<p>maven 项目使用的仓库一般有如下几种方式：</p>
-<ol>
-<li>maven 中央仓库，这是默认的仓库。</li>
-<li>镜像仓库，通过 sttings.xml 中的 settings.mirrors.mirror 配置。</li>
-<li>全局 profile 仓库，通过 settings.xml 中的 settings.repositories.repository 配置。</li>
-<li>项目仓库，通过 pom.xml 中的 project.repositories.repository 配置。</li>
-<li>项目 profile 仓库，通过 pom.xml 中的 project.profiles.profile.repositories.repository 配置。</li>
-<li>本地仓库。</li>
-</ol>
-<p>如果所有仓库的配置都存在，那么依赖的搜索顺序也会变得异常复杂。</p>
-<h2 id="仓库的配置方式"><a href="#仓库的配置方式" class="headerlink" title="仓库的配置方式"></a>仓库的配置方式</h2><h3 id="本地仓库"><a href="#本地仓库" class="headerlink" title="本地仓库"></a>本地仓库</h3><p>maven 缺省的本地仓库地址为 ${user.home}/.m2/repository，也就是说，一个用户会对应的拥有一个本地仓库。</p>
-<p>可以通过修改 ${user.home}/.m2/settings.xml，在 <settings> 节点下添加配置：</settings></p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">localRepository</span>&gt;</span>D:\java\maven-repo<span class="tag">&lt;/<span class="name">localRepository</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>如果想让所有的用户使用统一的配置，那么可以修改 maven 主目录下的 setting.xml：${M2_HOME}/conf/setting.xml。</p>
-<h3 id="maven-中央仓库"><a href="#maven-中央仓库" class="headerlink" title="maven 中央仓库"></a>maven 中央仓库</h3><p>在 maven 安装目录的 lib 目录下，有一个 maven-model-builder-3.6.1.jar，里面的 org/apache/maven/model/pom-4.0.0.xml 文件定义了 maven 默认中央仓库的地址：<a target="_blank" rel="noopener" href="https://repo.maven.apache.org/maven2%EF%BC%8C%E5%A6%82%E4%B8%8B%E5%9B%BE%E6%89%80%E7%A4%BA%EF%BC%9A">https://repo.maven.apache.org/maven2，如下图所示：</a></p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">repositories</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>central<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>Central Repository<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url</span>&gt;</span>https://repo.maven.apache.org/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">layout</span>&gt;</span>default<span class="tag">&lt;/<span class="name">layout</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>false<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">pluginRepositories</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">pluginRepository</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>central<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>Central Repository<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url</span>&gt;</span>https://repo.maven.apache.org/maven2<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">layout</span>&gt;</span>default<span class="tag">&lt;/<span class="name">layout</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>false<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">releases</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">updatePolicy</span>&gt;</span>never<span class="tag">&lt;/<span class="name">updatePolicy</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">releases</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">pluginRepository</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">pluginRepositories</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>一般使用阿里云镜像仓库代替默认的 maven 中央仓库，配置方式有两种：</p>
-<ul>
-<li>第一种，全局配置</li>
-</ul>
-<p>修改 ${M2_HOME}/conf/setting.xml 文件，在 <mirrors> 节点下添加配置：</mirrors></p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">mirrors</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">mirror</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>alimaven<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>aliyun maven<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://maven.aliyun.com/nexus/content/groups/public/<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">mirrorOf</span>&gt;</span>central<span class="tag">&lt;/<span class="name">mirrorOf</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;/<span class="name">mirror</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">mirrors</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>修改全局配置后，所有使用此 maven 的工程都会生效。</p>
-<p>&lt; mirrorOf&gt; 可以设置为哪个中央仓库做镜像，为名为 “central” 的中央仓库做镜像，写作 &lt; mirrorOf&gt;central&lt; /mirrorOf&gt;；为所有中央仓库做镜像，写作 &lt; mirrorOf&gt;*&lt; /mirrorOf&gt; (不建议)。maven 默认中央仓库的 id 为 central。id是唯一的。</p>
-</blockquote>
-<ul>
-<li>第二种，局部配置</li>
-</ul>
-<p>在需要使用阿里云镜像仓库的 maven 工程的 pom.xml 文件中添加：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">repositories</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>aliyun<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://maven.aliyun.com/nexus/content/groups/public<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">releases</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">releases</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>false<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">pluginRepositories</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">pluginRepository</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>aliyun-plugin<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://maven.aliyun.com/nexus/content/groups/public<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">releases</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">releases</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>false<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">pluginRepository</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">pluginRepositories</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>修改局部配置后，只对当前工程有效。</p>
-</blockquote>
-<h3 id="私服"><a href="#私服" class="headerlink" title="私服"></a>私服</h3><ul>
-<li>第一种，全局配置</li>
-</ul>
-<p>修改 ${M2_HOME}/conf/setting.xml 文件，在 <profiles> 节点下添加配置：</profiles></p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">profiles</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">profile</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">id</span>&gt;</span>matgene-nexus<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">repositories</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">id</span>&gt;</span>nexus<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://localhost:8081/nexus/content/groups/public/<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">releases</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">releases</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>false<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">pluginRepositories</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">pluginRepository</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">id</span>&gt;</span>nexus-plugin<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://localhost:8081/nexus/content/groups/public/<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">releases</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">releases</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>false<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">pluginRepository</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">pluginRepositories</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">profile</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">profiles</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>然后，在 <activeProfiles> 节点下添加激活配置 (通过配置的 profile 的 id 标识进行激活)：</activeProfiles></p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">activeProfiles</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">activeProfile</span>&gt;</span>matgene-nexus<span class="tag">&lt;/<span class="name">activeProfile</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">activeProfiles</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>第二种，局部配置</li>
-</ul>
-<p>在需要使用私服的 maven 工程的 pom.xml 文件中添加。</p>
-<p><strong>上传：</strong></p>
-<p>settings.xml：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">server</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">id</span>&gt;</span>releases<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">username</span>&gt;</span>admin<span class="tag">&lt;/<span class="name">username</span>&gt;</span>   </span><br><span class="line">    <span class="tag">&lt;<span class="name">password</span>&gt;</span>admin123<span class="tag">&lt;/<span class="name">password</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">server</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">server</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">id</span>&gt;</span>snapshots<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">username</span>&gt;</span>admin<span class="tag">&lt;/<span class="name">username</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">password</span>&gt;</span>admin123<span class="tag">&lt;/<span class="name">password</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">server</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>pom.xml：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">distributionManagement</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">id</span>&gt;</span>releases<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://localhost:8081/nexus/content/repositories/releases/<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">snapshotRepository</span>&gt;</span></span><br><span class="line">   		<span class="tag">&lt;<span class="name">id</span>&gt;</span>snapshots<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://localhost:8081/nexus/content/repositories/snapshots/<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">snapshotRepository</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">distributionManagement</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>下载：</strong></p>
-<p>pom.xml：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">repositories</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>nexus<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://localhost:8081/nexus/content/groups/public/<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">releases</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">releases</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>false<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">pluginRepositories</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">pluginRepository</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>nexus-plugin<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://localhost:8081/nexus/content/groups/public/<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">releases</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">releases</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>false<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">pluginRepository</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">pluginRepositories</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>在项目中，将私服地址更改为自己公司的实际地址。</p>
-</blockquote>
-<h2 id="依赖的下载顺序"><a href="#依赖的下载顺序" class="headerlink" title="依赖的下载顺序"></a>依赖的下载顺序</h2><h3 id="准备测试环境"><a href="#准备测试环境" class="headerlink" title="准备测试环境"></a>准备测试环境</h3><p>安装 jdk 和 maven。</p>
-<p>使用如下命令创建测试项目：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yes | mvn archetype:generate -DarchetypeGroupId=org.apache.maven.archetypes -DarchetypeArtifactId=maven-archetype-webapp  -DinteractiveMode=<span class="literal">true</span> -DgroupId=com.pollyduan -DartifactId=myweb -Dversion=1.0 -Dpackage=com.pollyduan</span><br></pre></td></tr></table></figure>
-
-<p>创建完成后，为了避免后续测试干扰，先执行一次 compile。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> myweb</span><br><span class="line">mvn compile</span><br></pre></td></tr></table></figure>
-
-<p>最后，修改 pom.xml 文件，将 junit 版本号改为 4.12 。我们要使用这个 jar 来测试依赖的搜索顺序。</p>
-<h3 id="默认情况"><a href="#默认情况" class="headerlink" title="默认情况"></a>默认情况</h3><p>首先确保 junit 4.12 不存在：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm -rf ~/.m2/repository/junit/junit/4.12</span><br></pre></td></tr></table></figure>
-
-<p>默认情况下没有配置任何仓库，也就是说，既没更改 $M2_HOME/conf/settings.xml，也没有添加 ~/.m2/settings.xml。</p>
-<p>执行编译，查看日志中拉取 junit 的仓库。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mvn compile</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line">Downloaded from central: https://repo.maven.apache.org/maven2/junit/junit/4.12/junit-4.12.pom (24 kB at 11 kB/s)</span><br></pre></td></tr></table></figure>
-
-<p>从显示的仓库 id 可以看出：默认是从 maven 中央仓库拉取的 jar。</p>
-<h3 id="配置镜像仓库-settings-mirror"><a href="#配置镜像仓库-settings-mirror" class="headerlink" title="配置镜像仓库 settings_mirror"></a>配置镜像仓库 settings_mirror</h3><p>创建 ~/.m2/setttings.xml，配置 maven 中央仓库的镜像，如下：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">settings</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">mirrors</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">mirror</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">id</span>&gt;</span>settings_mirror<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">url</span>&gt;</span>https://maven.aliyun.com/repository/public<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">mirrorOf</span>&gt;</span>central<span class="tag">&lt;/<span class="name">mirrorOf</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">mirror</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">mirrors</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">settings</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>重新测试：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rm -rf ~/.m2/repository/junit/junit/4.12</span><br><span class="line">mvn compile</span><br></pre></td></tr></table></figure>
-
-<p>在日志中查看下载依赖的仓库：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Downloaded from settings_mirror: https://maven.aliyun.com/repository/public/junit/junit/4.12/junit-4.12.pom (24 kB at 35 kB/s)</span><br></pre></td></tr></table></figure>
-
-<p>从显示的仓库 id 可以看出：是从 settings_mirror 中下载的 jar。</p>
-<p>结论：settings_mirror 的优先级高于 central。</p>
-<h3 id="配置项目仓库-pom-repositories"><a href="#配置项目仓库-pom-repositories" class="headerlink" title="配置项目仓库 pom_repositories"></a>配置项目仓库 pom_repositories</h3><p>在 project 中的 pom.xml 文件中，增加如下配置：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">repositories</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">id</span>&gt;</span>pom_repositories<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>local<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://10.18.29.128/nexus/content/groups/public/<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">releases</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">releases</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">sapshots</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>由于改变了 id 的名字，所以仓库地址无所谓，使用相同的地址也不影响测试。</p>
-<p>执行测试：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rm -rf ~/.m2/repository/junit/junit/4.12</span><br><span class="line">mvn compile</span><br></pre></td></tr></table></figure>
-
-<p>在日志中查看下载依赖的仓库：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Downloaded from pom_repositories: http://10.18.29.128/nexus/content/groups/public/junit/junit/4.12/junit-4.12.pom (24 kB at 95 kB/s)</span><br></pre></td></tr></table></figure>
-
-<p>从显示的仓库 id 可以看出：jar 是从 pom_repositories 中下载的。</p>
-<p>结论：pom_repositories 优先级高于 settings_mirror。</p>
-<h3 id="配置全局-profile-仓库-settings-profile-repo"><a href="#配置全局-profile-仓库-settings-profile-repo" class="headerlink" title="配置全局 profile 仓库 settings_profile_repo"></a>配置全局 profile 仓库 settings_profile_repo</h3><p>在 ~/.m2/settings.xml 中 settings 的节点内增加：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">profiles</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">profile</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">id</span>&gt;</span>s_profile<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">repositories</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">id</span>&gt;</span>settings_profile_repo<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">name</span>&gt;</span>netease<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://mirrors.163.com/maven/repository/maven-public/<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">releases</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">releases</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">profile</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">profiles</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>执行测试：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rm -rf ~/.m2/repository/junit/junit/4.12</span><br><span class="line">mvn compile -Ps_profile</span><br></pre></td></tr></table></figure>
-
-<p>在日志中查看下载依赖的仓库：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Downloaded from settings_profile_repo: http://mirrors.163.com/maven/repository/maven-public/junit/junit/4.12/junit-4.12.pom (24 kB at 63 kB/s)</span><br></pre></td></tr></table></figure>
-
-<p>从显示的仓库 id 可以看出：jar 是从 settings_profile_repo 中下载的。</p>
-<p>结论：settings_profile_repo 优先级高于 pom_repositories  和 settings_mirror。</p>
-<h3 id="配置项目-profile-仓库-pom-profile-repo"><a href="#配置项目-profile-仓库-pom-profile-repo" class="headerlink" title="配置项目 profile 仓库 pom_profile_repo"></a>配置项目 profile 仓库 pom_profile_repo</h3><p>在 project 中的 pom.xml 文件中，增加如下配置：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">profiles</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">profile</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">id</span>&gt;</span>p_profile<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">repositories</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>pom_profile_repo<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>local<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://10.18.29.128/nexus/content/groups/public/<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">releases</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">releases</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">snapshots</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">enabled</span>&gt;</span>true<span class="tag">&lt;/<span class="name">enabled</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">snapshots</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">profile</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">profiles</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>执行测试：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rm -rf ~/.m2/repository/junit/junit/4.12</span><br><span class="line">mvn compile -Ps_profile,p_profile</span><br><span class="line">mvn compile -Pp_profile,s_profile</span><br></pre></td></tr></table></figure>
-
-<p>在日志中查看下载依赖的仓库：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Downloaded from settings_profile_repo: http://mirrors.163.com/maven/repository/maven-public/junit/junit/4.12/junit-4.12.pom (24 kB at 68 kB/s)</span><br></pre></td></tr></table></figure>
-
-<p>从显示的仓库 id 可以看出：jar 是从 settings_profile_repo 中下载的。</p>
-<p>结论：settings_profile_repo 优先级高于 pom_profile_repo。</p>
-<p>进一步测试：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rm -rf ~/.m2/repository/junit/junit/4.12</span><br><span class="line">mvn compile -Pp_profile</span><br></pre></td></tr></table></figure>
-
-<p>在日志中查看下载依赖的仓库：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Downloaded from pom_profile_repo: http://10.18.29.128/nexus/content/groups/public/junit/junit/4.12/junit-4.12.pom (24 kB at 106 kB/s)</span><br></pre></td></tr></table></figure>
-
-<p>从显示的仓库 id 可以看出：jar 是从 settings_profile_repo 中下载的。</p>
-<p>结论：pom_profile_repo 优先级高于 pom_repositories。</p>
-<h3 id="本地仓库-local-repo"><a href="#本地仓库-local-repo" class="headerlink" title="本地仓库 local_repo"></a>本地仓库 local_repo</h3><p>这不算测试了，只是一个结论，可以任意测试：只要 ~/.m2/repository 中包含依赖，无论怎么配置，都会优先使用 local 本地仓库中的 jar。</p>
-<h3 id="最终结论"><a href="#最终结论" class="headerlink" title="最终结论"></a>最终结论</h3><ul>
-<li><p>settings_mirror 的优先级高于 central</p>
-</li>
-<li><p>settings_profile_repo 优先级高于 settings_mirror</p>
-</li>
-<li><p>settings_profile_repo 优先级高于 pom_repositories</p>
-</li>
-<li><p>settings_profile_repo 优先级高于 pom_profile_repo</p>
-</li>
-<li><p>pom_repositories 优先级高于 settings_mirror</p>
-</li>
-<li><p>pom_profile_repo 优先级高于 pom_repositories</p>
-</li>
-</ul>
-<p>通过上面的比较，可以得出各种仓库完整的搜索顺序链：</p>
-<p><strong>local_repo &gt; settings_profile_repo &gt; pom_profile_repo &gt; pom_repositories &gt; settings_mirror &gt; central</strong></p>
-<p>简单来说，查找依赖的顺序大致如下：</p>
-<ol>
-<li><p>在本地仓库中寻找，如果没有则进入下一步。</p>
-</li>
-<li><p>在全局配置的私服仓库 (settings.xml 中配置的并被激活) 中寻找，如果没有则进入下一步。</p>
-</li>
-<li><p>在项目自身配置的私服仓库 (pom.xml) 中寻找，如果没有则进入下一步。</p>
-</li>
-<li><p>在中央仓库中寻找，如果没有则终止寻找。</p>
-</li>
-</ol>
-<blockquote>
-<p>说明：</p>
-<ol>
-<li><p>如果在找寻的过程中，发现该仓库有镜像设置，则用镜像的地址代替，即假设现在进行到要在 respository A 仓库中查找某个依赖，但 A 仓库配置了 mirror，则会转到从 A 的 mirror 中查找该依赖，不会再从 A 中查找。</p>
-</li>
-<li><p>settings.xml 中配置的 profile (激活的) 下的 respository 优先级高于项目中 pom.xml 文件配置的 respository。</p>
-</li>
-<li><p>如果仓库的 id 设置成 “central”，则该仓库会覆盖 maven 默认的中央仓库配置。 </p>
-</li>
-</ol>
-</blockquote>
-<h2 id="本文参考"><a href="#本文参考" class="headerlink" title="本文参考"></a>本文参考</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/asdfsfsdgdfgh/article/details/96576665">https://blog.csdn.net/asdfsfsdgdfgh/article/details/96576665</a></p>
-<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/default/p/11856188.html">https://www.cnblogs.com/default/p/11856188.html</a></p>
-<p><a target="_blank" rel="noopener" href="https://my.oschina.net/polly/blog/2120650">https://my.oschina.net/polly/blog/2120650</a></p>
-<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/fengdayuan/article/details/93089136">https://blog.csdn.net/fengdayuan/article/details/93089136</a></p>
-<p>声明：写作本文初衷是个人学习记录，鉴于本人学识有限，如有侵权或不当之处，请联系 <a href="mailto:wdshfut@163.com">wdshfut@163.com</a>。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -4229,14 +4306,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-count">44</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-count">12</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -4272,12 +4349,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">968k</span>
+    <span title="站点总字数">1.1m</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">14:40</span>
+    <span title="站点阅读时长">16:29</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
