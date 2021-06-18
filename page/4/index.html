@@ -153,6 +153,221 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/12/22/shell/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="XiSun">
+      <meta itemprop="description" content="心如止水者，虽世间繁华之红尘纷扰，已然空无一物">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XiSun的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/12/22/shell/" class="post-title-link" itemprop="url">shell 脚本中的一些方法</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-12-22 17:16:35" itemprop="dateCreated datePublished" datetime="2020-12-22T17:16:35+08:00">2020-12-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-01-01 16:13:35" itemprop="dateModified" datetime="2021-01-01T16:13:35+08:00">2021-01-01</time>
+              </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="字符串截取"><a href="#字符串截取" class="headerlink" title="字符串截取"></a>字符串截取</h2><p>shell 截取字符串通常有两种方式：从指定位置开始截取和从指定字符 (子字符串) 开始截取。</p>
+<h3 id="从指定位置开始截取"><a href="#从指定位置开始截取" class="headerlink" title="从指定位置开始截取"></a>从指定位置开始截取</h3><p>两个参数：起始位置，截取长度。</p>
+<h4 id="从字符串左边开始计数"><a href="#从字符串左边开始计数" class="headerlink" title="从字符串左边开始计数"></a>从字符串左边开始计数</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$&#123;string: start :length&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>其中，string 是要截取的字符串，start 是起始位置 (从左边开始，从 0 开始计数)，length 是要截取的长度 (如果省略表示直到字符串的末尾)。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">url=<span class="string">&quot;c.biancheng.net&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;url: 2: 9&#125;</span></span><br><span class="line"></span><br><span class="line">biancheng</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">url=<span class="string">&quot;c.biancheng.net&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;url: 2&#125;</span></span><br><span class="line"></span><br><span class="line">biancheng.net</span><br></pre></td></tr></table></figure>
+
+<h4 id="从字符串右边开始计数"><a href="#从字符串右边开始计数" class="headerlink" title="从字符串右边开始计数"></a>从字符串右边开始计数</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$&#123;string: 0-start :length&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>0-</code> 是固定的写法，专门用来表示从字符串右边开始计数。</p>
+<blockquote>
+<p>从左边开始计数时，起始数字是 0；从右边开始计数时，起始数字是 1。计数方向不同，起始数字也不同。</p>
+<p>不管从哪边开始计数，截取方向都是从左到右。</p>
+</blockquote>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">url=<span class="string">&quot;c.biancheng.net&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;url: 0-13: 9&#125;</span></span><br><span class="line"></span><br><span class="line">biancheng</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">url=<span class="string">&quot;c.biancheng.net&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;url: 0-13&#125;</span></span><br><span class="line"></span><br><span class="line">biancheng.net</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>从右边数，b 是第 13 个字符。</p>
+</blockquote>
+<h3 id="从指定字符-子字符串-开始截取"><a href="#从指定字符-子字符串-开始截取" class="headerlink" title="从指定字符 (子字符串) 开始截取"></a>从指定字符 (子字符串) 开始截取</h3><p>这种截取方式无法指定字符串长度，只能从指定字符 (子字符串) 截取到字符串末尾。shell 可以截取指定字符 (子字符串) 右边的所有字符，也可以截取左边的所有字符。</p>
+<h4 id="使用-截取指定字符-子字符串-右边字符"><a href="#使用-截取指定字符-子字符串-右边字符" class="headerlink" title="使用 # 截取指定字符 (子字符串)右边字符"></a>使用 # 截取指定字符 (子字符串)右边字符</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$&#123;string#*chars&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>其中，string 表示要截取的字符，chars 是指定的字符 (子字符串)，<code>*</code> 是通配符的一种，表示任意长度的字符串。<code>*chars</code> 连起来使用的意思是：忽略左边的所有字符，直到遇见 chars (chars 不会被截取)。</p>
+<blockquote>
+<p>从左往右看。</p>
+</blockquote>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">url=<span class="string">&quot;http://c.biancheng.net/index.html&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;url#*:&#125;</span></span><br><span class="line"></span><br><span class="line">//c.biancheng.net/index.html</span><br></pre></td></tr></table></figure>
+
+<p>以下写法也可以得到同样的结果：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;url#*p:&#125;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;url#*ttp:&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>如果不需要忽略 chars 左边的字符，那么也可以不写 <code>*</code>，例如：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">url=<span class="string">&quot;http://c.biancheng.net/index.html&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;url#http://&#125;</span></span><br><span class="line"></span><br><span class="line">c.biancheng.net/index.html</span><br></pre></td></tr></table></figure>
+
+<p>注意，以上写法遇到第一个匹配的字符 (子字符串) 就结束了。例如：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">url=<span class="string">&quot;http://c.biancheng.net/index.html&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;url#*/&#125;</span></span><br><span class="line"></span><br><span class="line">/c.biancheng.net/index.html</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>url 字符串中有三个 <code>/</code>，输出结果表明，shell 遇到第一个 <code>/</code> 就匹配结束了。</p>
+</blockquote>
+<p>如果希望直到最后一个指定字符 (子字符串) 再匹配结束，那么可以使用 <code>##</code>，具体格式为：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$&#123;string##*chars&#125;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line">url=<span class="string">&quot;http://c.biancheng.net/index.html&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;url#*/&#125;</span>    <span class="comment"># 结果为 /c.biancheng.net/index.html</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;url##*/&#125;</span>   <span class="comment"># 结果为 index.html</span></span><br><span class="line"></span><br><span class="line">str=<span class="string">&quot;---aa+++aa@@@&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;str#*aa&#125;</span>   <span class="comment"># 结果为 +++aa@@@</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;str##*aa&#125;</span>  <span class="comment"># 结果为 @@@</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="使用-截取指定字符-子字符串-左边字符"><a href="#使用-截取指定字符-子字符串-左边字符" class="headerlink" title="使用 % 截取指定字符 (子字符串)左边字符"></a>使用 % 截取指定字符 (子字符串)左边字符</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$&#123;string%chars*&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>注意 <code>*</code> 的位置，因为要截取 chars 左边的字符，而忽略 chars 右边的字符，所以 <code>*</code> 应该位于 chars 的右侧。其他方面 <code>%</code> 和 <code>#</code> 的用法相同。</p>
+<blockquote>
+<p>从右往左看。</p>
+</blockquote>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line">url=<span class="string">&quot;http://c.biancheng.net/index.html&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;url%/*&#125;</span>  <span class="comment"># 结果为 http://c.biancheng.net</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;url%%/*&#125;</span>  <span class="comment"># 结果为 http:</span></span><br><span class="line"></span><br><span class="line">str=<span class="string">&quot;---aa+++aa@@@&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;str%aa*&#125;</span>  <span class="comment"># 结果为 ---aa+++</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;str%%aa*&#125;</span>  <span class="comment"># 结果为 ---</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="汇总"><a href="#汇总" class="headerlink" title="汇总"></a>汇总</h3><table>
+<thead>
+<tr>
+<th>格式</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>${string: start :length}</td>
+<td>从 string 字符串的左边第 start 个字符开始，向右截取 length 个字符。</td>
+</tr>
+<tr>
+<td>${string: start}</td>
+<td>从 string 字符串的左边第 start 个字符开始截取，直到最后。</td>
+</tr>
+<tr>
+<td>${string: 0-start :length}</td>
+<td>从 string 字符串的右边第 start 个字符开始，向右截取 length 个字符。</td>
+</tr>
+<tr>
+<td>${string: 0-start}</td>
+<td>从 string 字符串的右边第 start 个字符开始截取，直到最后。</td>
+</tr>
+<tr>
+<td>${string#*chars}</td>
+<td>从 string 字符串第一次出现 *chars 的位置开始，截取 *chars 右边的所有字符。</td>
+</tr>
+<tr>
+<td>${string##*chars}</td>
+<td>从 string 字符串最后一次出现 *chars 的位置开始，截取 *chars 右边的所有字符。</td>
+</tr>
+<tr>
+<td>${string%*chars}</td>
+<td>从 string 字符串第一次出现 *chars 的位置开始，截取 *chars 左边的所有字符。</td>
+</tr>
+<tr>
+<td>${string%%*chars}</td>
+<td>从 string 字符串最后一次出现 *chars 的位置开始，截取 *chars 左边的所有字符。</td>
+</tr>
+</tbody></table>
+<p><strong>参考：</strong></p>
+<p><a target="_blank" rel="noopener" href="http://c.biancheng.net/view/1120.html">http://c.biancheng.net/view/1120.html</a></p>
+<h2 id="字符串拼接"><a href="#字符串拼接" class="headerlink" title="字符串拼接"></a>字符串拼接</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line">name=<span class="string">&quot;Shell&quot;</span></span><br><span class="line">url=<span class="string">&quot;http://c.biancheng.net/shell/&quot;</span></span><br><span class="line"></span><br><span class="line">str1=<span class="variable">$name</span><span class="variable">$url</span>  <span class="comment"># 中间不能有空格</span></span><br><span class="line">str2=<span class="string">&quot;<span class="variable">$name</span> <span class="variable">$url</span>&quot;</span>  <span class="comment"># 如果被双引号包围，那么中间可以有空格</span></span><br><span class="line">str3=<span class="variable">$name</span><span class="string">&quot;: &quot;</span><span class="variable">$url</span>  <span class="comment"># 中间可以出现别的字符串</span></span><br><span class="line">str4=<span class="string">&quot;<span class="variable">$name</span>: <span class="variable">$url</span>&quot;</span>  <span class="comment"># 这样写也可以</span></span><br><span class="line">str5=<span class="string">&quot;<span class="variable">$&#123;name&#125;</span>Script: <span class="variable">$&#123;url&#125;</span>index.html&quot;</span>  <span class="comment"># 这个时候需要给变量名加上大括号</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$str1</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$str2</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$str3</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$str4</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$str5</span></span><br><span class="line"></span><br><span class="line">Shellhttp://c.biancheng.net/shell/</span><br><span class="line">Shell http://c.biancheng.net/shell/</span><br><span class="line">Shell: http://c.biancheng.net/shell/</span><br><span class="line">Shell: http://c.biancheng.net/shell/</span><br><span class="line">ShellScript: http://c.biancheng.net/shell/index.html</span><br></pre></td></tr></table></figure>
+
+<p>对于第 7 行代码，$name 和 $url 之间之所以不能出现空格，是因为当字符串不被任何一种引号包围时，遇到空格就认为字符串结束了，空格后边的内容会作为其他变量或者命令解析。</p>
+<p>对于第 10 行代码，加 { } 是为了帮助解释器识别变量的边界。</p>
+<h2 id="字符串分割"><a href="#字符串分割" class="headerlink" title="字符串分割"></a>字符串分割</h2><h3 id="以空格为分隔符"><a href="#以空格为分隔符" class="headerlink" title="以空格为分隔符"></a>以空格为分隔符</h3><p>比如有一个变量 “123 456 789”，要求以空格为分隔符把这个变量分隔，并把分隔后的字段分别赋值给变量，即 a=123；b=456；c=789。<br>共有3中方法：<br>方法一：先定义一个数组，然后把分隔出来的字段赋值给数组中的每一个元素<br>方法二：通过 eval+ 赋值的方式<br>方法三：通过多次 awk 把每个字段赋值</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line">a=<span class="string">&quot;123 456 789&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 方法一：通过数组的方式</span></span><br><span class="line"><span class="built_in">declare</span> -a arr</span><br><span class="line">index=0</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> $(<span class="built_in">echo</span> <span class="variable">$a</span> | awk <span class="string">&#x27;&#123;print $1,$3&#125;&#x27;</span>)</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">    arr[<span class="variable">$index</span>]=<span class="variable">$i</span></span><br><span class="line">    <span class="built_in">let</span> <span class="string">&quot;index+=1&quot;</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;arr[0]&#125;</span> <span class="comment"># 结果为 123</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;arr[1]&#125;</span> <span class="comment"># 结果为 789</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 方法二：通过eval+赋值的方式</span></span><br><span class="line">b=<span class="string">&quot;&quot;</span></span><br><span class="line">c=<span class="string">&quot;&quot;</span></span><br><span class="line"><span class="built_in">eval</span> $(<span class="built_in">echo</span> <span class="variable">$a</span> | awk <span class="string">&#x27;&#123; printf(&quot;b=%s;c=%s&quot;,$2,$1)&#125;&#x27;</span>)</span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$b</span> <span class="comment"># 结果为 456</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$c</span> <span class="comment"># 结果为 123</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 方法三：通过多次awk赋值的方式</span></span><br><span class="line">m=<span class="string">&quot;&quot;</span></span><br><span class="line">n=<span class="string">&quot;&quot;</span></span><br><span class="line">m=`<span class="built_in">echo</span> <span class="variable">$a</span> | awk <span class="string">&#x27;&#123;print $1&#125;&#x27;</span>`</span><br><span class="line">n=`<span class="built_in">echo</span> <span class="variable">$a</span> | awk <span class="string">&#x27;&#123;print $2&#125;&#x27;</span>`</span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$m</span> <span class="comment"># 结果为 123</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$n</span> <span class="comment"># 结果为 456</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="指定分隔符"><a href="#指定分隔符" class="headerlink" title="指定分隔符"></a>指定分隔符</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line">string=<span class="string">&quot;hello,shell,haha&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 方法一  </span></span><br><span class="line">array=(<span class="variable">$&#123;string//,/ &#125;</span>)  </span><br><span class="line"><span class="keyword">for</span> var <span class="keyword">in</span> <span class="variable">$&#123;array[@]&#125;</span></span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">   <span class="built_in">echo</span> <span class="variable">$var</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 方法二</span></span><br><span class="line">IFS=<span class="string">&quot;,&quot;</span></span><br><span class="line">OLD_IFS=<span class="string">&quot;<span class="variable">$IFS</span>&quot;</span></span><br><span class="line">IFS=<span class="string">&quot;<span class="variable">$OLD_IFS</span>&quot;</span></span><br><span class="line">array2=(<span class="variable">$string</span>)</span><br><span class="line"><span class="keyword">for</span> var2 <span class="keyword">in</span> <span class="variable">$&#123;array2[@]&#125;</span></span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">   <span class="built_in">echo</span> <span class="variable">$var2</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line">hello</span><br><span class="line">shell</span><br><span class="line">haha</span><br><span class="line">hello</span><br><span class="line">shell</span><br><span class="line">haha</span><br></pre></td></tr></table></figure>
+
+<h2 id="变量赋值"><a href="#变量赋值" class="headerlink" title="变量赋值"></a>变量赋值</h2><p>反引号：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var=`<span class="built_in">command</span>`</span><br></pre></td></tr></table></figure>
+
+<p><code>$()</code>：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var=$(<span class="built_in">command</span>)</span><br></pre></td></tr></table></figure>
+
+<p>例如：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ A=`date`</span><br><span class="line">$ <span class="built_in">echo</span> <span class="variable">$A</span></span><br><span class="line">Fri Dec 25 20:02:30 CST 2020 <span class="comment"># 变量A存放了date命令的执行结果</span></span><br><span class="line"></span><br><span class="line">$ B=$(date)</span><br><span class="line">$ <span class="built_in">echo</span> <span class="variable">$B</span></span><br><span class="line">Fri Dec 25 20:03:12 CST 2020 <span class="comment"># 变量B存放了date命令的执行结果</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意：= 号前后不要有空格。</p>
+</blockquote>
+<p><strong>参考：</strong></p>
+<p><a target="_blank" rel="noopener" href="https://book.51cto.com/art/201411/457601.htm">https://book.51cto.com/art/201411/457601.htm</a></p>
+<h2 id="判断文件夹是否存在"><a href="#判断文件夹是否存在" class="headerlink" title="判断文件夹是否存在"></a>判断文件夹是否存在</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ ! -d testgrid  ];<span class="keyword">then</span></span><br><span class="line">  mkdir testgrid</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">  <span class="built_in">echo</span> dir exist</span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+
+<p>外部传参：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 判断传入的参数的个数是不是一个</span></span><br><span class="line"><span class="keyword">if</span> [ ! <span class="variable">$#</span> -eq 1  ];<span class="keyword">then</span></span><br><span class="line">  <span class="built_in">echo</span> param error!</span><br><span class="line">  <span class="built_in">exit</span> 1</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 判断目录是不是已经存在，如果不存在则创建，存在则输出&quot;dir exist&quot; </span></span><br><span class="line">dirname=<span class="variable">$1</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;the dir name is <span class="variable">$dirname</span>&quot;</span></span><br><span class="line"><span class="keyword">if</span> [ ! -d <span class="variable">$dirname</span>  ];<span class="keyword">then</span></span><br><span class="line">  mkdir <span class="variable">$dirname</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">  <span class="built_in">echo</span> dir exist</span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="循环"><a href="#循环" class="headerlink" title="循环"></a>循环</h2><p>类 C 语言：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># !/bin/sh</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> ((i=1; i&lt;=100; i ++))</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="variable">$i</span></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+
+<p>in 使用：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># !/bin/sh</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> &#123;1..100&#125;</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="variable">$i</span></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+
+<p>seq 使用：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># !/bin/sh</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> `seq 1 100`</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="variable">$i</span></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="发送微信消息"><a href="#发送微信消息" class="headerlink" title="发送微信消息"></a>发送微信消息</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/whatday/article/details/105781861">https://blog.csdn.net/whatday/article/details/105781861</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2020/12/15/linux-command/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -555,7 +770,7 @@
 
 <blockquote>
 <p>linux 版本：</p>
-<p>Linux version 3.10.0-1062.el7.x86_64 (<a href="mailto:&#109;&#111;&#x63;&#x6b;&#98;&#117;&#x69;&#x6c;&#x64;&#x40;&#x6b;&#98;&#117;&#105;&#x6c;&#x64;&#x65;&#x72;&#x2e;&#98;&#115;&#x79;&#x73;&#46;&#x63;&#101;&#x6e;&#x74;&#x6f;&#115;&#x2e;&#111;&#114;&#x67;">&#109;&#111;&#x63;&#x6b;&#98;&#117;&#x69;&#x6c;&#x64;&#x40;&#x6b;&#98;&#117;&#105;&#x6c;&#x64;&#x65;&#x72;&#x2e;&#98;&#115;&#x79;&#x73;&#46;&#x63;&#101;&#x6e;&#x74;&#x6f;&#115;&#x2e;&#111;&#114;&#x67;</a>) (gcc version 4.8.5 20150623 (Red Hat 4.8.5-36) (GCC) ) #1 SMP Wed Aug 7 18:08:02 UTC 2019</p>
+<p>Linux version 3.10.0-1062.el7.x86_64 (<a href="mailto:&#x6d;&#x6f;&#x63;&#x6b;&#x62;&#x75;&#105;&#x6c;&#x64;&#x40;&#x6b;&#98;&#x75;&#105;&#108;&#x64;&#101;&#114;&#46;&#98;&#x73;&#x79;&#x73;&#x2e;&#99;&#x65;&#110;&#116;&#x6f;&#x73;&#x2e;&#x6f;&#x72;&#x67;">&#x6d;&#x6f;&#x63;&#x6b;&#x62;&#x75;&#105;&#x6c;&#x64;&#x40;&#x6b;&#98;&#x75;&#105;&#108;&#x64;&#101;&#114;&#46;&#98;&#x73;&#x79;&#x73;&#x2e;&#99;&#x65;&#110;&#116;&#x6f;&#x73;&#x2e;&#x6f;&#x72;&#x67;</a>) (gcc version 4.8.5 20150623 (Red Hat 4.8.5-36) (GCC) ) #1 SMP Wed Aug 7 18:08:02 UTC 2019</p>
 </blockquote>
 <h3 id="参数说明-7"><a href="#参数说明-7" class="headerlink" title="参数说明"></a>参数说明</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">-v, -verbose</span><br><span class="line">        Verbose: <span class="built_in">print</span> names of files successfully renamed.</span><br><span class="line">-n, -nono</span><br><span class="line">        No action: <span class="built_in">print</span> names of files to be renamed, but don<span class="string">&#x27;t rename.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">-f, -force</span></span><br><span class="line"><span class="string">        Over write: allow existing files to be over-written.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">-h, -help</span></span><br><span class="line"><span class="string">        Help: print SYNOPSIS and OPTIONS.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">-m, -man</span></span><br><span class="line"><span class="string">        Manual: print manual page.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">-V, -version</span></span><br><span class="line"><span class="string">        Version: show version number.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">-e      Expression: code to act on files name.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        May be repeated to build up code (like &quot;perl -e&quot;). If no -e, the</span></span><br><span class="line"><span class="string">        first argument is used as code.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">-E      Statement: code to act on files name, as -e but terminated by</span></span><br><span class="line"><span class="string">        &#x27;</span>;<span class="string">&#x27;.</span></span><br></pre></td></tr></table></figure>
 <p>或者</p>
@@ -3124,389 +3339,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/30/kafka-properties/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/header.jpg">
-      <meta itemprop="name" content="XiSun">
-      <meta itemprop="description" content="心如止水者，虽世间繁华之红尘纷扰，已然空无一物">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XiSun的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/30/kafka-properties/" class="post-title-link" itemprop="url">Kafka 的核心配置参数</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-10-30 15:48:10" itemprop="dateCreated datePublished" datetime="2020-10-30T15:48:10+08:00">2020-10-30</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-05 15:33:28" itemprop="dateModified" datetime="2021-01-05T15:33:28+08:00">2021-01-05</time>
-              </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>13k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>11 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="Kafka-Producer-核心配置参数"><a href="#Kafka-Producer-核心配置参数" class="headerlink" title="Kafka Producer 核心配置参数"></a>Kafka Producer 核心配置参数</h2><p><strong>bootstrap.servers</strong></p>
-<p>broke 服务器地址，多个服务器，用逗号隔开。</p>
-<p><strong>acks</strong></p>
-<p>发送应答，默认：1。</p>
-<p>acks 参数指定了生产者希望 leader 返回的用于确认请求完成的确认数量，即必须要有多少个分区副本收到该消息，生产者才会认为消息写入是成功的。</p>
-<p>允许以下设置：</p>
-<p>acks=0：生产者将完全不等待来自服务器的任何确认。记录将立即添加到 socket 缓冲区，并被认为已发送。在这种情况下，不能保证服务器已经收到记录，重试配置将不会生效 (因为客户机通常不会知道任何失败)。响应里来自服务端的 offset 总是-1。同时，由于不需要等待响应，所以可以以网络能够支持的最大速度发送消息，从而达到很高的吞吐量。</p>
-<p>acks=1：只需要集群的 leader 收到消息，生产者就会收到一个来自服务器的成功响应。leader 会将记录写到本地日志中，但不会等待所有 follower 的完全确认。在这种情况下，如果 follower 复制数据之前，leader 挂掉，数据就会丢失。</p>
-<p>acks=all / -1：当所有参与复制的节点全部收到消息的时候，生产者才会收到一个来自服务器的成功响应，最安全不过延迟比较高。如果需要保证消息不丢失, 需要使用该设置，同时需要设置 broke端 <code>unclean.leader.election.enable</code> 为 true，保证当 ISR 列表为空时，选择其他存活的副本作为新的 leader。</p>
-<p><strong>batch.size</strong></p>
-<p>批量发送大小，默认：16384，即 16 K。</p>
-<p>当有多个消息需要被发送到同一个 partition 的时候，生产者会把他们放到同一个批次里面 (Deque)，该参数指定了一个批次可以使用的内存大小，按照字节数计算，当批次被填满，批次里的所有消息会被发送出去。不过生产者并不一定会等到批次被填满才发送，半满甚至只包含一个消息的批次也有可能被发送。</p>
-<p>生产者产生的消息缓存到本地，每次批量发送 <code>batch.size</code> 大小到服务器。太小的 batch 会降低吞吐，太大则会浪费内存。</p>
-<p><strong>linger.ms</strong></p>
-<p>发送延迟时间，默认：0。</p>
-<p>指定了生产者在发送批次之前等待更多消息加入批次的时间。生产者会在批次填满或 <code>linger.ms</code> 达到上限时把批次发送出去。把 <code>linger.ms</code> 设置成比0大的数，让生产者在发送批次之前等待一会儿，使更多的消息加入到这个批次，虽然这样会增加延迟，但也会提升吞吐量。</p>
-<p>说明：<code>batch.size</code> 和 <code>linger.ms</code> 满足任何一个条件都会发送。</p>
-<p><strong>buffer.memory</strong></p>
-<p>生产者最大可用缓存，默认：33554432，即 32 M。</p>
-<p>生产者可以用来缓冲等待发送到服务器的记录的总内存字节。如果应用程序发送消息的速度超过生产者发送消息到服务器的速度，即超出 <code>max.block.ms</code>，将会抛出异常。</p>
-<p>该设置应该大致与生产者将使用的总内存相对应，但不是硬绑定，因为生产者使用的内存并非全部都用于缓冲。一些额外的内存将用于压缩 (如果启用了压缩) 以及维护飞行中的请求。</p>
-<p><strong>max.block.ms</strong></p>
-<p>阻塞时间，默认：60000，即 1 分钟。</p>
-<p>指定了在调用 <code>send ()</code> 方法或者 <code>partitionsFor ()</code> 方法获取元数据时生产者的阻塞时间。当生产者的发送缓冲区已满，或者没有可用的元数据时，这些方法就会阻塞。在阻塞时间达到 <code>max.block.ms</code> 时，就会抛出 <code>new TimeoutException(“Failed to allocate memory within the configured max blocking time “ + maxTimeToBlockMs + “ ms.”);</code>。</p>
-<p>用户提供的序列化器或分区程序中的阻塞将不计入此超时。</p>
-<p><strong>client.id</strong></p>
-<p>生产者 ID，默认：空。</p>
-<p>请求时传递给服务器的 id 字符串，用来标识消息来源，后台线程会根据它命名。这样做的目的是通过允许在服务器端请求日志中包含逻辑应用程序名称，从而能够跟踪 ip/端口之外的请求源。</p>
-<p><strong>compression.type</strong></p>
-<p>生产者数据被发送到服务器之前被压缩的压缩类型，默认：none，即不压缩。</p>
-<p>指定给定主题的最终压缩类型。此配置接受标准压缩编解码器 (“gzip”、“snappy”、“lz4”、“zstd”)。</p>
-<p>“gzip”：压缩效率高，适合高内存、CPU。</p>
-<p>“snappy”：适合带宽敏感性，压缩力度大。</p>
-<p><strong>retries</strong></p>
-<p>失败重试次数，默认：2147483647。</p>
-<p>异常是 RetriableException 类型，或者 TransactionManager 允许重试 (<code>transactionManager.canRetry ()</code> )。</p>
-<p>RetriableException 类型异常如下：</p>
-<p><img src="/2020/10/30/kafka-properties/843808-20181213103108421-940591020.png" alt="img"></p>
-<p><strong>retry.backoff.ms</strong></p>
-<p>失败请求重试的间隔时间，默认：100。</p>
-<p>这避免了在某些失败场景下以紧密循环的方式重复发送请求。</p>
-<p><strong>max.in.flight.requests.per.connection</strong></p>
-<p>单个连接上发送的未确认请求的最大数量，默认：5。</p>
-<p>阻塞前客户端在单个连接上发送的未确认请求的最大数量。即指定了生产者在收到服务器响应之前可以发送多少个消息。它的值越高，就会占用越多的内存，不过也会提升吞吐量。</p>
-<p>如果设置为 1，可以保证消息是按照发送的顺序写入服务器的，即便发生了重试。</p>
-<p>如果设置大于 1，在 <code>retries</code> 不为0的情况下可能会出现消息发送顺序的错误。例如将两个批发送到同一个分区，第一个批处理失败并重试，但是第二个批处理成功，那么第二个批处理中的记录可能会先出现。</p>
-<p><strong>delivery.timeout.ms</strong></p>
-<p>传输时间，默认：120000，即 2 分钟。</p>
-<p>生产者发送完请求接受服务器 ACK 的时间，该时间允许重试 ，该配置应该大于 <code>request.timeout.ms</code> + <code>linger.ms</code>。</p>
-<p><strong>request.timeout.ms</strong></p>
-<p>请求超时时间，默认：30000，即30秒。</p>
-<p>配置控制客户端等待请求响应的最长时间。 如果在超时之前未收到响应，客户端将在必要时重新发送请求，如果重试耗尽，则该请求将失败。 这应该大于<code>replica.lag.time.max.ms</code> (broker 端配置)，以减少由于不必要的生产者重试引起的消息重复的可能性。</p>
-<p><strong>connections.max.idle.ms</strong></p>
-<p>连接空闲超时时间，默认：540000，即 9 分钟。</p>
-<p>在此配置指定的毫秒数之后关闭空闲连接。</p>
-<p><strong>enable.idempotence</strong></p>
-<p>开启幂等，默认：false。</p>
-<p>如果设置为 <code>true</code> ，将开启 <code>exactly-once</code> 模式，生产者将确保在流中准确地写入每个消息的副本。如果设置为 <code>false</code>，则由于代理失败而导致生产者重试，等等，可能会在流中写入重试消息的副本。</p>
-<p>注意，启用幂等需要以下条件 ：<code>max.in.flight.requests.per.connection</code> 小于或等于 5，<code>retries</code> 大于 0， <code>acks</code> 必须为 all 或者 -1。如果用户没有显式地设置这些值，将选择合适的值。如果设置了不兼容的值，就会抛出 ConfigException。</p>
-<p><strong>key.serializer</strong></p>
-<p>key 序列化器，默认：无。</p>
-<p>需要实现接口：<code>org.apache.kafka.common. serialize .Serializer</code> 。Kafka 提供以下几个默认的 key 序列化器：</p>
-<p>String：<code>org.apache.kafka.common.serialization.StringSerializer</code>。</p>
-<p><strong>value.serializer</strong></p>
-<p>value 序列化器，默认：无。</p>
-<p>需要实现接口：<code>org.apache.kafka.common. serialize .Serializer</code>。Kafka 提供以下几个默认的 value 序列化器：</p>
-<p>byte[]：<code>org.apache.kafka.common.serialization.ByteArraySerializer</code>。</p>
-<p>String：<code>org.apache.kafka.common.serialization.StringSerializer</code>。</p>
-<p><strong>max.request.size</strong></p>
-<p>请求的最大字节大小，默认：1048576，即 1 M。</p>
-<p>该参数用于控制生产者发送的请求大小，单次发送的消息大小超过 <code>max.request.size</code> 时，会抛出异常 ，如：<code>org.apache.kafka.common.errors.RecordTooLargeException: The message is 70459102 bytes when serialized which is larger than the maximum request size you have configured with the max.request.size configuration.</code>。</p>
-<p>注意：broker 对可接收的消息最大值也有自己的限制 (通过 <code>message.max.bytes</code> 参数设置)，所以两边的配置最好可以匹配，避免生产者发送的消息被 broker 拒绝。</p>
-<p><strong>metric.reporters</strong></p>
-<p>自定义指标报告器，默认：无。</p>
-<p>用作指标报告器的类的列表，需要实现接口：<code>org.apache.kafka.common.metrics.MetricsReporter</code>，该接口允许插入将在创建新度量时得到通知的类。<code>JmxReporter</code> 始终包含在注册 <code>JMX</code> 统计信息中。</p>
-<p><strong>interceptor.classes</strong></p>
-<p>拦截器，默认：无。</p>
-<p>用作拦截器的类的列表，需要实现接口：<code>org.apache.kafka.clients.producer.ProducerInterceptor</code> 。允许将生产者接收到的记录发布到 Kafka 集群之前拦截它们 (可能还会发生突变)。</p>
-<p><strong>partitioner.class</strong></p>
-<p>分区策略，默认：<code>org.apache.kafka.clients.producer.internals.DefaultPartitioner</code>。</p>
-<p>如果自定义分区策略，需要实现接口： <code>org.apache.kafka.clients.producer.Partitioner</code>。</p>
-<p><strong>receive.buffer.bytes</strong></p>
-<p>默认：32768，即 32 K。</p>
-<p>指定了 TCP socket 接收数据包的缓冲区大小 (和 broker 通信还是通过 socket )。如果被设置为 -1，就使用操作系统的默认值。如果生产者或消费者与 broker 处于不同的数据中心，那么可以适当增大这些值，因为跨数据中心的网络一般都有比较高的延迟和比较低的带宽。</p>
-<p><strong>send.buffer.bytes</strong></p>
-<p>默认：131072，即 128 K。</p>
-<p>指定了 TCP socket 发送数据包的缓冲区大小 (和 broker 通信还是通过 socket )。如果被设置为 -1，就使用操作系统的默认值。如果生产者或消费者与 broker 处于不同的数据中心，那么可以适当增大这些值，因为跨数据中心的网络一般都有比较高的延迟和比较低的带宽。</p>
-<p><strong>transaction.timeout.ms</strong></p>
-<p>事务协调器等待生产者更新事务状态的最大毫秒数，默认：60000，即 1 分钟。</p>
-<p>如果超过该时间，事务协调器会终止进行中的事务。</p>
-<p>如果设置的时间大于 broker 端的 <code>max.transaction.timeout.ms</code>，会抛出 <code>InvalidTransactionTimeout</code> 异常。</p>
-<p><strong>transactional.id</strong></p>
-<p>用于事务传递的 TransactionalId，默认：空，即不使用事务。</p>
-<p>这使得可以跨越多个生产者会话的可靠性语义，因为它允许客户端保证在开始任何新事务之前使用相同的 TransactionalId 的事务已经完成。如果没有提供 TransactionalId，则生产者被限制为幂等传递。 </p>
-<p>注意：如果配置了 TransactionalId，则必须启用 <code>enable.idempotence</code>。</p>
-<h2 id="Kafka-Consumer-核心配置参数"><a href="#Kafka-Consumer-核心配置参数" class="headerlink" title="Kafka Consumer 核心配置参数"></a>Kafka Consumer 核心配置参数</h2><p><strong>bootstrap.servers</strong></p>
-<p>broke 服务器地址，多个服务器，用逗号隔开。</p>
-<p><strong>enable.auto.commit</strong></p>
-<p>是否开启自动提交 offset，默认：true。</p>
-<p>如果为 true，consumer 的偏移量将在后台定期提交，自动提交频率通过 <code>auto.commit.interval.ms</code> 设置。</p>
-<p><strong>auto.commit.interval.ms</strong></p>
-<p>自动提交频率，默认：5000。</p>
-<p><strong>auto.offset.reset</strong></p>
-<p>初始偏移量，默认：latest。</p>
-<p>如果 Kafka 中没有初始偏移量，或者服务器上不再存在当前偏移量 (例如，该数据已被删除)，该怎么处理：</p>
-<p>earliest：自动重置偏移到最早的偏移。</p>
-<p>latest：自动将偏移量重置为最新偏移量。</p>
-<p>none：如果没有为使用者的组找到以前的偏移量，则向使用者抛出 exception。</p>
-<p>anything else：向使用者抛出异常。</p>
-<p><strong>client.id</strong></p>
-<p>客户端 id，默认：空。</p>
-<p>便于跟踪日志。</p>
-<p><strong>check.crcs</strong></p>
-<p>是否开启数据校验，默认：true。</p>
-<p>自动检查消耗的记录的 CRC32。这确保不会发生对消息的在线或磁盘损坏。此检查增加了一些开销，因此在寻求极端性能的情况下可能禁用此检查。</p>
-<p><strong>group.id</strong></p>
-<p>消费者所属的群组，默认：空。</p>
-<p>唯一标识用户群组，每个 partition 只会分配给同一个 group 里面的一个 consumer 来消费。</p>
-<p><strong>max.poll.records</strong></p>
-<p>拉取的最大记录，默认：500。</p>
-<p>单次轮询调用 <code>poll ()</code> 方法能返回的记录的最大数量。</p>
-<p><strong>max.poll.interval.ms</strong></p>
-<p>拉取记录间隔，默认：300000，即 5 分钟。</p>
-<p>使用消费者组管理时轮询调用之间的最大延迟。这为使用者在获取更多记录之前空闲的时间设置了上限。如果在此超时过期之前没有调用 <code>poll ()</code>，则认为使用者失败，组将重新平衡，以便将分区重新分配给另一个成员。</p>
-<p><strong>request.timeout.ms</strong></p>
-<p>请求超时时间，默认：30000 。</p>
-<p>配置控制客户机等待请求响应的最长时间。如果在超时之前没有收到响应，客户端将在需要时重新发送请求，或者在重试耗尽时失败请求。</p>
-<p><strong>session.timeout.ms</strong></p>
-<p>consumer session 超时时间，默认：10000。</p>
-<p>用于检测 worker 程序失败的超时。worker 定期发送心跳，以向代理表明其活性。如果在此会话超时过期之前代理没有接收到心跳，则代理将从组中删除。</p>
-<p>注意：该值必须在 broker 端配置的 <code>group.min.session.timeout</code> 和 <code>group.max.session.timeout.ms</code> 范围之间。</p>
-<p><strong>heartbeat.interval.ms</strong></p>
-<p>心跳时间，默认：3000。</p>
-<p>心跳是在 consumer 与 coordinator 之间进行的。心跳是确定 consumer 存活，加入或者退出 group 的有效手段。</p>
-<p>这个值必须设置的小于 <code>session.timeout.ms</code> 的1/3，因为：</p>
-<p>当 consumer 由于某种原因不能发 Heartbeat 到 coordinator 时，并且时间超过 <code>session.timeout.ms</code> 时，就会认为该 consumer 已退出，它所订阅的 partition 会分配到同一 group 内的其它的 consumer 上。</p>
-<p><strong>connections.max.idle.ms</strong></p>
-<p>连接空闲超时时间，默认：540000，即 9 分钟。</p>
-<p>在此配置指定的毫秒数之后关闭空闲连接。</p>
-<p><strong>key.deserializer</strong></p>
-<p>key 反序列化器，默认：无。</p>
-<p>需要实现接口：<code>org.apache.kafka.common.serialize.Deserializer</code>。Kafka 提供以下几个默认的 key 反序列化器：</p>
-<p>String：<code>org.apache.kafka.common.serialization.StringDeserializer</code>。</p>
-<p><strong>value.deserializer</strong></p>
-<p>value 反序列化器，默认：无。</p>
-<p>需要实现接口：<code>org.apache.kafka.common. serialize .Deserializer</code>。Kafka 提供以下几个默认的 value 反序列化器：</p>
-<p>String：<code>org.apache.kafka.common.serialization.StringDeserializer</code>。</p>
-<p><strong>partition.assignment.strategy</strong></p>
-<p>consumer订阅分区策略，默认：<code>org.apache.kafka.clients.consumer.RangeAssignor</code>。</p>
-<p>当使用组管理时，客户端将使用分区分配策略的类名在使用者实例之间分配分区所有权。</p>
-<p><strong>max.partition.fetch.bytes</strong></p>
-<p>一次 fetch 请求，从一个 partition 中取得的 records 的最大值，默认：1048576，即 1 M。</p>
-<p>如果在从 topic 中第一个非空的 partition 取消息时，取到的第一个 record 的大小就超过这个配置时，仍然会读取这个 record，也就是说在这种情况下，只会返回这一条 record。</p>
-<p>broker、topic 都会对 producer 发给它的 message size 做限制。所以在配置这值时，可以参考 broker 端的 <code>message.max.bytes</code> 配置和 topic 端的 <code>max.message.bytes</code> 配置。</p>
-<p><strong>fetch.max.bytes</strong></p>
-<p>一次 fetch 请求，从一个 broker 中取得的 records 的最大值，默认：52428800，即 50 M。</p>
-<p>如果在从 topic中 第一个非空的 partition 取消息时，取到的第一个 record 的大小就超过这个配置时，仍然会读取这个 record，也就是说在这种情况下，只会返回这一条 record。</p>
-<p>broker、topic 都会对 producer 发给它的 message size 做限制。所以在配置这值时，可以参考 broker 端的 <code>message.max.bytes</code> 配置 和 topic 端的 <code>max.message.bytes</code> 配置。</p>
-<p><strong>fetch.min.bytes</strong></p>
-<p>一次 fetch 请求，从一个 broker 中取得的 records 的最小值，默认：1。</p>
-<p>如果 broker 中数据量不够的话会 wait，直到积累的数据大小满足这个条件。默认值设置为1的目的是：使得 consumer 的请求能够尽快的返回。将此设置为大于 1 的值将导致服务器等待更大数量的数据累积，这可以稍微提高服务器吞吐量，但代价是增加一些延迟。</p>
-<p><strong>fetch.max.wait.ms</strong></p>
-<p>拉取阻塞时间，默认：500。</p>
-<p>如果没有足够的数据立即满足 <code>fetch.min.bytes</code> 提供的要求，服务器在响应 fetch 请求之前将阻塞的最长时间。</p>
-<p><strong>exclude.internal.topics</strong></p>
-<p>公开内部 topic，默认：true。</p>
-<p>是否应该将来自内部主题 (如偏移量) 的记录公开给使用者，consumer 共享 offset。如果设置为 true，从内部主题接收记录的唯一方法是订阅它。</p>
-<p><strong>isolation.level</strong></p>
-<p>隔离级别，默认：read_uncommitted。</p>
-<p>控制如何以事务方式读取写入的消息。如果设置为 read_committed，<code>poll ()</code> 方法将只返回已提交的事务消息。如果设置为 read_uncommitted，<code>poll ()</code> 方法将返回所有消息，甚至是已经中止的事务消息。在任何一种模式下，非事务性消息都将无条件返回。</p>
-<h2 id="Kafka-Broker-核心配置参数"><a href="#Kafka-Broker-核心配置参数" class="headerlink" title="Kafka Broker 核心配置参数"></a>Kafka Broker 核心配置参数</h2><p><strong>zookeeper.connect</strong></p>
-<p>zookeeper 地址，多个地址用逗号隔开。</p>
-<p><strong>broker.id</strong></p>
-<p>服务器的 broke id，默认：-1。</p>
-<p>每一个 broker 在集群中的唯一表示，要求是正数。</p>
-<p>如果未设置，将生成唯一的代理 id。为了避免 zookeeper 生成的 broke id 和用户配置的 broke id 之间的冲突，生成的代理 id 从 <code>reserve.broker.max.id</code> 开始 id + 1。</p>
-<p><strong>advertised.host.name</strong></p>
-<p>默认：null。</p>
-<p>不赞成使用：</p>
-<p>在 <code>server.properties</code> 里还有另一个参数是解决这个问题的， <code>advertised.host.name</code> 参数用来配置返回的 <code>host.name</code>值，把这个参数配置为外网 IP 地址即可。</p>
-<p>这个参数默认没有启用，默认是返回的 <code>java.net.InetAddress.getCanonicalHostName()</code> 的值，在我的 mac 上这个值并不等于 hostname 的值而是返回 IP，但在 linux 上这个值就是 hostname 的值。</p>
-<p><strong>advertised.listeners</strong></p>
-<p>hostname 和端口注册到 zookeeper 给生产者和消费者使用的，如果没有设置，将会使用 listeners 的配置，如果 listeners 也没有配置，将使用 <code>java.net.InetAddress.getCanonicalHostName()</code> 来获取这个 hostname 和 port，对于 ipv4，基本就是 localhost 了。</p>
-<p><strong>auto.create.topics.enable</strong></p>
-<p>是否允许自动创建 topic，默认：true。</p>
-<p>如果为 true，第一次发动消息时，允许自动创建 topic。否则，只能通过命令创建 topic。</p>
-<p><strong>auto.leader.rebalance.enable</strong></p>
-<p>自动 rebalance，默认：true。</p>
-<p>支持自动 leader balance。如果需要，后台线程定期检查并触发 leader balance。</p>
-<p><strong>background.threads</strong></p>
-<p>默认：10。</p>
-<p>一些后台任务处理的线程数，例如过期消息文件的删除等，一般情况下不需要去做修改。</p>
-<p><strong>compression.type</strong></p>
-<p>压缩类型，默认：producer。</p>
-<p>对发送的消息采取的压缩编码方式 (‘gzip’，’snappy’，’lz4’)。 ‘uncompressed’：不压缩， ‘producer’：保持 producer 本身设置的压缩编码。</p>
-<p><strong>delete.topic.enable</strong></p>
-<p>是否允许删除 topic，默认：true。</p>
-<p>如果关闭此配置，则通过管理工具删除主题将无效。</p>
-<p><strong>leader.imbalance.check.interval.seconds</strong></p>
-<p>rebalance 检测频率，默认：300。</p>
-<p>控制器触发分区 rebalance 检查的频率。</p>
-<p><strong>leader.imbalance.per.broker.percentage</strong></p>
-<p>触发 rebalance 得比率，默认：10，即 10%。</p>
-<p>每个 broke 允许的 leader 不平衡比率。如果控制器超过每个 broke 的这个值，控制器将触发一个 leader balance。该值以百分比指定。</p>
-<p><strong>log.dir</strong></p>
-<p>保存日志数据的目录，默认：/tmp/kafka-logs。</p>
-<p><strong>log.dirs</strong></p>
-<p>保存日志数据的目录，默认：null。</p>
-<p>可以指定多个存储路径，以逗号分隔。如果未设置，使用 <code>log.dir</code> 中设置的值。</p>
-<p><strong>log.flush.interval.messages</strong></p>
-<p>默认：9223372036854775807。</p>
-<p>在将消息刷新到磁盘之前，日志分区上累积的消息数量。</p>
-<p>log 文件 ”sync” 到磁盘之前累积的消息条数。因为磁盘 IO 操作是一个慢操作，但又是一个”数据可靠性”的必要手段。所以此参数的设置，需要在”数据可靠性”与”性能”之间做必要的权衡。</p>
-<p>如果此值过大，将会导致每次 ”fsync” 的时间较长 (IO 阻塞)；如果此值过小，将会导致 ”fsync” 的次数较多，这也意味着整体的 client 请求有一定的延迟。</p>
-<p>物理 server 故障，将会导致没有 fsync 的消息丢失。</p>
-<p><strong>log.flush.interval.ms</strong></p>
-<p>默认：null。</p>
-<p>任何 topic 中的消息在刷新到磁盘之前保存在内存中的最长时间。如果没有设置，则使用 <code>log.flush.scheduler.interval.ms</code> 中的值。</p>
-<p><strong>log.flush.scheduler.interval.ms</strong></p>
-<p>日志刷新器检查是否需要将任何日志刷新到磁盘的频率，默认：9223372036854775807。</p>
-<p><strong>log.flush.offset.checkpoint.interval.ms</strong></p>
-<p>作为日志恢复点的上次刷新的持久记录的更新频率，默认：60000。</p>
-<p><strong>log.retention.bytes</strong></p>
-<p>删除前日志的最大大小，默认：-1。</p>
-<p>topic 每个分区的最大文件大小，一个 topic 的大小限制 = 分区数 * <code>log.retention.bytes</code>。</p>
-<p><strong>log.retention.hours</strong></p>
-<p>日志文件最大保存时间 (小时)，默认：168，即 7 天。</p>
-<p>删除日志文件之前保存它的小时数。</p>
-<p><strong>log.retention.minutes</strong></p>
-<p>日志文件最大保存时间 (分钟)，默认：null。</p>
-<p>在删除日志文件之前保存它的分钟数，如果没有设置，则使用 <code>log.retention.hours</code> 中的值。</p>
-<p><strong>log.retention.ms</strong></p>
-<p>日志文件最大保存时间 (毫秒)，默认：null。</p>
-<p>在删除日志文件之前保存它的毫秒数，如果没有设置，则使用 <code>log.retention.minutes</code> 中的值。如果设置为 -1，则没有时间限制。</p>
-<p><strong>log.roll.hours</strong></p>
-<p>新 segment 产生时间，默认：168，即 7 天。</p>
-<p>即使文件没有到达 <code>log.segment.bytes</code> 设置的大小，只要文件创建时间到达此属性，也会强制创建新 segment。</p>
-<p><strong>log.roll.ms</strong></p>
-<p>新 segment 产生时间，默认：null。</p>
-<p>如果未设置，则使用 <code>log.roll.hours</code> 中的值。</p>
-<p><strong>log.segment.bytes</strong></p>
-<p>单个 segment 文件的最大值，默认：1073741824，即 1 G。</p>
-<p><strong>log.segment.delete.delay.ms</strong></p>
-<p>segment 删除前等待时间， 默认：60000，即 1 分钟。</p>
-<p><strong>message.max.bytes</strong></p>
-<p>最大 batch size，默认：1048588，即 1.000011 M。</p>
-<p>Kafka 允许的最大 record batch size (如果启用了压缩，则是压缩后的大小)。如果增加了这个值，并且是 0.10.2 版本之前的 consumer，那么也必须增加 consumer 的 fetch 大小，以便他们能够获取这么大的 record batch。在最新的消息格式版本中，记录总是按批进行分组，以提高效率。在以前的消息格式版本中，未压缩记录没有分组成批，这种限制只适用于单个 record。针对每个 topic，可以使用 <code>max.message.bytes</code> 设置。</p>
-<p><strong>min.insync.replicas</strong></p>
-<p>insync中最小副本值，默认：1。</p>
-<p>当生产者将 <code>acks</code> 设置为 “all” (或 “-1”)时，<code>min.insync.replicas</code> 指定了必须确认写操作成功的最小副本数量。如果不能满足这个最小值，则生产者将抛出一个异常 (要么是 <code>NotEnoughReplicas</code>，要么是 <code>NotEnoughReplicasAfterAppend</code>)。</p>
-<p>当一起使用时，<code>min.insync.replicas</code> 和 <code>ack</code> 允许你执行更大的持久性保证。一个典型的场景是创建一个复制因子为 3 的主题，设置 <code>min.insync.replicas</code> 为 2，生产者设置 <code>acks</code> 为 “all”，这将确保如果大多数副本没有收到写操作，则生产者会抛出异常。</p>
-<p><strong>num.io.threads</strong></p>
-<p>服务器用于处理请求的线程数，其中可能包括磁盘 I/O，默认：8。</p>
-<p><strong>num.network.threads</strong></p>
-<p>服务器用于接收来自网络的请求和向网络发送响应的线程数，默认：3。</p>
-<p><strong>num.recovery.threads.per.data.dir</strong></p>
-<p>每个数据目录在启动时用于日志恢复和在关闭时用于刷新的线程数，默认：1。</p>
-<p><strong>num.replica.alter.log.dirs.threads</strong></p>
-<p>可以在日志目录 (可能包括磁盘 I/O) 之间移动副本的线程数，默认：null。</p>
-<p><strong>num.replica.fetchers</strong></p>
-<p>从 leader 复制数据到 follower 的线程数，默认：1。</p>
-<p><strong>offset.metadata.max.bytes</strong></p>
-<p>与 offset 提交关联的 metadata 的最大大小，默认：4096。</p>
-<p><strong>offsets.commit.timeout.ms</strong></p>
-<p>offset 提交将被延迟，直到偏移量主题的所有副本收到提交或达到此超时。这类似于生产者请求超时。默认：5000。</p>
-<p><strong>offsets.topic.num.partitions</strong></p>
-<p>偏移量提交主题的分区数量 (部署后不应再更改)，默认：50。</p>
-<p><strong>offsets.topic.replication.factor</strong></p>
-<p>副本大小，默认：3。</p>
-<p><strong>offsets.topic.segment.bytes</strong></p>
-<p>默认104857600，即 100 M。</p>
-<p>segment 映射文件 (index) 文件大小，应该保持相对较小以便加快日志压缩和缓存负载。</p>
-<p><strong>queued.max.requests</strong></p>
-<p>阻塞网络线程之前，允许排队的请求数，默认：500。</p>
-<p><strong>replica.fetch.min.bytes</strong></p>
-<p>每个 fetch 响应所需的最小字节，默认：1。</p>
-<p>如果字节不够，则等待 replicaMaxWaitTimeMs。</p>
-<p><strong>replica.lag.time.max.ms</strong></p>
-<p>默认：30000。</p>
-<p>如果 follower 没有发送任何获取请求，或者至少在这段时间没有消耗到 leader 日志的结束偏移量，那么 leader 将从 isr 中删除 follower。</p>
-<p><strong>transaction.max.timeout.ms</strong></p>
-<p>默认：900000，即15分钟。</p>
-<p>事务执行最长时间，超时则抛出异常。</p>
-<p><strong>unclean.leader.election.enable</strong></p>
-<p>默认：false。</p>
-<p>指示是否在最后不得已的情况下启用 ISR 集中以外的副本作为 leader，即使这样做可能导致数据丢失。</p>
-<p><strong>zookeeper.connection.timeout.ms</strong></p>
-<p>默认：null。</p>
-<p>客户端等待与 zookeeper 建立连接的最长时间。如果未设置，则使用 <code>zookeeper.session.timeout.ms</code> 中的值。</p>
-<p><strong>zookeeper.max.in.flight.requests</strong></p>
-<p>默认：10。</p>
-<p>阻塞之前 consumer 将发送给 zookeeper 的未确认请求的最大数量。</p>
-<p><strong>group.max.session.timeout.ms</strong></p>
-<p>默认：1800000，即 30 分钟。</p>
-<p>注册使用者允许的最大会话超时。超时时间越长，消费者在心跳之间处理消息的时间就越多，而检测故障的时间就越长。</p>
-<p><strong>group.min.session.timeout.ms</strong></p>
-<p>默认：6000。</p>
-<p>注册使用者允许的最小会话超时。更短的超时导致更快的故障检测，但代价是更频繁的用户心跳，这可能会耗尽 broker 资源。</p>
-<p><strong>num.partitions</strong></p>
-<p>每个主题的默认日志分区数量，默认：1。</p>
-<h2 id="本文参考"><a href="#本文参考" class="headerlink" title="本文参考"></a>本文参考</h2><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/wangzhuxing/p/10111831.html#_label0_11">https://www.cnblogs.com/wangzhuxing/p/10111831.html#_label0_11</a></p>
-<p><a target="_blank" rel="noopener" href="https://atbug.com/kafka-producer-config/">https://atbug.com/kafka-producer-config/</a></p>
-<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/jiecxy/article/details/53389892">https://blog.csdn.net/jiecxy/article/details/53389892</a></p>
-<p>本文只整理了部分有关 Kafka 的配置，仅作参考，更多的关于 broker，topic，producer 和 consumer 的配置，请参考 <a target="_blank" rel="noopener" href="https://kafka.apache.org/documentation/">Kafka 官网</a>。</p>
-<p>声明：写作本文初衷是个人学习记录，鉴于本人学识有限，如有侵权或不当之处，请联系 <a href="mailto:wdshfut@163.com">wdshfut@163.com</a>。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -3578,7 +3410,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">44</span>
+          <span class="site-state-item-count">45</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -3626,7 +3458,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">16:29</span>
+    <span title="站点阅读时长">16:30</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
