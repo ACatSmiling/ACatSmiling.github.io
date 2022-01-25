@@ -104,7 +104,7 @@
 <meta property="og:image" content="http://example.com/2021/05/17/docker-base/image-20210602145904796.png">
 <meta property="og:image" content="http://example.com/2021/05/17/docker-base/image-20210602145943825.png">
 <meta property="article:published_time" content="2021-05-17T02:30:51.000Z">
-<meta property="article:modified_time" content="2022-01-03T00:58:11.809Z">
+<meta property="article:modified_time" content="2022-01-18T08:37:24.786Z">
 <meta property="article:author" content="XiSun">
 <meta property="article:tag" content="docker">
 <meta name="twitter:card" content="summary">
@@ -264,7 +264,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-03 08:58:11" itemprop="dateModified" datetime="2022-01-03T08:58:11+08:00">2022-01-03</time>
+                <time title="修改时间：2022-01-18 16:37:24" itemprop="dateModified" datetime="2022-01-18T16:37:24+08:00">2022-01-18</time>
               </span>
 
           
@@ -380,10 +380,17 @@
 <li>Linux 安装：<a target="_blank" rel="noopener" href="https://hub.docker.com/search?q=&amp;type=edition&amp;offering=community&amp;operating_system=linux">https://hub.docker.com/search?q=&amp;type=edition&amp;offering=community&amp;operating_system=linux</a></li>
 </ul>
 <h3 id="WSL-安装"><a href="#WSL-安装" class="headerlink" title="WSL 安装"></a>WSL 安装</h3><ul>
-<li><p>默认已经安装 WSL。</p>
+<li><p>默认已经安装 WSL，打开 Windows PowerShell，输入以下命令启动：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">PS</span> C:\WINDOWS\system32&gt; wsl</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>默认安装的 WSL version 是 1，在 Windows PowerShell 中查看：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">PS</span> C:\Users\Xisun\Desktop&gt; wsl -<span class="literal">-list</span> <span class="literal">-v</span></span><br><span class="line">  NAME      STATE           VERSION</span><br><span class="line">* Ubuntu    Running         <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>WSL 有时候会因为一些原因导致无法启动，提示 <code>参考的对象类型不支持尝试的操作</code>，此时需要以管理员身份打开 Windows PowerShell，然后执行以下命令，再重启电脑即可恢复：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(base) <span class="built_in">PS</span> C:\WINDOWS\system32&gt; netsh winsock reset</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
 </li>
 <li><p>在 Windows PowerShell 中，切换 WSL version 为 2：</p>
 <ul>
@@ -415,7 +422,7 @@
 <p>参考：<a target="_blank" rel="noopener" href="https://github.com/arkane-systems/genie">https://github.com/arkane-systems/genie</a></p>
 </blockquote>
 </li>
-<li><p>以管理员身份打开 Windows PowerShell：<code>win + x</code> 快捷键，然后执行命令 <code>wsl</code>，进入 WSL 控制台，并切换到 root 用户：</p>
+<li><p>以管理员身份打开 Windows PowerShell：<code>win + x</code> 快捷键，打开 Windows PowerShell，或者以管理员方式打开，然后在界面中执行命令 <code>wsl</code>，进入 WSL 控制台，并切换到 root 用户：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">PS</span> C:\WINDOWS\system32&gt; wsl</span><br><span class="line">xisun@DESKTOP<span class="literal">-OJKMETJ</span>:/mnt/c/WINDOWS/system32<span class="variable">$</span> su root</span><br><span class="line">Password:</span><br><span class="line">root@DESKTOP<span class="literal">-OJKMETJ</span>:/mnt/c/WINDOWS/system32<span class="comment">#</span></span><br></pre></td></tr></table></figure>
 
 <ul>
@@ -524,13 +531,13 @@
 <li><p>参考：<a target="_blank" rel="noopener" href="https://docs.docker.com/engine/install/ubuntu/">https://docs.docker.com/engine/install/ubuntu/</a></p>
 </li>
 <li><p>按照官网指示一步步执行，即可安装 Docker。主要涉及如下命令，各命令的含义参考官网：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get remove docker docker-engine docker.io containerd runc</span></span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install apt-transport-https \</span></span><br><span class="line">    ca-certificates \</span><br><span class="line">    curl \</span><br><span class="line">    gnupg \</span><br><span class="line">    lsb-release</span><br><span class="line">    </span><br><span class="line"><span class="meta">$</span><span class="bash"> curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \</span></span><br><span class="line">	sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">echo</span> \</span></span><br><span class="line">  &quot;deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \</span><br><span class="line"><span class="meta">  $</span><span class="bash">(lsb_release -cs) stable<span class="string">&quot; | sudo tee /etc/apt/sources.list.d/docker.list &gt; /dev/null</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install docker-ce docker-ce-cli containerd.io</span></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get remove docker docker-engine docker.io containerd runc</span></span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install apt-transport-https \</span></span><br><span class="line">    ca-certificates \</span><br><span class="line">    curl \</span><br><span class="line">    gnupg \</span><br><span class="line">    lsb-release</span><br><span class="line">    </span><br><span class="line"><span class="meta">$</span><span class="bash"> curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \</span></span><br><span class="line">	sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">echo</span> \</span></span><br><span class="line">  &quot;deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \</span><br><span class="line"><span class="meta">  $</span><span class="bash">(lsb_release -cs) stable<span class="string">&quot; | sudo tee /etc/apt/sources.list.d/docker.list &gt; /dev/null</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get update</span></span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo apt-get install docker-ce docker-ce-cli containerd.io</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
+</li>
+</ul>
 <blockquote>
 <p>以上命令默认安装的为 Docker 最新版本，若需要安装特定版本，请参考官网。</p>
 </blockquote>
-</li>
-</ul>
 <h2 id="Docker-常用命令"><a href="#Docker-常用命令" class="headerlink" title="Docker 常用命令"></a>Docker 常用命令</h2><h3 id="帮助命令"><a href="#帮助命令" class="headerlink" title="帮助命令"></a>帮助命令</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker version</span></span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> docker info</span></span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> docker --<span class="built_in">help</span></span></span><br></pre></td></tr></table></figure>
 
 <h3 id="镜像命令"><a href="#镜像命令" class="headerlink" title="镜像命令"></a>镜像命令</h3><ul>
@@ -586,7 +593,7 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker pull centos</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>新建并启动容器</strong></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker run [OPTIONS] IMAGE [COMMAND][ARG]</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker run [OPTIONS] IMAGENAME [COMMAND][ARG]</span></span><br></pre></td></tr></table></figure>
 
 <ul>
 <li><p>OPTIONS 说明：</p>
@@ -639,7 +646,7 @@
 <p>-f 可以删除没有停止的容器。</p>
 </blockquote>
 </li>
-<li><p>删除多个：</p>
+<li><p>删除所有：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker rm -f $(docker ps -aq)</span></span><br></pre></td></tr></table></figure>
 
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker ps -aq | xargs docker rm</span></span><br></pre></td></tr></table></figure>
@@ -647,7 +654,7 @@
 </ul>
 </li>
 <li><p><strong>启动守护式容器</strong></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker run -d IMAGE</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker run -d IMAGENAME</span></span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>例如，以后台模式启动一个 CentOS，<code>docker run -d centos</code>，然后 <code>docker ps -a</code> 进行查看，<strong>会发现容器已经退出。</strong></li>
@@ -732,7 +739,7 @@
 <li><strong>rootfs (root file system)：</strong>在 bootfs 之上。包含的就是典型 Linux 系统中的 /dev， /proc，/bin，/etc 等标准目录和文件。rootfs 就是各种不同的操作系统发行版，比如 Ubuntu，CentOS 等等。</li>
 </ul>
 </li>
-<li><p>对于一个精简的 OS，rootfs 可以很小，只需要包括最基本的命令、工具和程序库就可以了，因为底层直接用 Host (宿主机) 的 kernel，自己只需要提供 rootfs 就行了。由此可见对于不同的 Linux 发行版，bootfs基本是一致的，rootfs会有差别，因此不同的发行版可以公用 bootfs。比如：平时我们安装的虚拟机的 CentOS 都是好几个 G 大小，而 Docker 里才要 200 M 左右。</p>
+<li><p>对于一个精简的 OS，rootfs 可以很小，只需要包括最基本的命令、工具和程序库就可以了，因为底层直接用 Host (宿主机) 的 kernel，自己只需要提供 rootfs 就行了。由此可见对于不同的 Linux 发行版，bootfs 基本是一致的，rootfs 会有差别，因此不同的发行版可以公用 bootfs。比如：平时我们安装的虚拟机的 CentOS 都是好几个 G 大小，而 Docker 里才要 200 M 左右。</p>
 <p><img src="/2021/05/17/docker-base/image-20210520113538105.png" alt="image-20210520113538105"></p>
 </li>
 </ul>
@@ -1401,7 +1408,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">27:20</span>
+    <span title="站点阅读时长">27:35</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
